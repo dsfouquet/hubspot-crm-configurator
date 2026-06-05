@@ -1,4 +1,8 @@
 import { STEPS } from '../constants/steps'
+import PreviewWizard from './PreviewWizard'
+import PreviewRecord from './PreviewRecord'
+import PreviewDealRecord from './PreviewDealRecord'
+import PreviewCustomObjects from './PreviewCustomObjects'
 
 // Placeholder preview shown until each step's real preview is built.
 function PreviewPlaceholder({ index }) {
@@ -22,12 +26,12 @@ function PreviewPlaceholder({ index }) {
 
 // Maps step key → preview component. Replace placeholders as previews are built.
 export const PREVIEW_COMPONENTS = {
-  wizard: (i) => <PreviewPlaceholder index={i} />,
-  contacts: (i) => <PreviewPlaceholder index={i} />,
-  companies: (i) => <PreviewPlaceholder index={i} />,
-  deals: (i) => <PreviewPlaceholder index={i} />,
-  tickets: (i) => <PreviewPlaceholder index={i} />,
-  customObjects: (i) => <PreviewPlaceholder index={i} />,
+  wizard: () => <PreviewWizard />,
+  contacts: () => <PreviewRecord slice="contacts" />,
+  companies: () => <PreviewRecord slice="companies" />,
+  deals: () => <PreviewDealRecord />,
+  tickets: () => <PreviewRecord slice="tickets" />,
+  customObjects: () => <PreviewCustomObjects />,
   workflows: (i) => <PreviewPlaceholder index={i} />,
   views: (i) => <PreviewPlaceholder index={i} />,
   dashboards: (i) => <PreviewPlaceholder index={i} />,

@@ -157,4 +157,133 @@ export const useStore = create((set, get) => ({
   setAdvisorNotes(text) {
     get().patchSession({ advisorNotes: text })
   },
+
+  // ---- Wizard (Step 1) ----
+  setWizardAnswer(questionKey, value) {
+    get().patchSlice('wizard', { [questionKey]: value })
+  },
+
+  // ---- Record property / section / activity helpers (Steps 2-5) ----
+  toggleProperty(slice, key) {
+    get().patchSlice(slice, (s) => ({
+      properties: s.properties.map((p) =>
+        p.key === key && !p.locked ? { ...p, enabled: !p.enabled } : p
+      ),
+    }))
+  },
+  addProperty(slice, property) {
+    get().patchSlice(slice, (s) => ({ properties: [...s.properties, property] }))
+  },
+  removeProperty(slice, key) {
+    get().patchSlice(slice, (s) => ({
+      properties: s.properties.filter((p) => p.key !== key || p.locked),
+    }))
+  },
+  toggleSection(slice, key) {
+    get().patchSlice(slice, (s) => ({
+      sections: s.sections.map((sec) =>
+        sec.key === key ? { ...sec, enabled: !sec.enabled } : sec
+      ),
+    }))
+  },
+  addSection(slice, label) {
+    const key = label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
+    get().patchSlice(slice, (s) => ({
+      sections: [...s.sections, { key: `${key}_${Date.now()}`, label, enabled: true }],
+    }))
+  },
+  removeSection(slice, key) {
+    get().patchSlice(slice, (s) => ({
+      sections: s.sections.filter((sec) => sec.key !== key),
+    }))
+  },
+  moveSection(slice, key, dir) {
+    get().patchSlice(slice, (s) => {
+      const arr = [...s.sections]
+      const i = arr.findIndex((sec) => sec.key === key)
+      const j = i + dir
+      if (i < 0 || j < 0 || j >= arr.length) return {}
+      ;[arr[i], arr[j]] = [arr[j], arr[i]]
+      return { sections: arr }
+    })
+  },
+  toggleActivity(slice, key) {
+    get().patchSlice(slice, (s) => ({
+      activities: s.activities.map((a) =>
+        a.key === key ? { ...a, enabled: !a.enabled } : a
+      ),
+    }))
+  },
+
+  // ---- Pipeline stage helpers (Deals / Tickets) ----
+  addStage(slice, label) {
+    const key = label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
+    get().patchSlice(slice, (s) => ({
+      pipelineStages: [
+        ...s.pipelineStages,
+        { key: `${key}_${Date.now()}`, label, probability: null },
+      ],
+    }))
+  },
+  renameStage(slice, key, label) {
+    get().patchSlice(slice, (s) => ({
+      pipelineStages: s.pipelineStages.map((st) =>
+        st.key === key ? { ...st, label } : st
+      ),
+    }))
+  },
+  setStageProbability(slice, key, probability) {
+    get().patchSlice(slice, (s) => ({
+      pipelineStages: s.pipelineStages.map((st) =>
+        st.key === key ? { ...st, probability } : st
+      ),
+    }))
+  },
+  removeStage(slice, key) {
+    get().patchSlice(slice, (s) => ({
+      pipelineStages: s.pipelineStages.filter((st) => st.key !== key),
+    }))
+  },
+  moveStage(slice, key, dir) {
+    get().patchSlice(slice, (s) => {
+      const arr = [...s.pipelineStages]
+      const i = arr.findIndex((st) => st.key === key)
+      const j = i + dir
+      if (i < 0 || j < 0 || j >= arr.length) return {}
+      ;[arr[i], arr[j]] = [arr[j], arr[i]]
+      return { pipelineStages: arr }
+    })
+  },
+
+  // ---- Custom objects (Step 6) ----
+  addCustomObject() {
+    get().patchSession((s) => {
+      if (s.customObjects.length >= 5) return {}
+      return {
+        customObjects: [
+          ...s.customObjects,
+          {
+            id: `obj_${Date.now()}`,
+            singular: '',
+            plural: '',
+            description: '',
+            properties: [],
+            associations: [],
+          },
+        ],
+      }
+    })
+  },
+  updateCustomObject(id, patch) {
+    get().patchSession((s) => ({
+      customObjects: s.customObjects.map((o) =>
+        o.id === id ? { ...o, ...patch } : o
+      ),
+    }))
+  },
+  removeCustomObject(id) {
+    get().patchSession((s) => ({
+      customObjects: s.customObjects.filter((o) => o.id !== id),
+    }))
+  },
 }))

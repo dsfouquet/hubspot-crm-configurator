@@ -1,0 +1,65 @@
+// Step 1 wizard (spec). Each question: key, prompt, type, options, max (for multi).
+export const WIZARD_QUESTIONS = [
+  {
+    key: 'teamType',
+    prompt: 'What does your team do?',
+    type: 'single',
+    allowOther: true,
+    options: [
+      'B2B Sales (outbound focused)',
+      'B2B Sales (inbound/marketing led)',
+      'Field Sales / Outside Sales',
+      'Account Management / Renewals',
+      'Professional Services / Project-based',
+    ],
+  },
+  {
+    key: 'teamSize',
+    prompt: 'How many people will use HubSpot?',
+    type: 'single',
+    options: ['Just me (1)', 'Small team (2–5)', 'Mid-size team (6–20)', 'Large team (20+)'],
+  },
+  {
+    key: 'challenges',
+    prompt: "What's your biggest sales challenge right now?",
+    type: 'multi',
+    max: 3,
+    options: [
+      'Not enough leads / top of funnel',
+      'Leads fall through the cracks',
+      'No visibility into pipeline / forecast',
+      'Reps not following up consistently',
+      "Can't tell what activities are driving revenue",
+      'No accountability / coaching structure',
+      'Too much manual data entry',
+      'Slow quote-to-close process',
+    ],
+  },
+  {
+    key: 'activities',
+    prompt: 'What activities are most important to your team?',
+    type: 'multi',
+    options: [
+      'Cold calling / call blocking',
+      'Email outreach / sequences',
+      'In-person visits / site calls',
+      'Demo scheduling',
+      'Proposal / quoting',
+      'Pipeline review / forecasting',
+      'Customer check-ins / QBRs',
+      'Ticket / support resolution',
+    ],
+  },
+  {
+    key: 'currentTools',
+    prompt: 'Do you currently use any of these?',
+    type: 'multi',
+    options: [
+      'Spreadsheets for CRM',
+      'Another CRM (Salesforce, Pipedrive, etc.)',
+      'Paper / whiteboard tracking',
+      'Email only',
+      'Nothing structured',
+    ],
+  },
+]

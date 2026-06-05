@@ -1,6 +1,9 @@
 import { STEPS } from '../constants/steps'
+import Step1_Wizard from './Step1_Wizard'
+import RecordStep from './RecordStep'
+import Step6_CustomObjects from './Step6_CustomObjects'
 
-// Placeholder shown until each step's real component is built (build phase 2+).
+// Placeholder shown until each step's real component is built (build phase 3+).
 function Placeholder({ index }) {
   const step = STEPS[index]
   return (
@@ -18,12 +21,42 @@ function Placeholder({ index }) {
 
 // Maps step key → config component. Replace placeholders as steps are built.
 export const STEP_COMPONENTS = {
-  wizard: (i) => <Placeholder index={i} />,
-  contacts: (i) => <Placeholder index={i} />,
-  companies: (i) => <Placeholder index={i} />,
-  deals: (i) => <Placeholder index={i} />,
-  tickets: (i) => <Placeholder index={i} />,
-  customObjects: (i) => <Placeholder index={i} />,
+  wizard: (i) => <Step1_Wizard index={i} />,
+  contacts: (i) => (
+    <RecordStep
+      index={i}
+      slice="contacts"
+      intro="Configure the fields and layout for your Contact records."
+    />
+  ),
+  companies: (i) => (
+    <RecordStep
+      index={i}
+      slice="companies"
+      intro="Configure the fields and layout for your Company records."
+    />
+  ),
+  deals: (i) => (
+    <RecordStep
+      index={i}
+      slice="deals"
+      intro="Configure your Deal records and pipeline stages."
+      pipeline
+      pipelineProbability
+      pipelineTitle="Pipeline Stage Configurator"
+    />
+  ),
+  tickets: (i) => (
+    <RecordStep
+      index={i}
+      slice="tickets"
+      intro="Configure your support Ticket records and pipeline."
+      pipeline
+      pipelineProbability={false}
+      pipelineTitle="Ticket Pipeline Stages"
+    />
+  ),
+  customObjects: (i) => <Step6_CustomObjects index={i} />,
   workflows: (i) => <Placeholder index={i} />,
   views: (i) => <Placeholder index={i} />,
   dashboards: (i) => <Placeholder index={i} />,
