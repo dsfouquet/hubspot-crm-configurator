@@ -3,6 +3,7 @@ import PreviewWizard from './PreviewWizard'
 import PreviewRecord from './PreviewRecord'
 import PreviewDealRecord from './PreviewDealRecord'
 import PreviewCustomObjects from './PreviewCustomObjects'
+import PreviewAutomations from './PreviewAutomations'
 
 // Placeholder preview shown until each step's real preview is built.
 function PreviewPlaceholder({ index }) {
@@ -32,7 +33,7 @@ export const PREVIEW_COMPONENTS = {
   deals: () => <PreviewDealRecord />,
   tickets: () => <PreviewRecord slice="tickets" />,
   customObjects: () => <PreviewCustomObjects />,
-  workflows: (i) => <PreviewPlaceholder index={i} />,
+  workflows: () => <PreviewAutomations />,
   views: (i) => <PreviewPlaceholder index={i} />,
   dashboards: (i) => <PreviewPlaceholder index={i} />,
   cadence: (i) => <PreviewPlaceholder index={i} />,

@@ -76,6 +76,7 @@ export const useStore = create((set, get) => ({
   currentStep: 0, // index into STEPS
   presenterMode: false,
   advisorOpen: false,
+  focusedWorkflowId: null, // which workflow diagram the preview pane shows
   gatePassed: restored
     ? Boolean(initialSession.gate?.email) || initialSession.mode === 'live'
     : false,
@@ -253,6 +254,33 @@ export const useStore = create((set, get) => ({
       ;[arr[i], arr[j]] = [arr[j], arr[i]]
       return { pipelineStages: arr }
     })
+  },
+
+  // ---- Automation workflows (Step 7) ----
+  addWorkflow(workflow) {
+    const id = workflow.id || `wf_${Date.now()}`
+    const wf = { ...workflow, id }
+    get().patchSession((s) => ({ workflows: [...s.workflows, wf] }))
+    set({ focusedWorkflowId: id })
+    return id
+  },
+  removeWorkflow(id) {
+    get().patchSession((s) => ({ workflows: s.workflows.filter((w) => w.id !== id) }))
+    set((state) => ({
+      focusedWorkflowId: state.focusedWorkflowId === id ? null : state.focusedWorkflowId,
+    }))
+  },
+  updateWorkflow(id, patch) {
+    get().patchSession((s) => ({
+      workflows: s.workflows.map((w) => (w.id === id ? { ...w, ...patch } : w)),
+    }))
+  },
+  setFocusedWorkflow(id) {
+    set({ focusedWorkflowId: id })
+  },
+  // True if a template (by templateId) is already added.
+  hasTemplate(templateId) {
+    return get().session.workflows.some((w) => w.templateId === templateId)
   },
 
   // ---- Custom objects (Step 6) ----
