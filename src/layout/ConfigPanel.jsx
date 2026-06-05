@@ -9,7 +9,7 @@ export default function ConfigPanel() {
   const render = STEP_COMPONENTS[stepKey]
 
   return (
-    <section className="w-[45%] shrink-0 bg-white border-r border-hs-border overflow-y-auto hs-scroll">
+    <section className="w-[30%] min-w-[340px] shrink-0 bg-white border-r border-hs-border overflow-y-auto hs-scroll">
       {render(currentStep)}
     </section>
   )

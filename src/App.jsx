@@ -36,11 +36,13 @@ export default function App() {
             </button>
           </>
         ) : (
-          // Normal mode: step nav + config + preview
+          // Normal mode: step nav (chrome) + a 30/70 config|preview content area
           <>
             <StepNav />
-            <ConfigPanel />
-            <PreviewPane />
+            <div className="flex-1 flex min-w-0">
+              <ConfigPanel />
+              <PreviewPane />
+            </div>
           </>
         )}
 
