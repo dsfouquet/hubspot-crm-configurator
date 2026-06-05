@@ -1,0 +1,93 @@
+{
+  "lastUpdated": "2026-06-01",
+  "source": "https://www.hubspot.com/pricing",
+  "_editingNotes": "Non-developers can safely edit this file. To add a feature: 1) add its key to the right tier's 'features' array, 2) add a human label in 'featureLabels'. To change pricing: edit 'monthlyPerSeat'. See spec Section 13.",
+  "tiers": {
+    "free": {
+      "label": "Free",
+      "color": "#00BDA5",
+      "monthlyPerSeat": 0,
+      "features": [
+        "contacts",
+        "companies",
+        "deals",
+        "basic_dashboards",
+        "email_tracking",
+        "meeting_scheduling",
+        "live_chat",
+        "tickets"
+      ]
+    },
+    "starter": {
+      "label": "Starter",
+      "color": "#0091AE",
+      "monthlyPerSeat": 20,
+      "features": [
+        "remove_hubspot_branding",
+        "email_sending",
+        "forms",
+        "simple_automation",
+        "goals"
+      ]
+    },
+    "pro": {
+      "label": "Professional",
+      "color": "#FF7A59",
+      "monthlyPerSeat": 100,
+      "features": [
+        "sequences",
+        "workflows_advanced",
+        "custom_objects",
+        "playbooks",
+        "forecasting",
+        "custom_reporting",
+        "ab_testing",
+        "calculated_properties",
+        "deal_scoring"
+      ]
+    },
+    "enterprise": {
+      "label": "Enterprise",
+      "color": "#2D3E50",
+      "monthlyPerSeat": 150,
+      "features": [
+        "custom_objects_unlimited",
+        "predictive_lead_scoring",
+        "multi_touch_attribution",
+        "sandboxes",
+        "conversation_intelligence",
+        "recurring_revenue_tracking"
+      ]
+    }
+  },
+  "featureLabels": {
+    "contacts": "Contacts",
+    "companies": "Companies",
+    "deals": "Deals",
+    "tickets": "Tickets / Support",
+    "basic_dashboards": "Basic Dashboards",
+    "email_tracking": "Email Tracking",
+    "meeting_scheduling": "Meeting Scheduling",
+    "live_chat": "Live Chat",
+    "remove_hubspot_branding": "Remove HubSpot Branding",
+    "email_sending": "Marketing Email Sending",
+    "forms": "Forms",
+    "simple_automation": "Simple Automation Workflows",
+    "goals": "Goals",
+    "sequences": "Email Sequences",
+    "workflows_advanced": "Advanced Automation Workflows",
+    "custom_objects": "Custom Objects (up to 10)",
+    "playbooks": "Playbooks",
+    "forecasting": "Revenue Forecasting",
+    "custom_reporting": "Custom Report Builder",
+    "ab_testing": "A/B Testing",
+    "calculated_properties": "Calculated Properties",
+    "deal_scoring": "Deal Scoring",
+    "custom_objects_unlimited": "Custom Objects (unlimited)",
+    "predictive_lead_scoring": "Predictive Lead Scoring",
+    "multi_touch_attribution": "Multi-Touch Attribution",
+    "sandboxes": "Sandboxes",
+    "conversation_intelligence": "Conversation Intelligence",
+    "recurring_revenue_tracking": "Recurring Revenue Tracking"
+  }
+}

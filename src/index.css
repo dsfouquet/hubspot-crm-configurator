@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* HubSpot design-system tokens (spec Section 9) — exposed as CSS vars
+   so non-Tailwind contexts (ReactFlow nodes, inline styles) can reference them. */
+:root {
+  --hs-orange: #ff7a59;
+  --hs-navy: #2d3e50;
+  --hs-blue: #0091ae;
+  --hs-canvas: #f5f8fa;
+  --hs-border: #cbd6e2;
+  --hs-text-dark: #33475b;
+  --hs-text-light: #7c98b6;
+  --hs-white: #ffffff;
+  --hs-green: #00bda5;
+  --hs-red: #f2545b;
+  --hs-purple: #6a78d1;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--hs-text-dark);
+  background: var(--hs-canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Thin HubSpot-style scrollbars inside scrolling panels */
+.hs-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.hs-scroll::-webkit-scrollbar-thumb {
+  background: var(--hs-border);
+  border-radius: 4px;
+}
+.hs-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Drawer / panel slide transitions */
+.slide-enter {
+  transform: translateX(100%);
+}
+.slide-enter-active {
+  transform: translateX(0);
+  transition: transform 250ms ease;
+}
