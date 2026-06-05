@@ -5,6 +5,7 @@ import ConfigPanel from './layout/ConfigPanel'
 import PreviewPane from './layout/PreviewPane'
 import Footer from './layout/Footer'
 import AdvisorPanel from './layout/AdvisorPanel'
+import SplitPane from './layout/SplitPane'
 import EmailGateModal from './modals/EmailGateModal'
 import Step11_Preview from './steps/Step11_Preview'
 import { STEPS } from './constants/steps'
@@ -49,13 +50,10 @@ export default function App() {
             </div>
           </>
         ) : (
-          // Normal mode: step nav (chrome) + a 30/70 config|preview content area
+          // Normal mode: step nav (chrome) + a user-resizable config|preview split
           <>
             <StepNav />
-            <div className="flex-1 flex min-w-0">
-              <ConfigPanel />
-              <PreviewPane />
-            </div>
+            <SplitPane left={<ConfigPanel />} right={<PreviewPane />} />
           </>
         )}
 
