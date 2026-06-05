@@ -1,14 +1,24 @@
+import { useState } from 'react'
 import { useStore } from '../store/useStore'
+import TierIndicator from '../shared/TierIndicator'
+import { shareableUrl } from '../utils/sessionId'
 
 // Daniel-only collapsible drawer (spec 3.3). Slides in from the right, sits on top
 // of the preview — not part of the screen-share area in presenter mode.
-// Tier indicator is stubbed here and fully wired in build phase 6.
 export default function AdvisorPanel() {
   const advisorOpen = useStore((s) => s.advisorOpen)
   const toggleAdvisor = useStore((s) => s.toggleAdvisor)
   const advisorNotes = useStore((s) => s.session.advisorNotes)
   const setAdvisorNotes = useStore((s) => s.setAdvisorNotes)
   const sessionCode = useStore((s) => s.session.sessionCode)
+  const sessionId = useStore((s) => s.session.sessionId)
+  const [copied, setCopied] = useState('')
+
+  const copy = (text, what) => {
+    navigator.clipboard?.writeText(text)
+    setCopied(what)
+    setTimeout(() => setCopied(''), 1500)
+  }
 
   if (!advisorOpen) return null
 
@@ -30,14 +40,12 @@ export default function AdvisorPanel() {
         </div>
 
         <div className="flex-1 overflow-y-auto hs-scroll p-4 space-y-5">
-          {/* Tier indicator — wired to tierCalculator in phase 6 */}
+          {/* Live tier indicator */}
           <section>
             <h4 className="text-[11px] font-ui font-semibold uppercase tracking-wide text-hs-text-light mb-2">
               Required HubSpot Tier
             </h4>
-            <div className="rounded-lg border border-hs-border p-3 text-sm text-hs-text-light font-ui">
-              Tier indicator loads once configuration begins.
-            </div>
+            <TierIndicator />
           </section>
 
           {/* Session controls */}
@@ -45,11 +53,27 @@ export default function AdvisorPanel() {
             <h4 className="text-[11px] font-ui font-semibold uppercase tracking-wide text-hs-text-light mb-2">
               Session
             </h4>
-            <div className="rounded-lg border border-hs-border p-3 font-ui">
-              <div className="text-xs text-hs-text-light">Session code</div>
-              <div className="text-lg font-semibold text-hs-navy tracking-widest">
-                {sessionCode}
+            <div className="rounded-lg border border-hs-border p-3 font-ui space-y-2">
+              <div>
+                <div className="text-xs text-hs-text-light">Session code</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-semibold text-hs-navy tracking-widest">
+                    {sessionCode}
+                  </span>
+                  <button
+                    onClick={() => copy(sessionCode, 'code')}
+                    className="text-[12px] font-medium text-hs-blue hover:underline"
+                  >
+                    {copied === 'code' ? '✓ Copied' : 'Copy'}
+                  </button>
+                </div>
               </div>
+              <button
+                onClick={() => copy(shareableUrl(sessionId), 'link')}
+                className="w-full text-[12px] font-medium text-white bg-hs-navy rounded px-2 py-1.5"
+              >
+                {copied === 'link' ? '✓ Link copied' : 'Copy session link'}
+              </button>
             </div>
           </section>
 
