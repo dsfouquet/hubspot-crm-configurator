@@ -161,6 +161,23 @@ export const useStore = create((set, get) => ({
     get().patchSession({ advisorNotes: text })
   },
 
+  // Load a restored session (from code/link). Skips the gate when appropriate.
+  loadSession(restoredSession) {
+    saveSession(restoredSession)
+    syncUrlSession(restoredSession.sessionId)
+    set({
+      session: restoredSession,
+      currentStep: 0,
+      gatePassed:
+        Boolean(restoredSession.gate?.email) || restoredSession.mode === 'live',
+    })
+  },
+
+  // Force an immediate (non-debounced) save — used on tab close.
+  saveNow() {
+    saveSession(get().session)
+  },
+
   // Unlock the final preview (after email gate in async, or immediately in live).
   unlockPreview() {
     get().patchSession({ previewUnlocked: true })

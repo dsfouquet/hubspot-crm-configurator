@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useStore } from './store/useStore'
 import Header from './layout/Header'
 import StepNav from './layout/StepNav'
@@ -15,8 +16,20 @@ export default function App() {
   const presenterMode = useStore((s) => s.presenterMode)
   const toggleAdvisor = useStore((s) => s.toggleAdvisor)
   const currentStep = useStore((s) => s.currentStep)
+  const saveNow = useStore((s) => s.saveNow)
 
   const isPreviewStep = STEPS[currentStep].key === 'preview'
+
+  // Flush the session to localStorage on tab close / hide (beats the 500ms debounce).
+  useEffect(() => {
+    const flush = () => saveNow()
+    window.addEventListener('beforeunload', flush)
+    document.addEventListener('visibilitychange', flush)
+    return () => {
+      window.removeEventListener('beforeunload', flush)
+      document.removeEventListener('visibilitychange', flush)
+    }
+  }, [saveNow])
 
   // Landing gate blocks the app until name+email (async) or Start Live Session.
   if (!gatePassed) return <EmailGateModal />
