@@ -22,9 +22,8 @@ export const WIZARD_QUESTIONS = [
   },
   {
     key: 'challenges',
-    prompt: "What's your biggest sales challenge right now?",
+    prompt: 'What are your biggest sales challenges right now?',
     type: 'multi',
-    max: 3,
     options: [
       'Not enough leads / top of funnel',
       'Leads fall through the cracks',
