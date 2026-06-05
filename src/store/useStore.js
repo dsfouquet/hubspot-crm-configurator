@@ -15,6 +15,8 @@ import {
   defaultDeals,
   defaultTickets,
 } from '../constants/defaultProperties'
+import { defaultWidgets } from '../constants/defaultWidgets'
+import { defaultCadence } from '../constants/defaultCadence'
 
 const nowIso = () => new Date().toISOString()
 
@@ -35,9 +37,9 @@ function buildInitialSession(mode = 'async') {
     tickets: defaultTickets(),
     customObjects: [],
     workflows: [],
-    views: [],
-    dashboards: { name: 'Sales Command Center', widgets: [] },
-    cadence: { meetings: [], rules: [], notifications: [] },
+    views: { off: [], custom: [] },
+    dashboards: { name: 'Sales Command Center', widgets: defaultWidgets() },
+    cadence: defaultCadence(),
     advisorNotes: '',
     completedSteps: [],
     previewUnlocked: false,
@@ -312,6 +314,85 @@ export const useStore = create((set, get) => ({
   removeCustomObject(id) {
     get().patchSession((s) => ({
       customObjects: s.customObjects.filter((o) => o.id !== id),
+    }))
+  },
+
+  // ---- Views & Tabs (Step 8) ----
+  // Toggle a recommended view on/off (tracked by its id in views.off).
+  toggleRecommendedView(id) {
+    get().patchSlice('views', (v) => {
+      const off = v.off || []
+      return { off: off.includes(id) ? off.filter((x) => x !== id) : [...off, id] }
+    })
+  },
+  addCustomView(view) {
+    get().patchSlice('views', (v) => ({
+      custom: [...(v.custom || []), { ...view, id: `view_${Date.now()}` }],
+    }))
+  },
+  removeCustomView(id) {
+    get().patchSlice('views', (v) => ({
+      custom: (v.custom || []).filter((x) => x.id !== id),
+    }))
+  },
+
+  // ---- Dashboards (Step 9) ----
+  toggleWidget(id) {
+    get().patchSlice('dashboards', (d) => {
+      const widgets = d.widgets || []
+      return {
+        widgets: widgets.includes(id)
+          ? widgets.filter((w) => w !== id)
+          : [...widgets, id],
+      }
+    })
+  },
+  setDashboardName(name) {
+    get().patchSlice('dashboards', { name })
+  },
+  addCustomWidget(widget) {
+    get().patchSlice('dashboards', (d) => ({
+      customWidgets: [...(d.customWidgets || []), { ...widget, id: `widget_${Date.now()}` }],
+    }))
+  },
+  removeCustomWidget(id) {
+    get().patchSlice('dashboards', (d) => ({
+      customWidgets: (d.customWidgets || []).filter((w) => w.id !== id),
+    }))
+  },
+
+  // ---- Accountability Cadence (Step 10) ----
+  toggleMeeting(key) {
+    get().patchSlice('cadence', (c) => ({
+      meetings: c.meetings.map((m) =>
+        m.key === key ? { ...m, enabled: !m.enabled } : m
+      ),
+    }))
+  },
+  setMeetingField(key, field, value) {
+    get().patchSlice('cadence', (c) => ({
+      meetings: c.meetings.map((m) => (m.key === key ? { ...m, [field]: value } : m)),
+    }))
+  },
+  setRule(field, value) {
+    get().patchSlice('cadence', (c) => ({ rules: { ...c.rules, [field]: value } }))
+  },
+  toggleNotificationChannel(channel) {
+    get().patchSlice('cadence', (c) => {
+      const channels = c.notifications.channels || []
+      return {
+        notifications: {
+          ...c.notifications,
+          channels: channels.includes(channel)
+            ? channels.filter((ch) => ch !== channel)
+            : [...channels, channel],
+        },
+      }
+    })
+  },
+  setNotificationFrequency(frequency) {
+    get().patchSlice('cadence', (c) => ({
+      notifications: { ...c.notifications, frequency },
     }))
   },
 }))

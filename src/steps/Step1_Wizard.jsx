@@ -16,7 +16,10 @@ export default function Step1_Wizard({ index }) {
   const selectSingle = (opt) => setWizardAnswer(question.key, opt)
 
   const toggleMulti = (opt) => {
-    const current = Array.isArray(answer) ? answer : []
+    // Read fresh state from the store (not the render closure) so rapid
+    // consecutive toggles don't clobber each other.
+    const live = useStore.getState().session.wizard[question.key]
+    const current = Array.isArray(live) ? live : []
     if (current.includes(opt)) {
       setWizardAnswer(question.key, current.filter((o) => o !== opt))
     } else {
@@ -44,7 +47,8 @@ export default function Step1_Wizard({ index }) {
       return
     }
     // Multi: keep the selected preset options, swap in the new "other" text.
-    const presets = Array.isArray(answer) ? answer.filter((a) => question.options.includes(a)) : []
+    const live = useStore.getState().session.wizard[question.key]
+    const presets = Array.isArray(live) ? live.filter((a) => question.options.includes(a)) : []
     setWizardAnswer(question.key, text.trim() ? [...presets, text] : presets)
   }
 

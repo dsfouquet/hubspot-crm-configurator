@@ -3,6 +3,9 @@ import Step1_Wizard from './Step1_Wizard'
 import RecordStep from './RecordStep'
 import Step6_CustomObjects from './Step6_CustomObjects'
 import Step7_Workflows from './Step7_Workflows'
+import Step8_Views from './Step8_Views'
+import Step9_Dashboards from './Step9_Dashboards'
+import Step10_Cadence from './Step10_Cadence'
 
 // Placeholder shown until each step's real component is built (build phase 3+).
 function Placeholder({ index }) {
@@ -59,8 +62,8 @@ export const STEP_COMPONENTS = {
   ),
   customObjects: (i) => <Step6_CustomObjects index={i} />,
   workflows: (i) => <Step7_Workflows index={i} />,
-  views: (i) => <Placeholder index={i} />,
-  dashboards: (i) => <Placeholder index={i} />,
-  cadence: (i) => <Placeholder index={i} />,
+  views: (i) => <Step8_Views index={i} />,
+  dashboards: (i) => <Step9_Dashboards index={i} />,
+  cadence: (i) => <Step10_Cadence index={i} />,
   preview: (i) => <Placeholder index={i} />,
 }

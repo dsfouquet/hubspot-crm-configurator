@@ -1,0 +1,97 @@
+import { useStore } from '../store/useStore'
+
+// Mock accountability dashboard: cadence schedule, active rules, sample notification.
+export default function PreviewCadence() {
+  const cadence = useStore((s) => s.session.cadence)
+  const meetings = cadence.meetings.filter((m) => m.enabled)
+  const rules = cadence.rules
+
+  const activeRules = []
+  if (rules.flagNoActivityEnabled)
+    activeRules.push(`Flag deals idle > ${rules.flagNoActivityDays} days`)
+  if (rules.requireNextStep) activeRules.push('Next step required on open deals')
+  if (rules.autoRemindEnabled)
+    activeRules.push(`Remind on tasks overdue > ${rules.autoRemindOverdueDays} days`)
+  if (rules.requireCloseDateEnabled)
+    activeRules.push(`Close date required past ${rules.requireCloseDatePastStage}`)
+  if (rules.minCallsEnabled) activeRules.push(`Min ${rules.minCallsPerWeek} calls/week`)
+
+  return (
+    <div className="p-5 space-y-4">
+      {/* Cadence schedule */}
+      <div className="bg-white rounded-lg border border-hs-border overflow-hidden">
+        <div className="bg-hs-navy px-4 py-2.5">
+          <h2 className="font-preview font-semibold text-white text-[15px]">Team Cadence</h2>
+        </div>
+        <div className="p-3">
+          {meetings.length === 0 ? (
+            <p className="text-[13px] font-preview text-hs-text-light">No meetings scheduled.</p>
+          ) : (
+            <ul className="space-y-2">
+              {meetings.map((m) => (
+                <li key={m.key} className="flex items-start gap-3">
+                  <div className="shrink-0 w-12 text-center">
+                    <div className="text-[11px] font-preview font-semibold text-hs-orange">
+                      {m.day.length > 8 ? m.day.slice(0, 8) : m.day}
+                    </div>
+                    <div className="text-[10px] font-preview text-hs-text-light">{m.time}</div>
+                  </div>
+                  <div className="flex-1 border-l-2 border-hs-orange/40 pl-3">
+                    <p className="text-[13px] font-preview font-medium text-hs-navy">{m.label}</p>
+                    {m.agenda && (
+                      <p className="text-[12px] font-preview text-hs-text-light">{m.agenda}</p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      {/* Active rules */}
+      <div className="bg-white rounded-lg border border-hs-border p-3">
+        <p className="text-[11px] font-preview font-semibold uppercase tracking-wide text-hs-text-light mb-2">
+          Active Accountability Rules
+        </p>
+        {activeRules.length === 0 ? (
+          <p className="text-[13px] font-preview text-hs-text-light">No rules enabled.</p>
+        ) : (
+          <ul className="space-y-1">
+            {activeRules.map((r) => (
+              <li key={r} className="text-[13px] font-preview text-hs-text-dark flex items-center gap-2">
+                <span className="text-hs-green">✓</span> {r}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Sample notification + channels */}
+      <div className="bg-white rounded-lg border border-hs-border p-3">
+        <p className="text-[11px] font-preview font-semibold uppercase tracking-wide text-hs-text-light mb-2">
+          Notifications · {cadence.notifications.frequency}
+        </p>
+        <div className="rounded-md border border-hs-orange/30 bg-hs-orange/5 px-3 py-2 flex items-start gap-2">
+          <span>🔔</span>
+          <div>
+            <p className="text-[13px] font-preview text-hs-text-dark leading-snug">
+              <strong>Gulf Coast — SIHI Vacuum Pump</strong> has had no activity in 15 days.
+            </p>
+            <p className="text-[11px] font-preview text-hs-text-light">Re-engage this deal →</p>
+          </div>
+        </div>
+        <div className="flex gap-1.5 mt-2">
+          {cadence.notifications.channels.map((ch) => (
+            <span
+              key={ch}
+              className="text-[11px] font-preview bg-hs-blue/10 text-hs-blue rounded px-2 py-0.5"
+            >
+              {ch}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
