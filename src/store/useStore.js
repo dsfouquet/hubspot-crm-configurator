@@ -161,6 +161,11 @@ export const useStore = create((set, get) => ({
     get().patchSession({ advisorNotes: text })
   },
 
+  // Unlock the final preview (after email gate in async, or immediately in live).
+  unlockPreview() {
+    get().patchSession({ previewUnlocked: true })
+  },
+
   // ---- Wizard (Step 1) ----
   setWizardAnswer(questionKey, value) {
     get().patchSlice('wizard', { [questionKey]: value })

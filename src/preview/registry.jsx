@@ -7,6 +7,7 @@ import PreviewAutomations from './PreviewAutomations'
 import PreviewViews from './PreviewViews'
 import PreviewDashboard from './PreviewDashboard'
 import PreviewCadence from './PreviewCadence'
+import Step11_Preview from '../steps/Step11_Preview'
 
 // Placeholder preview shown until each step's real preview is built.
 function PreviewPlaceholder({ index }) {
@@ -40,5 +41,5 @@ export const PREVIEW_COMPONENTS = {
   views: () => <PreviewViews />,
   dashboards: () => <PreviewDashboard />,
   cadence: () => <PreviewCadence />,
-  preview: (i) => <PreviewPlaceholder index={i} />,
+  preview: () => <Step11_Preview />,
 }

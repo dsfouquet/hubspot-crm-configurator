@@ -6,11 +6,16 @@ import PreviewPane from './layout/PreviewPane'
 import Footer from './layout/Footer'
 import AdvisorPanel from './layout/AdvisorPanel'
 import EmailGateModal from './modals/EmailGateModal'
+import Step11_Preview from './steps/Step11_Preview'
+import { STEPS } from './constants/steps'
 
 export default function App() {
   const gatePassed = useStore((s) => s.gatePassed)
   const presenterMode = useStore((s) => s.presenterMode)
   const toggleAdvisor = useStore((s) => s.toggleAdvisor)
+  const currentStep = useStore((s) => s.currentStep)
+
+  const isPreviewStep = STEPS[currentStep].key === 'preview'
 
   // Landing gate blocks the app until name+email (async) or Start Live Session.
   if (!gatePassed) return <EmailGateModal />
@@ -35,6 +40,14 @@ export default function App() {
               🔒
             </button>
           </>
+        ) : isPreviewStep ? (
+          // Final step: nav + full-width tabbed HubSpot preview
+          <>
+            <StepNav />
+            <div className="flex-1 min-w-0">
+              <Step11_Preview />
+            </div>
+          </>
         ) : (
           // Normal mode: step nav (chrome) + a 30/70 config|preview content area
           <>
@@ -49,7 +62,7 @@ export default function App() {
         <AdvisorPanel />
       </div>
 
-      {!presenterMode && <Footer />}
+      {!presenterMode && !isPreviewStep && <Footer />}
     </div>
   )
 }
