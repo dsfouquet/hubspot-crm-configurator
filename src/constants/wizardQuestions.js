@@ -3,8 +3,9 @@ export const WIZARD_QUESTIONS = [
   {
     key: 'teamType',
     prompt: 'What does your team do?',
-    type: 'single',
+    type: 'multi',
     allowOther: true,
+    hint: 'Select all that apply',
     options: [
       'B2B Sales (outbound focused)',
       'B2B Sales (inbound/marketing led)',

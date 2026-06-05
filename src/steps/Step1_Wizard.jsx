@@ -28,6 +28,26 @@ export default function Step1_Wizard({ index }) {
   const isSelected = (opt) =>
     question.type === 'single' ? answer === opt : Array.isArray(answer) && answer.includes(opt)
 
+  // "Other" free-text value: the answer item that isn't one of the preset options.
+  const otherValue =
+    question.type === 'single'
+      ? typeof answer === 'string' && !question.options.includes(answer)
+        ? answer
+        : ''
+      : Array.isArray(answer)
+        ? answer.find((a) => !question.options.includes(a)) || ''
+        : ''
+
+  const setOther = (text) => {
+    if (question.type === 'single') {
+      setWizardAnswer(question.key, text)
+      return
+    }
+    // Multi: keep the selected preset options, swap in the new "other" text.
+    const presets = Array.isArray(answer) ? answer.filter((a) => question.options.includes(a)) : []
+    setWizardAnswer(question.key, text.trim() ? [...presets, text] : presets)
+  }
+
   return (
     <StepBody>
       <StepHeader
@@ -85,10 +105,8 @@ export default function Step1_Wizard({ index }) {
 
           {question.allowOther && (
             <input
-              value={
-                typeof answer === 'string' && !question.options.includes(answer) ? answer : ''
-              }
-              onChange={(e) => setWizardAnswer(question.key, e.target.value)}
+              value={otherValue}
+              onChange={(e) => setOther(e.target.value)}
               placeholder="Other (type your own)…"
               className="w-full rounded-md border border-hs-border px-3 py-2.5 text-[14px] font-ui focus:outline-none focus:border-hs-blue"
             />
