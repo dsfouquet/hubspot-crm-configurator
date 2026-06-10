@@ -34,13 +34,24 @@ without keys — email/AI features no-op gracefully until configured.
 
 `src/data/hubspotTiers.json` is designed to be edited by non-developers. See spec Section 13.
 
-## Build status
+## Build status — v1 complete
 
 - [x] 1. App shell (layout, nav, presenter mode, advisor drawer)
-- [ ] 2. Steps 1–6 (record config)
-- [ ] 3. Step 7 (automation workflows)
-- [ ] 4. Steps 8–10
-- [ ] 5. Step 11 (preview)
-- [ ] 6. Tier calculator
-- [ ] 7. Session persistence + email
-- [ ] 8. PDF export
+- [x] 2. Steps 1–6 (record config)
+- [x] 3. Step 7 (automation workflows + ReactFlow + plain-English generator)
+- [x] 4. Steps 8–10 (views recommendations, dashboards, cadence)
+- [x] 5. Step 11 (full-width tabbed preview)
+- [x] 6. Tier calculator + Advisor Panel
+- [x] 7. Session persistence (localStorage + code restore)
+- [x] 8. PDF export (branded multi-page blueprint)
+
+### Notable additions beyond the original spec
+- Draggable resizable split between config and preview (persists)
+- Wizard Q1 (team type) is multi-select; recommendations union across motions
+- Interactive record section tabs
+- Email delivery dropped per request — flow is async + PDF download (anytime, via header or final screen)
+
+### Not in v1 (would need a backend)
+- Cross-device session restore (localStorage is per-browser)
+- Automated email delivery (EmailJS scaffolding remains in `utils/emailSender.js` if revived)
+- Live AI workflow generation needs `VITE_ANTHROPIC_API_KEY` (falls back to an editable draft)
