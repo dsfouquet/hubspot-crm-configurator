@@ -9,6 +9,7 @@ import AdvisorPanel from './layout/AdvisorPanel'
 import SplitPane from './layout/SplitPane'
 import EmailGateModal from './modals/EmailGateModal'
 import Step11_Preview from './steps/Step11_Preview'
+import BlueprintDocument from './components/BlueprintDocument'
 import { STEPS } from './constants/steps'
 
 export default function App() {
@@ -74,6 +75,14 @@ export default function App() {
       </div>
 
       {!presenterMode && !isPreviewStep && <Footer />}
+
+      {/* Off-screen printable doc — target for PDF export (available anytime) */}
+      <div
+        aria-hidden
+        style={{ position: 'absolute', left: -10000, top: 0, pointerEvents: 'none' }}
+      >
+        <BlueprintDocument />
+      </div>
     </div>
   )
 }

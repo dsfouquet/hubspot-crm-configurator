@@ -1,5 +1,6 @@
 import Logo from '../components/Logo'
 import { useStore } from '../store/useStore'
+import DownloadPdfButton from '../components/DownloadPdfButton'
 
 // Top header bar. Two looks: normal mode (full chrome) vs. presenter mode (simplified).
 export default function Header() {
@@ -35,6 +36,7 @@ export default function Header() {
         </span>
       </div>
       <div className="flex items-center gap-2">
+        <DownloadPdfButton variant="header" />
         <button
           onClick={togglePresenter}
           className="flex items-center gap-1.5 text-sm font-ui font-medium text-hs-text-dark hover:text-hs-navy px-3 py-1.5 rounded-md border border-hs-border hover:border-hs-text-light"

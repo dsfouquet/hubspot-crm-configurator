@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { useStore } from '../store/useStore'
-import { shareableUrl } from '../utils/sessionId'
-import { sendCompletionEmails } from '../utils/emailSender'
-import { exportPreviewPdf } from '../utils/pdfExport'
-import SessionCodeModal from '../modals/SessionCodeModal'
+import DownloadPdfButton from '../components/DownloadPdfButton'
 
 import PreviewRecord from '../preview/PreviewRecord'
 import PreviewDealRecord from '../preview/PreviewDealRecord'
@@ -22,16 +19,14 @@ const TABS = [
   { key: 'accountability', label: 'Accountability', render: () => <PreviewCadence /> },
 ]
 
-// ---- Final email gate (async only) ----
+// ---- Final gate (async only): capture name + email for lead records, no sending ----
 function FinalGate({ onUnlock }) {
   const session = useStore((s) => s.session)
   const [name, setName] = useState(session.gate?.name || '')
   const [email, setEmail] = useState(session.gate?.email || '')
-  const [busy, setBusy] = useState(false)
 
-  const submit = async () => {
+  const submit = () => {
     if (!name.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return
-    setBusy(true)
     onUnlock({ name: name.trim(), email: email.trim() })
   }
 
@@ -43,7 +38,7 @@ function FinalGate({ onUnlock }) {
             Your HubSpot blueprint is ready
           </h2>
           <p className="text-[13px] font-preview text-white/70 mt-1">
-            See the full interactive preview and get a copy emailed to you.
+            See the full interactive preview and download your blueprint as a PDF.
           </p>
         </div>
         <div className="p-6 space-y-3">
@@ -61,10 +56,9 @@ function FinalGate({ onUnlock }) {
           />
           <button
             onClick={submit}
-            disabled={busy}
-            className="w-full bg-hs-orange hover:bg-hs-orange/90 text-white font-ui font-semibold py-2.5 rounded-md disabled:opacity-60"
+            className="w-full bg-hs-orange hover:bg-hs-orange/90 text-white font-ui font-semibold py-2.5 rounded-md"
           >
-            {busy ? 'Preparing…' : 'Send Me My Summary & View Preview'}
+            View My HubSpot Blueprint →
           </button>
         </div>
       </div>
@@ -74,79 +68,19 @@ function FinalGate({ onUnlock }) {
 
 // ---- Bottom action bar ----
 function ActionBar() {
-  const session = useStore((s) => s.session)
-  const isLive = session.mode === 'live'
-  const [showSession, setShowSession] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const [pdfBusy, setPdfBusy] = useState(false)
-
-  const share = () => {
-    navigator.clipboard?.writeText(shareableUrl(session.sessionId))
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
-
-  const downloadPdf = async () => {
-    setPdfBusy(true)
-    await exportPreviewPdf('preview-export-root', `HubSpot-Blueprint-${session.sessionCode}.pdf`)
-    setPdfBusy(false)
-  }
-
   const calendly = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/'
-
   return (
-    <>
-      <div className="shrink-0 border-t border-hs-border bg-white px-5 py-3 flex items-center gap-2 flex-wrap">
-        {isLive ? (
-          <>
-            <button
-              onClick={() => setShowSession(true)}
-              className="text-[13px] font-ui font-semibold text-white bg-hs-orange px-4 py-2 rounded-md"
-            >
-              Send Session Link to Prospect
-            </button>
-            <button
-              onClick={() => setShowSession(true)}
-              className="text-[13px] font-ui font-medium text-hs-text-dark border border-hs-border px-4 py-2 rounded-md hover:border-hs-text-light"
-            >
-              Generate Session Code
-            </button>
-            <button
-              onClick={downloadPdf}
-              disabled={pdfBusy}
-              className="text-[13px] font-ui font-medium text-hs-text-dark border border-hs-border px-4 py-2 rounded-md hover:border-hs-text-light disabled:opacity-50"
-            >
-              {pdfBusy ? 'Building PDF…' : 'Download PDF Summary'}
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={downloadPdf}
-              disabled={pdfBusy}
-              className="text-[13px] font-ui font-semibold text-white bg-hs-orange px-4 py-2 rounded-md disabled:opacity-50"
-            >
-              {pdfBusy ? 'Building PDF…' : 'Download PDF Summary'}
-            </button>
-            <a
-              href={calendly}
-              target="_blank"
-              rel="noreferrer"
-              className="text-[13px] font-ui font-medium text-white bg-hs-blue px-4 py-2 rounded-md"
-            >
-              Book a Call with Daniel
-            </a>
-            <button
-              onClick={share}
-              className="text-[13px] font-ui font-medium text-hs-text-dark border border-hs-border px-4 py-2 rounded-md hover:border-hs-text-light"
-            >
-              {copied ? '✓ Link copied' : 'Share This Preview'}
-            </button>
-          </>
-        )}
-      </div>
-      {showSession && <SessionCodeModal onClose={() => setShowSession(false)} />}
-    </>
+    <div className="shrink-0 border-t border-hs-border bg-white px-5 py-3 flex items-center gap-2 flex-wrap">
+      <DownloadPdfButton variant="primary" label="Download PDF Summary" />
+      <a
+        href={calendly}
+        target="_blank"
+        rel="noreferrer"
+        className="text-[13px] font-ui font-medium text-white bg-hs-blue px-4 py-2 rounded-md"
+      >
+        Book a Call with Daniel
+      </a>
+    </div>
   )
 }
 
@@ -160,11 +94,9 @@ export default function Step11_Preview() {
   const isLive = session.mode === 'live'
   const unlocked = isLive || session.previewUnlocked
 
-  const handleUnlock = async ({ name, email }) => {
+  const handleUnlock = ({ name, email }) => {
     beginAsyncSession(name, email)
     unlockPreview()
-    // Fire-and-forget emails (don't block unlock on delivery).
-    sendCompletionEmails({ ...session, gate: { name, email } })
   }
 
   if (!unlocked) {
