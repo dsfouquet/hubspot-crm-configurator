@@ -80,19 +80,40 @@ function IndexHeader({ count, noun, createLabel }) {
   )
 }
 
-// Saved-view tab row: "All ___" active, plus recommended views for this record type.
-function SavedViews({ allLabel, views }) {
+// Saved-view tab row — clickable views that actually filter the table, plus the
+// user's recommended views from the configurator (appended, also clickable but
+// shown unfiltered since their criteria are conceptual).
+function SavedViews({ views, active, onPick, extraViews = [] }) {
   return (
     <div className="flex items-center gap-1 mb-3 border-b border-hs-border overflow-x-auto">
-      <span className="text-[12px] font-medium text-hs-navy border-b-2 border-hs-orange px-3 pb-2 whitespace-nowrap -mb-px">
-        {allLabel}
-      </span>
-      {views.map((v) => (
+      {views.map((v) => {
+        const isActive = v.id === active
+        return (
+          <button
+            key={v.id}
+            onClick={() => onPick(v.id)}
+            className={`text-[12px] px-3 pb-2 whitespace-nowrap -mb-px border-b-2 ${
+              isActive
+                ? 'font-medium text-hs-navy border-hs-orange'
+                : 'text-hs-text-light hover:text-hs-navy border-transparent'
+            }`}
+          >
+            {v.name}
+            {v.count != null && (
+              <span className={`ml-1 ${isActive ? 'text-hs-text-light' : 'text-hs-border'}`}>
+                {v.count}
+              </span>
+            )}
+          </button>
+        )
+      })}
+      {extraViews.map((v) => (
         <span
           key={v.id}
-          className="text-[12px] text-hs-text-light hover:text-hs-navy px-3 pb-2 whitespace-nowrap cursor-default"
+          className="text-[12px] text-hs-text-light px-3 pb-2 whitespace-nowrap cursor-default"
+          title="Built for you from your fix plan"
         >
-          {v.name}
+          ★ {v.name}
         </span>
       ))}
       <span className="text-[12px] text-hs-text-light px-2 pb-2 whitespace-nowrap cursor-default">
@@ -113,8 +134,33 @@ const fmtK = (n) =>
 
 // ---- Contacts --------------------------------------------------------------
 
+// Common contact views every sales team asks for — each really filters the table.
+const CONTACT_VIEWS = [
+  { id: 'all', name: 'All contacts', filter: () => true },
+  { id: 'leads', name: 'Leads', filter: (c) => c.lifecycle === 'Lead' || c.lifecycle === 'MQL' },
+  { id: 'customers', name: 'Customers', filter: (c) => c.lifecycle === 'Customer' },
+  { id: 'evangelists', name: 'Evangelists', filter: (c) => c.lifecycle === 'Evangelist' },
+  { id: 'decision', name: 'Decision Makers', filter: (c) => c.decisionMaker },
+  {
+    id: 'reengage',
+    name: 'Re-engagement',
+    filter: (c) => !c.engaged || c.lifecycle === 'Past client',
+  },
+]
+
+const LIFECYCLE_COLOR = {
+  Lead: 'blue',
+  MQL: 'purple',
+  Customer: 'green',
+  Evangelist: 'orange',
+  'Past client': 'gray',
+}
+
 function ContactsTab({ session }) {
-  const views = activeViews(session).filter((v) => v.recordType === 'Contacts')
+  const recommended = activeViews(session).filter((v) => v.recordType === 'Contacts')
+  const [view, setView] = useState('all')
+  const viewDefs = CONTACT_VIEWS.map((v) => ({ ...v, count: CONTACTS.filter(v.filter).length }))
+  const rows = CONTACTS.filter(CONTACT_VIEWS.find((v) => v.id === view).filter)
   const columns = [
     {
       key: 'name',
@@ -133,6 +179,11 @@ function ContactsTab({ session }) {
     },
     { key: 'company', label: 'Company' },
     {
+      key: 'lifecycle',
+      label: 'Lifecycle',
+      render: (v) => <Pill color={LIFECYCLE_COLOR[v] || 'gray'}>{v}</Pill>,
+    },
+    {
       key: 'email',
       label: 'Email',
       render: (v) => <span className="text-hs-blue">{v}</span>,
@@ -147,10 +198,10 @@ function ContactsTab({ session }) {
   ]
   return (
     <div>
-      <IndexHeader count={CONTACTS.length} noun="contacts" createLabel="Create contact" />
+      <IndexHeader count={rows.length} noun="contacts" createLabel="Create contact" />
       <IndexCard>
-        <SavedViews allLabel="All contacts" views={views} />
-        <DataTable columns={columns} rows={CONTACTS} />
+        <SavedViews views={viewDefs} active={view} onPick={setView} extraViews={recommended} />
+        <DataTable columns={columns} rows={rows} />
       </IndexCard>
     </div>
   )
@@ -160,8 +211,19 @@ function ContactsTab({ session }) {
 
 const TIER_COLOR = { 'Tier 1': 'green', 'Tier 2': 'blue', 'Tier 3': 'gray' }
 
+const COMPANY_VIEWS = [
+  { id: 'all', name: 'All companies', filter: () => true },
+  { id: 'customers', name: 'Customers', filter: (c) => c.lifecycle === 'Customer' },
+  { id: 'target', name: 'Target Market', filter: (c) => c.lifecycle === 'Target' },
+  { id: 'reengage', name: 'Re-engagement', filter: (c) => c.lifecycle === 'Past client' },
+  { id: 'tier1', name: 'Key Accounts', filter: (c) => c.tier === 'Tier 1' },
+]
+
 function CompaniesTab({ session }) {
-  const views = activeViews(session).filter((v) => v.recordType === 'Companies')
+  const recommended = activeViews(session).filter((v) => v.recordType === 'Companies')
+  const [view, setView] = useState('all')
+  const viewDefs = COMPANY_VIEWS.map((v) => ({ ...v, count: COMPANIES.filter(v.filter).length }))
+  const filtered = COMPANIES.filter(COMPANY_VIEWS.find((v) => v.id === view).filter)
   const columns = [
     {
       key: 'name',
@@ -183,12 +245,12 @@ function CompaniesTab({ session }) {
     { key: 'owner', label: 'Owner' },
   ]
   // owner rotates through REPS (companies have no owner field of their own)
-  const rows = COMPANIES.map((c, i) => ({ ...c, owner: REPS[i % REPS.length] }))
+  const rows = filtered.map((c, i) => ({ ...c, owner: REPS[i % REPS.length] }))
   return (
     <div>
-      <IndexHeader count={COMPANIES.length} noun="companies" createLabel="Create company" />
+      <IndexHeader count={rows.length} noun="companies" createLabel="Create company" />
       <IndexCard>
-        <SavedViews allLabel="All companies" views={views} />
+        <SavedViews views={viewDefs} active={view} onPick={setView} extraViews={recommended} />
         <DataTable columns={columns} rows={rows} />
       </IndexCard>
     </div>
@@ -221,7 +283,146 @@ function DealCard({ deal }) {
   )
 }
 
+// Board / Table / Calendar — the three ways HubSpot lets you look at a pipeline.
+const DEAL_VIEW_MODES = ['Board', 'Table', 'Calendar']
+
+function DealsBoard({ cols }) {
+  return (
+    <div className="flex gap-3 overflow-x-auto pb-2">
+      {cols.map((col) => {
+        const sum = col.deals.reduce((s, d) => s + d.amount, 0)
+        return (
+          <div key={col.key} className="w-56 shrink-0">
+            <div className="bg-white rounded-t-lg border border-hs-border border-b-0 px-3 py-2">
+              <div className="text-[12px] font-semibold text-hs-navy truncate">{col.label}</div>
+              <div className="text-[10px] text-hs-text-light">
+                {col.deals.length} deals · {fmtK(sum)}
+              </div>
+            </div>
+            <div className="bg-hs-canvas border border-hs-border rounded-b-lg p-2 space-y-2 min-h-[120px]">
+              {col.deals.length === 0 ? (
+                <div className="text-[10px] text-hs-text-light text-center py-6">No deals</div>
+              ) : (
+                col.deals.map((d, i) => <DealCard key={i} deal={d} />)
+              )}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function DealsTable({ cols }) {
+  const rows = cols.flatMap((col) => col.deals.map((d) => ({ ...d, stageLabel: col.label })))
+  const columns = [
+    {
+      key: 'name',
+      label: 'Deal',
+      render: (v, row) => (
+        <div className="min-w-0">
+          <div className="font-semibold text-hs-navy leading-tight truncate">{v}</div>
+          <div className="text-[10px] text-hs-text-light truncate">{row.company}</div>
+        </div>
+      ),
+    },
+    { key: 'stageLabel', label: 'Stage', render: (v) => <Pill color="blue">{v}</Pill> },
+    {
+      key: 'amount',
+      label: 'Amount',
+      align: 'right',
+      render: (v) => <span className="font-semibold text-hs-green">{fmtK(v)}</span>,
+    },
+    { key: 'closeDate', label: 'Close Date' },
+    { key: 'owner', label: 'Owner' },
+    {
+      key: 'age',
+      label: 'In Stage',
+      align: 'right',
+      render: (v) => (
+        <span className={v > 10 ? 'text-hs-orange font-medium' : 'text-hs-text-light'}>
+          {v} days
+        </span>
+      ),
+    },
+  ]
+  return (
+    <IndexCard>
+      <DataTable columns={columns} rows={rows} />
+    </IndexCard>
+  )
+}
+
+// June 2026 calendar (Jun 1 was a Monday) with deals pinned to close dates;
+// deals closing later are listed under "Coming months".
+function DealsCalendar() {
+  const juneDeals = {}
+  const later = []
+  DEALS.forEach((d) => {
+    const m = d.closeDate.match(/^Jun (\d+)/)
+    if (m) (juneDeals[Number(m[1])] ||= []).push(d)
+    else later.push(d)
+  })
+  const firstWeekday = 1 // Monday
+  const cells = []
+  for (let i = 0; i < firstWeekday; i++) cells.push(null)
+  for (let day = 1; day <= 30; day++) cells.push(day)
+
+  return (
+    <IndexCard>
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="text-[13px] font-semibold text-hs-navy">June 2026 · by close date</h4>
+        <span className="text-[11px] text-hs-text-light">‹ &nbsp; ›</span>
+      </div>
+      <div className="grid grid-cols-7 gap-px bg-hs-border rounded overflow-hidden">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
+          <div key={d} className="bg-hs-canvas text-center text-[9px] uppercase tracking-wide text-hs-text-light py-1">
+            {d}
+          </div>
+        ))}
+        {cells.map((day, i) => (
+          <div key={i} className="bg-white min-h-[52px] p-1">
+            {day && (
+              <>
+                <div className="text-[9px] text-hs-text-light">{day}</div>
+                {(juneDeals[day] || []).map((d) => (
+                  <div
+                    key={d.name}
+                    className="mt-0.5 rounded bg-hs-orange/10 border border-hs-orange/30 px-1 py-0.5"
+                    title={d.name}
+                  >
+                    <div className="text-[8px] font-semibold text-hs-navy truncate">{d.name}</div>
+                    <div className="text-[8px] text-hs-green font-medium">{fmtK(d.amount)}</div>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+      {later.length > 0 && (
+        <div className="mt-3">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1">
+            Coming months
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {later.map((d) => (
+              <span
+                key={d.name}
+                className="text-[10px] bg-hs-canvas border border-hs-border rounded px-2 py-1 text-hs-text-dark"
+              >
+                {d.closeDate.replace(', 2026', '')} · {d.name.split(' — ')[0]} · {fmtK(d.amount)}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </IndexCard>
+  )
+}
+
 function DealsTab({ session }) {
+  const [mode, setMode] = useState('Board')
   const stages =
     session.deals?.pipelineStages?.length > 0
       ? session.deals.pipelineStages
@@ -239,6 +440,22 @@ function DealsTab({ session }) {
       <div className="flex items-center gap-3 mb-3">
         <h3 className="text-[15px] font-semibold text-hs-navy">Sales Pipeline</h3>
         <span className="text-[12px] text-hs-text-light">{DEALS.length} deals</span>
+        {/* View switcher */}
+        <div className="inline-flex rounded-md border border-hs-border bg-white p-0.5 ml-2">
+          {DEAL_VIEW_MODES.map((m) => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className={`text-[11px] px-2.5 py-1 rounded ${
+                mode === m
+                  ? 'bg-hs-navy text-white font-medium'
+                  : 'text-hs-text-light hover:text-hs-navy'
+              }`}
+            >
+              {m}
+            </button>
+          ))}
+        </div>
         <button
           type="button"
           className="ml-auto text-[12px] font-medium text-white bg-hs-orange rounded-md px-3 py-1.5 cursor-default"
@@ -246,32 +463,9 @@ function DealsTab({ session }) {
           Create deal
         </button>
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-2">
-        {cols.map((col) => {
-          const sum = col.deals.reduce((s, d) => s + d.amount, 0)
-          return (
-            <div key={col.key} className="w-56 shrink-0">
-              <div className="bg-white rounded-t-lg border border-hs-border border-b-0 px-3 py-2">
-                <div className="text-[12px] font-semibold text-hs-navy truncate">
-                  {col.label}
-                </div>
-                <div className="text-[10px] text-hs-text-light">
-                  {col.deals.length} deals · {fmtK(sum)}
-                </div>
-              </div>
-              <div className="bg-hs-canvas border border-hs-border rounded-b-lg p-2 space-y-2 min-h-[120px]">
-                {col.deals.length === 0 ? (
-                  <div className="text-[10px] text-hs-text-light text-center py-6">
-                    No deals
-                  </div>
-                ) : (
-                  col.deals.map((d, i) => <DealCard key={i} deal={d} />)
-                )}
-              </div>
-            </div>
-          )
-        })}
-      </div>
+      {mode === 'Board' && <DealsBoard cols={cols} />}
+      {mode === 'Table' && <DealsTable cols={cols} />}
+      {mode === 'Calendar' && <DealsCalendar />}
     </div>
   )
 }

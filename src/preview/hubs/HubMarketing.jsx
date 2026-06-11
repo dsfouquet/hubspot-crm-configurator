@@ -19,6 +19,7 @@ import {
   LEAD_SOURCES,
   MONTHS,
 } from '../demoData'
+import { industryCopy } from '../industryCopy'
 
 const TABS = ['Email', 'Forms', 'CTAs', 'Campaigns']
 
@@ -126,6 +127,9 @@ function EmailTab({ companyName }) {
 }
 
 function NewsletterMock({ companyName }) {
+  const industry = useStore((s) => s.session?.wizard?.industry)
+  const copy = industryCopy(industry)
+  const nl = copy.newsletter
   return (
     <ReportCard
       title="Email preview"
@@ -138,7 +142,7 @@ function NewsletterMock({ companyName }) {
           {/* Navy header bar */}
           <div className="bg-hs-navy px-4 py-3">
             <p className="text-white text-[13px] font-semibold tracking-tight">
-              {companyName} Monthly Field Notes
+              {companyName} {nl.title}
             </p>
             <p className="text-white/60 text-[10px] mt-0.5">
               June 2026 · Issue #14
@@ -149,43 +153,31 @@ function NewsletterMock({ companyName }) {
           <div className="px-4 py-4">
             {/* Hero headline */}
             <h3 className="text-[15px] font-bold text-hs-navy leading-snug">
-              Spring is here — is your equipment ready for the season?
+              {nl.headline}
             </h3>
             <p className="text-[11px] text-hs-text-light mt-1.5 leading-relaxed">
-              Three quick reads from the field this month, plus an easy way to
-              get ahead of summer downtime.
+              {nl.intro}
             </p>
 
-            {/* Article teaser 1 */}
-            <div className="flex gap-3 mt-4">
-              <div className="w-16 h-16 rounded bg-hs-blue/80 shrink-0" />
-              <div className="min-w-0">
-                <p className="text-[12px] font-semibold text-hs-text-dark leading-snug">
-                  5 signs your pump seal is about to fail
-                </p>
-                <p className="text-[10px] text-hs-text-light mt-1 leading-relaxed">
-                  Catch the warning signs early and avoid an unplanned shutdown.
-                </p>
+            {/* Article teasers */}
+            {nl.articles.map((a, i) => (
+              <div key={a.title} className={`flex gap-3 ${i === 0 ? 'mt-4' : 'mt-3'}`}>
+                <div
+                  className={`w-16 h-16 rounded shrink-0 ${i === 0 ? 'bg-hs-blue/80' : 'bg-hs-green/80'}`}
+                />
+                <div className="min-w-0">
+                  <p className="text-[12px] font-semibold text-hs-text-dark leading-snug">
+                    {a.title}
+                  </p>
+                  <p className="text-[10px] text-hs-text-light mt-1 leading-relaxed">{a.desc}</p>
+                </div>
               </div>
-            </div>
-
-            {/* Article teaser 2 */}
-            <div className="flex gap-3 mt-3">
-              <div className="w-16 h-16 rounded bg-hs-green/80 shrink-0" />
-              <div className="min-w-0">
-                <p className="text-[12px] font-semibold text-hs-text-dark leading-snug">
-                  How one plant cut downtime 30%
-                </p>
-                <p className="text-[10px] text-hs-text-light mt-1 leading-relaxed">
-                  A preventive maintenance schedule that actually gets followed.
-                </p>
-              </div>
-            </div>
+            ))}
 
             {/* CTA button */}
             <div className="mt-5 text-center">
               <span className="inline-block bg-hs-orange text-white text-[12px] font-semibold rounded px-5 py-2.5">
-                Schedule spring maintenance
+                {nl.cta}
               </span>
             </div>
           </div>

@@ -2,6 +2,7 @@
 // Benefits-only, demo-ready. Quotes / Invoices / Payments sub-tabs.
 // Pure JSX, no new deps, no images (styled divs only).
 import { useState } from 'react'
+import { useStore } from '../../store/useStore'
 import {
   ReportCard,
   StatCard,
@@ -11,6 +12,7 @@ import {
   Pill,
 } from '../charts'
 import { INVOICES, AR_AGING, DEALS, REVENUE_TREND, MONTHS } from '../demoData'
+import { industryCopy } from '../industryCopy'
 
 const TABS = ['Quotes', 'Invoices', 'Payments']
 
@@ -63,14 +65,6 @@ export default function HubCommerce() {
 /* QUOTES                                                              */
 /* ------------------------------------------------------------------ */
 
-const QUOTE_LINES = [
-  { desc: 'SIHI LPH 45 Vacuum Pump', qty: 1, amount: 61200 },
-  { desc: 'Installation & commissioning', qty: 1, amount: 14800 },
-  { desc: 'Annual service plan (yr 1)', qty: 1, amount: 8500 },
-]
-
-const QUOTE_SUBTOTAL = QUOTE_LINES.reduce((s, l) => s + l.amount, 0)
-
 const QUOTE_STATUS = [
   { color: 'green', label: 'Signed' },
   { color: 'orange', label: 'Awaiting reply' },
@@ -88,6 +82,12 @@ const QUOTE_SENT = [
 ]
 
 function QuotesTab() {
+  // Industry-specific quote document (line items, bill-to, quote number).
+  const industry = useStore((s) => s.session?.wizard?.industry)
+  const q = industryCopy(industry).quote
+  const quoteLines = q.lines.map((l) => ({ desc: l.item, qty: 1, amount: l.price }))
+  const quoteSubtotal = quoteLines.reduce((s, l) => s + l.amount, 0)
+
   const rows = DEALS.slice(0, 5).map((d, i) => ({
     quote: d.name,
     amount: d.amount,
@@ -120,7 +120,7 @@ function QuotesTab() {
             </div>
             <div className="text-right leading-tight">
               <p className="text-[15px] font-bold text-hs-navy">QUOTE</p>
-              <p className="text-[11px] text-hs-text-light">#Q-2047</p>
+              <p className="text-[11px] text-hs-text-light">#{q.number}</p>
             </div>
           </div>
 
@@ -130,10 +130,10 @@ function QuotesTab() {
               Bill to
             </p>
             <p className="text-[12px] font-medium text-hs-text-dark leading-tight">
-              Gulf Coast Chemical
+              {q.billTo.company}
             </p>
             <p className="text-[11px] text-hs-text-light leading-tight">
-              Maria Chen · VP of Operations
+              {q.billTo.contact}
             </p>
             <p className="text-[11px] text-hs-text-light leading-tight">
               Baton Rouge, LA
@@ -157,7 +157,7 @@ function QuotesTab() {
                 </tr>
               </thead>
               <tbody>
-                {QUOTE_LINES.map((l) => (
+                {quoteLines.map((l) => (
                   <tr key={l.desc} className="border-b border-hs-canvas">
                     <td className="text-[11px] text-hs-text-dark py-2 pr-2 leading-tight">
                       {l.desc}
@@ -179,17 +179,15 @@ function QuotesTab() {
             <div className="ml-auto w-44 space-y-1">
               <div className="flex justify-between text-[11px] text-hs-text-light">
                 <span>Subtotal</span>
-                <span className="tabular-nums">{dollars(QUOTE_SUBTOTAL)}</span>
+                <span className="tabular-nums">{dollars(quoteSubtotal)}</span>
               </div>
               <div className="flex justify-between text-[11px] text-hs-text-light">
                 <span>Tax (estimated)</span>
-                <span className="tabular-nums">
-                  {dollars(84500 - QUOTE_SUBTOTAL)}
-                </span>
+                <span className="tabular-nums">{dollars(Math.max(0, q.total - quoteSubtotal))}</span>
               </div>
               <div className="flex justify-between text-[14px] font-bold text-hs-navy border-t border-hs-border pt-1.5 mt-1">
                 <span>Total</span>
-                <span className="tabular-nums">$84,500</span>
+                <span className="tabular-nums">{dollars(q.total)}</span>
               </div>
             </div>
           </div>

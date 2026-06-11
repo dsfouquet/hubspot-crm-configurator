@@ -5,22 +5,24 @@
 export const REPS = ['Marcus Hebert', 'Aimee Landry', 'Catherine Roy', 'You']
 
 export const COMPANIES = [
-  { name: 'Gulf Coast Chemical', city: 'Baton Rouge, LA', industry: 'Chemical Mfg', tier: 'Tier 1' },
-  { name: 'Bayou Fabrication', city: 'Houma, LA', industry: 'Metal Fabrication', tier: 'Tier 2' },
-  { name: 'Pelican Industrial Services', city: 'Gonzales, LA', industry: 'Industrial Services', tier: 'Tier 1' },
-  { name: 'Acadiana Builders Group', city: 'Lafayette, LA', industry: 'Construction', tier: 'Tier 2' },
-  { name: 'Crescent City Logistics', city: 'New Orleans, LA', industry: 'Transportation', tier: 'Tier 3' },
-  { name: 'Red Stick Mechanical', city: 'Baton Rouge, LA', industry: 'HVAC / Mechanical', tier: 'Tier 2' },
+  { name: 'Gulf Coast Chemical', city: 'Baton Rouge, LA', industry: 'Chemical Mfg', tier: 'Tier 1', lifecycle: 'Customer' },
+  { name: 'Bayou Fabrication', city: 'Houma, LA', industry: 'Metal Fabrication', tier: 'Tier 2', lifecycle: 'Customer' },
+  { name: 'Pelican Industrial Services', city: 'Gonzales, LA', industry: 'Industrial Services', tier: 'Tier 1', lifecycle: 'Target' },
+  { name: 'Acadiana Builders Group', city: 'Lafayette, LA', industry: 'Construction', tier: 'Tier 2', lifecycle: 'Target' },
+  { name: 'Crescent City Logistics', city: 'New Orleans, LA', industry: 'Transportation', tier: 'Tier 3', lifecycle: 'Past client' },
+  { name: 'Red Stick Mechanical', city: 'Baton Rouge, LA', industry: 'HVAC / Mechanical', tier: 'Tier 2', lifecycle: 'Customer' },
 ]
 
+// lifecycle: Lead | MQL | Customer | Evangelist | Past client
+// decisionMaker + engaged drive the saved-view filters in the CRM demo.
 export const CONTACTS = [
-  { name: 'Maria Chen', title: 'VP of Operations', company: 'Gulf Coast Chemical', email: 'mchen@gulfcoastchem.com', phone: '(225) 555-0142', owner: 'You', lastActivity: '2 days ago' },
-  { name: 'James Boudreaux', title: 'Maintenance Manager', company: 'Gulf Coast Chemical', email: 'jboudreaux@gulfcoastchem.com', phone: '(225) 555-0177', owner: 'You', lastActivity: '5 days ago' },
-  { name: 'Priya Nair', title: 'Procurement Lead', company: 'Pelican Industrial Services', email: 'pnair@pelicanind.com', phone: '(225) 555-0263', owner: 'Marcus Hebert', lastActivity: '1 day ago' },
-  { name: 'Tommy Guidry', title: 'Owner', company: 'Bayou Fabrication', email: 'tguidry@bayoufab.com', phone: '(985) 555-0314', owner: 'Aimee Landry', lastActivity: '3 hours ago' },
-  { name: 'Sarah Thibodeaux', title: 'Office Manager', company: 'Acadiana Builders Group', email: 'sarah@acadianabuilders.com', phone: '(337) 555-0458', owner: 'Aimee Landry', lastActivity: '1 week ago' },
-  { name: 'David Okafor', title: 'Plant Manager', company: 'Crescent City Logistics', email: 'dokafor@cclogistics.com', phone: '(504) 555-0529', owner: 'Catherine Roy', lastActivity: '2 weeks ago' },
-  { name: 'Lauren Fontenot', title: 'Controller', company: 'Red Stick Mechanical', email: 'lfontenot@redstickmech.com', phone: '(225) 555-0671', owner: 'Marcus Hebert', lastActivity: '4 days ago' },
+  { name: 'Maria Chen', title: 'VP of Operations', company: 'Gulf Coast Chemical', email: 'mchen@gulfcoastchem.com', phone: '(225) 555-0142', owner: 'You', lastActivity: '2 days ago', lifecycle: 'Customer', decisionMaker: true, engaged: true },
+  { name: 'James Boudreaux', title: 'Maintenance Manager', company: 'Gulf Coast Chemical', email: 'jboudreaux@gulfcoastchem.com', phone: '(225) 555-0177', owner: 'You', lastActivity: '5 days ago', lifecycle: 'Customer', decisionMaker: false, engaged: true },
+  { name: 'Priya Nair', title: 'Procurement Lead', company: 'Pelican Industrial Services', email: 'pnair@pelicanind.com', phone: '(225) 555-0263', owner: 'Marcus Hebert', lastActivity: '1 day ago', lifecycle: 'Lead', decisionMaker: true, engaged: true },
+  { name: 'Tommy Guidry', title: 'Owner', company: 'Bayou Fabrication', email: 'tguidry@bayoufab.com', phone: '(985) 555-0314', owner: 'Aimee Landry', lastActivity: '3 hours ago', lifecycle: 'Evangelist', decisionMaker: true, engaged: true },
+  { name: 'Sarah Thibodeaux', title: 'Office Manager', company: 'Acadiana Builders Group', email: 'sarah@acadianabuilders.com', phone: '(337) 555-0458', owner: 'Aimee Landry', lastActivity: '1 week ago', lifecycle: 'MQL', decisionMaker: false, engaged: true },
+  { name: 'David Okafor', title: 'Plant Manager', company: 'Crescent City Logistics', email: 'dokafor@cclogistics.com', phone: '(504) 555-0529', owner: 'Catherine Roy', lastActivity: '2 weeks ago', lifecycle: 'Past client', decisionMaker: true, engaged: false },
+  { name: 'Lauren Fontenot', title: 'Controller', company: 'Red Stick Mechanical', email: 'lfontenot@redstickmech.com', phone: '(225) 555-0671', owner: 'Marcus Hebert', lastActivity: '4 days ago', lifecycle: 'Lead', decisionMaker: true, engaged: false },
 ]
 
 export const DEALS = [
