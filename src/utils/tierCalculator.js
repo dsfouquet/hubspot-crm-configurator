@@ -66,6 +66,11 @@ function collectTriggers(session) {
   // Custom report widgets → Custom Report Builder (Pro).
   if ((session.dashboards?.customWidgets?.length || 0) > 0) add('custom_reporting', 'pro')
 
+  // Fix-plan problems that imply Enterprise features (e.g. marketing attribution).
+  if ((session.fixPlan?.problems || []).some((p) => p.id === 'marketing_attribution')) {
+    add('multi_touch_attribution', 'enterprise', 'from your marketing-attribution problem')
+  }
+
   // Dedupe by feature, keeping the highest tier + first detail seen.
   const byFeature = {}
   for (const t of triggers) {

@@ -1,6 +1,7 @@
 // Step navigation definition (spec Section 3.4). Order is authoritative.
 export const STEPS = [
-  { key: 'wizard', label: 'About Your Business', short: 'Business' },
+  { key: 'wizard', label: 'Discovery', short: 'Discovery' },
+  { key: 'fixPlan', label: 'Your Fix Plan', short: 'Fix Plan' },
   { key: 'contacts', label: 'Contacts', short: 'Contacts' },
   { key: 'companies', label: 'Companies', short: 'Companies' },
   { key: 'deals', label: 'Deals', short: 'Deals' },

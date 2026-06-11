@@ -1,5 +1,6 @@
 import { STEPS } from '../constants/steps'
-import Step1_Wizard from './Step1_Wizard'
+import Step1_Discovery from './Step1_Discovery'
+import Step2_FixPlan from './Step2_FixPlan'
 import RecordStep from './RecordStep'
 import Step6_CustomObjects from './Step6_CustomObjects'
 import Step7_Workflows from './Step7_Workflows'
@@ -25,7 +26,8 @@ function Placeholder({ index }) {
 
 // Maps step key → config component. Replace placeholders as steps are built.
 export const STEP_COMPONENTS = {
-  wizard: (i) => <Step1_Wizard index={i} />,
+  wizard: (i) => <Step1_Discovery index={i} />,
+  fixPlan: (i) => <Step2_FixPlan index={i} />,
   contacts: (i) => (
     <RecordStep
       index={i}

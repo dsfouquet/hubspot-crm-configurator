@@ -10,7 +10,9 @@ const RULES = [
     recordType: 'Contacts',
     description: 'Contacts to call, ordered by priority.',
     reason: 'You selected cold calling',
-    when: (c) => c.activities.includes('Cold calling / call blocking'),
+    when: (c) =>
+      c.activities.includes('Cold calling / call blocking') ||
+      c.leadSources.includes('Cold outreach'),
   },
   {
     id: 'site_visit_schedule',
@@ -30,7 +32,8 @@ const RULES = [
     reason: 'Forecast visibility is a challenge',
     when: (c) =>
       c.challenges.includes('No visibility into pipeline / forecast') ||
-      c.activities.includes('Pipeline review / forecasting'),
+      c.activities.includes('Pipeline review / forecasting') ||
+      c.leaks.includes('unknown_close_rate'),
   },
   {
     id: 'stale_deals',
@@ -38,7 +41,9 @@ const RULES = [
     recordType: 'Deals',
     description: 'Open deals going cold.',
     reason: 'Leads fall through the cracks',
-    when: (c) => c.challenges.includes('Leads fall through the cracks'),
+    when: (c) =>
+      c.challenges.includes('Leads fall through the cracks') ||
+      c.leaks.includes('leads_fall_through'),
   },
   {
     id: 'sequence_enrollment',
@@ -55,7 +60,9 @@ const RULES = [
     recordType: 'Deals',
     description: 'Kanban board of deals across your stages.',
     reason: 'You review pipeline',
-    when: (c) => c.activities.includes('Pipeline review / forecasting'),
+    when: (c) =>
+      c.activities.includes('Pipeline review / forecasting') ||
+      c.leaks.includes('pipeline_in_head'),
   },
   {
     id: 'open_tickets_priority',
@@ -63,7 +70,9 @@ const RULES = [
     recordType: 'Tickets',
     description: 'Support queue sorted by priority.',
     reason: 'You handle tickets / support',
-    when: (c) => c.activities.includes('Ticket / support resolution'),
+    when: (c) =>
+      c.activities.includes('Ticket / support resolution') ||
+      c.leaks.includes('ticket_blindness'),
   },
   {
     id: 'renewal_tracker',
@@ -71,7 +80,9 @@ const RULES = [
     recordType: 'Deals',
     description: 'Upcoming renewals by date.',
     reason: 'You do account management / renewals',
-    when: (c) => c.teamType.includes('Account Management / Renewals'),
+    when: (c) =>
+      c.teamType.includes('Account Management / Renewals') ||
+      c.leaks.includes('no_reengagement'),
   },
   {
     id: 'quotes_awaiting',
@@ -79,7 +90,8 @@ const RULES = [
     recordType: 'Deals',
     description: 'Proposals out, no reply yet.',
     reason: 'You send proposals / quotes',
-    when: (c) => c.activities.includes('Proposal / quoting'),
+    when: (c) =>
+      c.activities.includes('Proposal / quoting') || c.leaks.includes('quotes_no_followup'),
   },
   {
     id: 'rep_leaderboard',
@@ -88,7 +100,9 @@ const RULES = [
     description: 'Rep ranking by closed revenue + activity.',
     reason: 'Your team has 6+ people',
     when: (c) =>
-      c.teamSize === 'Mid-size team (6–20)' || c.teamSize === 'Large team (20+)',
+      c.teamSize === 'Mid-size team (6–20)' ||
+      c.teamSize === 'Large team (20+)' ||
+      c.leaks.includes('rep_workload_unproven'),
   },
   // Workflow-driven views
   {
@@ -119,6 +133,9 @@ function buildContext(session) {
     activities: asArray(w.activities),
     currentTools: asArray(w.currentTools),
     templateIds: (session.workflows || []).map((wf) => wf.templateId).filter(Boolean),
+    // Fix-plan leak ids (discovery mode) — each problem contributes its views.
+    leaks: (session.fixPlan?.problems || []).map((p) => p.id),
+    leadSources: asArray(w.leadSources),
   }
 }
 

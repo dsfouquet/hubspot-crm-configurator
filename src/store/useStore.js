@@ -37,6 +37,7 @@ function buildInitialSession(mode = 'async') {
     tickets: defaultTickets(),
     customObjects: [],
     workflows: [],
+    fixPlan: null,
     views: { off: [], custom: [] },
     dashboards: { name: 'Sales Command Center', widgets: defaultWidgets() },
     cadence: defaultCadence(),
@@ -79,6 +80,7 @@ export const useStore = create((set, get) => ({
   presenterMode: false,
   advisorOpen: false,
   focusedWorkflowId: null, // which workflow diagram the preview pane shows
+  focusedProblemId: null, // which fix-plan problem the preview pane shows
   gatePassed: restored
     ? Boolean(initialSession.gate?.email) || initialSession.mode === 'live'
     : false,
@@ -183,9 +185,21 @@ export const useStore = create((set, get) => ({
     get().patchSession({ previewUnlocked: true })
   },
 
-  // ---- Wizard (Step 1) ----
+  // ---- Wizard / Discovery (Step 1) ----
   setWizardAnswer(questionKey, value) {
     get().patchSlice('wizard', { [questionKey]: value })
+  },
+
+  // ---- Fix Plan (Step 2) ----
+  // Apply a generated fix plan + its config patch in one session update.
+  applyFixPlan(plan, patch) {
+    get().patchSession((s) => ({
+      fixPlan: plan,
+      workflows: [...s.workflows, ...patch.newWorkflows],
+      dashboards: { ...s.dashboards, widgets: patch.widgets },
+      cadence: { ...s.cadence, rules: { ...s.cadence.rules, ...patch.rulePatch } },
+      deals: patch.stages ? { ...s.deals, pipelineStages: patch.stages } : s.deals,
+    }))
   },
 
   // ---- Record property / section / activity helpers (Steps 2-5) ----
@@ -301,6 +315,9 @@ export const useStore = create((set, get) => ({
   },
   setFocusedWorkflow(id) {
     set({ focusedWorkflowId: id })
+  },
+  setFocusedProblem(id) {
+    set({ focusedProblemId: id })
   },
   // True if a template (by templateId) is already added.
   hasTemplate(templateId) {

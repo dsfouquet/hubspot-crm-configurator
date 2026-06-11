@@ -201,13 +201,18 @@ export default function BlueprintDocument() {
       {/* ---- Page 2: Business summary + tier ---- */}
       <Page>
         <SectionTitle kicker="01">Business Summary</SectionTitle>
-        <Card title="About your team">
+        <Card title="About your business">
           {[
-            ['What your team does', arr(w.teamType)],
+            ['What you do', arr(w.businessDescription)],
+            ['Industry', arr(w.industry)],
+            ['How you sell', arr(w.teamType)],
             ['Team size', arr(w.teamSize)],
-            ['Biggest challenges', arr(w.challenges)],
-            ['Key activities', arr(w.activities)],
-            ['Currently using', arr(w.currentTools)],
+            ['Monthly lead/quote volume', arr(w.monthlyVolume)],
+            ['Recurring revenue', arr(w.recurringRevenue)],
+            ['New business comes from', arr(w.leadSources)],
+            ['Average deal size', arr(w.avgDealSize)],
+            ['Sales cycle', arr(w.salesCycle)],
+            ['Currently tracking with', arr(w.currentTracking)],
           ].map(([label, vals]) => (
             <div key={label} style={{ marginBottom: 8 }}>
               <div style={{ fontSize: 11, color: '#7C98B6' }}>{label}</div>
@@ -235,6 +240,79 @@ export default function BlueprintDocument() {
           )}
         </Card>
       </Page>
+
+      {/* ---- Fix Plan: Problems → Solutions (only when discovery was completed) ---- */}
+      {session.fixPlan && session.fixPlan.problems.length > 0 && (
+        <Page>
+          <SectionTitle kicker="Fix Plan">Your Problems → Our Solutions</SectionTitle>
+          {session.fixPlan.topLeakCost && (
+            <div style={{ fontSize: 13, color: '#F2545B', marginBottom: 10 }}>
+              You estimated your biggest leak at: {session.fixPlan.topLeakCost}
+            </div>
+          )}
+          {session.fixPlan.problems.map((p) => (
+            <Card key={p.id} title={`${p.isTop ? '🔥 ' : ''}${p.title}`}>
+              <div style={{ fontSize: 11, color: '#7C98B6', marginBottom: 4 }}>
+                You said: “{p.saidLabel}”
+              </div>
+              <div style={{ fontSize: 13, color: '#33475B', marginBottom: 8 }}>{p.narrative}</div>
+              <div
+                style={{
+                  background: '#2D3E50',
+                  borderRadius: 6,
+                  padding: '8px 12px',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 10,
+                    color: '#FF7A59',
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                    marginBottom: 4,
+                  }}
+                >
+                  Built for you by Crescent Connect
+                </div>
+                {p.ccBuild.map((item, i) => (
+                  <div key={i} style={{ fontSize: 12, color: '#fff', marginBottom: 2 }}>
+                    › {item}
+                  </div>
+                ))}
+              </div>
+            </Card>
+          ))}
+        </Page>
+      )}
+
+      {/* ---- Implementation scope: what Crescent Connect builds ---- */}
+      {session.fixPlan && (
+        <Page>
+          <SectionTitle kicker="Implementation">What Crescent Connect Builds</SectionTitle>
+          <div style={{ fontSize: 13, color: '#33475B', marginBottom: 14, lineHeight: 1.5 }}>
+            HubSpot out of the box is an empty toolkit — blank pipelines, no automations, generic
+            properties, nothing connected. Everything in this blueprint is implementation work:
+            designed around your process, built, tested, and trained by Crescent Connect.
+          </div>
+          <Card title="Your implementation scope">
+            {session.fixPlan.globalBuild.map((item, i) => (
+              <div key={i} style={{ fontSize: 13, color: '#33475B', marginBottom: 5 }}>
+                <span style={{ color: '#00BDA5' }}>✓</span> {item}
+              </div>
+            ))}
+          </Card>
+          {session.fixPlan.mondayScreen && (
+            <Card title="Your Monday-morning screen">
+              <div style={{ fontSize: 13, color: '#33475B', fontStyle: 'italic' }}>
+                “{session.fixPlan.mondayScreen}”
+              </div>
+              <div style={{ fontSize: 12, color: '#7C98B6', marginTop: 4 }}>
+                Built as your default dashboard view.
+              </div>
+            </Card>
+          )}
+        </Page>
+      )}
 
       {/* ---- Page 3: Record configuration ---- */}
       <Page>
