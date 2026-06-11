@@ -199,14 +199,42 @@ export default function Step1_Discovery({ index }) {
     setBuilding(false)
   }
 
+  // Mode toggle shown at the top of both paths.
+  const ModeToggle = () => (
+    <div className="mb-4 flex items-center gap-2">
+      <div className="inline-flex rounded-lg border border-hs-border bg-hs-canvas p-0.5">
+        <button
+          onClick={() => setQuickMode(false)}
+          className={`text-[12px] font-ui font-medium px-3 py-1.5 rounded-md transition-colors ${
+            !quickMode ? 'bg-white text-hs-navy shadow-sm' : 'text-hs-text-light hover:text-hs-navy'
+          }`}
+        >
+          Full discovery
+        </button>
+        <button
+          onClick={() => setQuickMode(true)}
+          className={`text-[12px] font-ui font-medium px-3 py-1.5 rounded-md transition-colors ${
+            quickMode ? 'bg-white text-hs-navy shadow-sm' : 'text-hs-text-light hover:text-hs-navy'
+          }`}
+        >
+          ⚡ Quick (2 questions)
+        </button>
+      </div>
+      <span className="text-[11px] font-ui text-hs-text-light">
+        {quickMode ? '~60 seconds — still builds your full fix plan' : '~4 minutes — the most tailored result'}
+      </span>
+    </div>
+  )
+
   // ---- Quick-essentials skip path ----
   if (quickMode) {
     return (
       <StepBody>
         <StepHeader
           index={index}
-          intro="60 seconds, two questions — enough to build your fix plan. You can fill in the rest later."
+          intro="Two questions — enough to build your fix plan. You can fill in the rest later."
         />
+        <ModeToggle />
         <div className="space-y-4">
           {QUICK_QUESTIONS.map((q) => (
             <div key={q.qid} className="rounded-lg border border-hs-border bg-white p-4">
@@ -217,26 +245,18 @@ export default function Step1_Discovery({ index }) {
         </div>
         <div className="mt-4 flex items-center justify-between">
           <button
-            onClick={() => setQuickMode(false)}
-            className="text-[13px] font-ui text-hs-text-light hover:text-hs-navy"
+            onClick={() => goToStep(index + 2)}
+            className="text-[12px] font-ui text-hs-text-light hover:text-hs-navy underline"
           >
-            ← Back to full discovery
+            Just browse the demo (skip everything)
           </button>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => goToStep(index + 2)}
-              className="text-[12px] font-ui text-hs-text-light hover:text-hs-navy underline"
-            >
-              Skip everything
-            </button>
-            <button
-              onClick={finish}
-              disabled={building}
-              className="text-[13px] font-ui font-semibold text-white bg-hs-orange px-4 py-2 rounded-md disabled:opacity-50"
-            >
-              ⚡ Build My Fix Plan →
-            </button>
-          </div>
+          <button
+            onClick={finish}
+            disabled={building}
+            className="text-[13px] font-ui font-semibold text-white bg-hs-orange px-4 py-2 rounded-md disabled:opacity-50"
+          >
+            ⚡ Build My Fix Plan →
+          </button>
         </div>
       </StepBody>
     )
@@ -249,6 +269,8 @@ export default function Step1_Discovery({ index }) {
         index={index}
         intro="Organized the way HubSpot is — answer what applies, skip what doesn't."
       />
+
+      <ModeToggle />
 
       {/* Section tabs */}
       <div className="flex items-center gap-1.5 mb-4 flex-wrap">
@@ -294,12 +316,6 @@ export default function Step1_Discovery({ index }) {
           className="text-[13px] font-ui font-medium text-hs-text-dark px-3 py-1.5 rounded-md border border-hs-border disabled:opacity-40"
         >
           ← {sectionIdx > 0 ? DISCOVERY_SECTIONS[sectionIdx - 1].label : 'Back'}
-        </button>
-        <button
-          onClick={() => setQuickMode(true)}
-          className="text-[12px] font-ui text-hs-text-light hover:text-hs-navy underline"
-        >
-          In a hurry? Quick version
         </button>
         {isLastSection ? (
           <button

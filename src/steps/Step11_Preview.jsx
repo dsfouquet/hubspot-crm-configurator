@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import DownloadPdfButton from '../components/DownloadPdfButton'
 
+import HubJourney from '../preview/hubs/HubJourney'
 import HubCRM from '../preview/hubs/HubCRM'
 import HubSales from '../preview/hubs/HubSales'
 import HubMarketing from '../preview/hubs/HubMarketing'
@@ -15,6 +16,7 @@ import PreviewCadence from '../preview/PreviewCadence'
 // is a polished multi-screen demo view (benefits only — the Crescent Connect
 // build work behind it lives in the Fix Plan, not here).
 const HUBS = [
+  { key: 'journey', label: 'Journey', icon: '🧭', render: () => <HubJourney /> },
   { key: 'crm', label: 'CRM', icon: '👥', render: () => <HubCRM /> },
   { key: 'marketing', label: 'Marketing', icon: '📣', render: () => <HubMarketing /> },
   { key: 'sales', label: 'Sales', icon: '💰', render: () => <HubSales /> },
@@ -94,7 +96,7 @@ export default function Step11_Preview() {
   const session = useStore((s) => s.session)
   const unlockPreview = useStore((s) => s.unlockPreview)
   const beginAsyncSession = useStore((s) => s.beginAsyncSession)
-  const [hub, setHub] = useState('crm')
+  const [hub, setHub] = useState('journey')
 
   const isLive = session.mode === 'live'
   const unlocked = isLive || session.previewUnlocked
