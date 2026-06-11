@@ -234,6 +234,8 @@ export function buildFixPlan(wizard) {
             wizard.hubPains.find((h) => hubPainIdFromLabel(h) === id)) ||
           sol.title,
         narrative: sol.narrative,
+        implication: sol.implication || '',
+        hub: sol.hub || 'Sales Hub',
         workflows: sol.workflows,
         viewIds: sol.viewIds,
         widgets: sol.widgets,
@@ -251,6 +253,7 @@ export function buildFixPlan(wizard) {
     globalBuild: buildGlobalScope(wizard),
     mondayScreen: wizard.mondayScreen || '',
     topLeakCost: wizard.topLeakCost || '',
+    topGoal: wizard.topGoal || '',
   }
 }
 

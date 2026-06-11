@@ -85,6 +85,15 @@ export default function Step2_FixPlan({ index }) {
         } and pre-built the fix for each. Click one to see it live on the right.`}
       />
 
+      {fixPlan.topGoal && (
+        <div className="mb-4 rounded-lg bg-hs-navy px-4 py-3">
+          <div className="text-[10px] font-ui font-semibold uppercase tracking-wide text-hs-orange mb-0.5">
+            Your #1 fix for the next 30 days
+          </div>
+          <p className="text-[14px] font-ui text-white italic">“{fixPlan.topGoal}”</p>
+        </div>
+      )}
+
       <div className="space-y-3">
         {fixPlan.problems.map((p) => {
           const isFocused = focusedProblemId === p.id
@@ -103,10 +112,22 @@ export default function Step2_FixPlan({ index }) {
                   Costing you the most
                 </span>
               )}
-              <div className="text-[11px] font-ui text-hs-text-light mb-0.5">
-                You said: “{p.saidLabel}”
+              <div className="flex items-center justify-between gap-2 mb-0.5">
+                <span className="text-[11px] font-ui text-hs-text-light">
+                  You said: “{p.saidLabel}”
+                </span>
+                {p.hub && (
+                  <span className="text-[10px] font-ui font-medium text-hs-blue border border-hs-blue/30 rounded px-1.5 py-0.5 shrink-0">
+                    {p.hub}
+                  </span>
+                )}
               </div>
               <h3 className="font-ui font-semibold text-hs-navy text-[15px]">{p.title}</h3>
+              {p.implication && (
+                <p className="text-[12px] font-ui text-hs-red mt-1">
+                  <span className="font-semibold">The real cost:</span> {p.implication}
+                </p>
+              )}
               <p className="text-[13px] font-ui text-hs-text-dark mt-1">{p.narrative}</p>
 
               <div className="mt-2.5 grid grid-cols-1 gap-2">
@@ -171,10 +192,17 @@ export default function Step2_FixPlan({ index }) {
             <h3 className="font-ui font-semibold text-hs-navy text-[15px] mb-1">
               How this gets built — your scope of work
             </h3>
-            <p className="text-[12px] font-ui text-hs-text-light mb-3">
+            <p className="text-[12px] font-ui text-hs-text-light mb-1">
               Your setup, sorted into how Crescent Connect delivers it. Start free; the rest is
               the full install.
             </p>
+            {scope.hubsFiring.length >= 2 && (
+              <p className="text-[12px] font-ui text-hs-text-dark mb-3">
+                Your problems span <strong>{scope.hubsFiring.length} HubSpot hubs</strong> (
+                {scope.hubsFiring.join(', ')}) — that's a full-install conversation, not a quick
+                setup.
+              </p>
+            )}
             <div className="space-y-3">
               <OfferCard
                 offer={OFFERS.free}
@@ -215,9 +243,13 @@ export default function Step2_FixPlan({ index }) {
         </div>
       )}
 
-      <p className="mt-4 text-[12px] font-ui text-hs-text-light">
+      <p className="mt-4 text-[13px] font-ui text-hs-text-dark italic">
+        One more question worth sitting with: if nothing changes in the next 12 months, where
+        does that leave the business?
+      </p>
+      <p className="mt-2 text-[12px] font-ui text-hs-text-light">
         Everything above is already loaded into the configurator — keep clicking Next to
-        fine-tune it, or jump straight to step 12 for the full preview.
+        fine-tune it, or jump straight to the final step for the full preview.
       </p>
     </StepBody>
   )

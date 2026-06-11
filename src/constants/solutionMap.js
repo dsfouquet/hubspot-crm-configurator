@@ -310,7 +310,153 @@ export const SOLUTION_MAP = {
     ],
     keywords: ['ai', 'chatgpt', 'drafting', 'summaries', 'hand-write', 'manually write'],
   },
+
+  playbook_gap: {
+    title: 'One sales process, written down and enforced',
+    narrative:
+      'Your best rep\'s approach becomes the playbook every deal follows — stage requirements, scripts, and next steps built into the pipeline itself.',
+    workflows: [],
+    viewIds: ['pipeline_board'],
+    widgets: [],
+    cadenceRules: { requireNextStep: true },
+    tierFeatures: [{ feature: 'playbooks', tier: 'pro' }],
+    ccBuild: [
+      'Sales playbook documented from how your best rep actually sells',
+      'Stage-by-stage required fields so no deal advances half-baked',
+      'HubSpot Playbooks cards your reps see right on the deal record',
+    ],
+    keywords: ['playbook', 'sales process', 'own way', 'no process', 'consistent process', 'training new'],
+  },
+  tools_dont_talk: {
+    title: 'Tools that finally talk to each other',
+    narrative:
+      'The re-typing stops: your CRM, email, calendar, accounting, and other tools sync automatically, so the same data lives everywhere without anyone copying it.',
+    workflows: [],
+    viewIds: [],
+    widgets: [],
+    cadenceRules: {},
+    ccBuild: [
+      'Integration map of your full tool stack — what syncs, what gets replaced',
+      'Native + Zapier/Make connections built and tested',
+      'One source of truth: no more "which system is right?"',
+    ],
+    keywords: ['re-type', 'retype', 'copy paste', "don't talk", 'sync', 'double entry', 'duplicate entry'],
+  },
+  tasks_slip: {
+    title: 'Nothing lives in memory anymore',
+    narrative:
+      'Every commitment becomes a task tied to a contact or deal, with owners, due dates, and automatic reminders — visible by person and by week.',
+    workflows: ['deal_stale_alert'],
+    viewIds: [],
+    widgets: ['tasks_completed_overdue'],
+    cadenceRules: { autoRemindEnabled: true, requireNextStep: true },
+    ccBuild: [
+      'Task templates auto-created at each pipeline stage',
+      'Recurring task cadences for the things that happen every week/month',
+      'Completion-rate visibility by person for your Monday meeting',
+    ],
+    keywords: ['tasks slip', 'forgot', 'fell through', 'memory', 'slack message', 'dropped ball', 'not written down'],
+  },
 }
+
+// SPIN layer (sales/discovery-questions/Discovery-Questions-By-Hub.md):
+// each problem carries its Implication line — the "what is this costing you"
+// framing shown on fix-plan cards and the PDF — plus the HubSpot hub it maps to.
+// Routing rule from that doc: 2+ hubs firing = Core Offer conversation.
+const SPIN_EXTRAS = {
+  quotes_no_followup: {
+    hub: 'Sales Hub',
+    implication: 'If a $50K quote dies once a quarter from no follow-up, what is that costing you in a year?',
+  },
+  unknown_close_rate: {
+    hub: 'Reporting',
+    implication: "If you can't measure close rate by rep, source, and service line, you don't know which to fix first — and fixing the wrong one isn't free.",
+  },
+  leads_fall_through: {
+    hub: 'Sales Hub',
+    implication: 'The competitor who called your last lead back in 5 minutes — what did that conversation cost you?',
+  },
+  pipeline_in_head: {
+    hub: 'CRM',
+    implication: 'If your best rep walked out tomorrow, how much of what is in their head walks out with them?',
+  },
+  rep_workload_unproven: {
+    hub: 'Reporting',
+    implication: 'If your #1 rep trains the next hire, how long before that hire is actually useful — and what does that gap cost?',
+  },
+  no_reengagement: {
+    hub: 'CRM',
+    implication: 'If even 5% of your old customers re-engaged once a year, what would that add to revenue?',
+  },
+  marketing_attribution: {
+    hub: 'Marketing Hub',
+    implication: "Spending $3K/month on ads with no closed deal tied to any campaign — how do you decide what to cut and what to scale?",
+  },
+  admin_overload: {
+    hub: 'Operations',
+    implication: 'If your reps got back 10 hours a week from admin, how many more closed deals is that in a year?',
+  },
+  inconsistent_onboarding: {
+    hub: 'Service Hub',
+    implication: 'Two clients getting two different experiences — what does that do to referrals and reviews?',
+  },
+  ticket_blindness: {
+    hub: 'Service Hub',
+    implication: 'The issue that never gets resolved costs more than the slow one — it becomes a lost client. How many are open right now?',
+  },
+  ar_visibility: {
+    hub: 'Commerce Hub',
+    implication: 'If $50K sits in outstanding invoices and 20% go 60+ days past due, that is $10K you are lending for free.',
+  },
+  marketing_email_gap: {
+    hub: 'Marketing Hub',
+    implication: 'A list that never gets emailed loses about 20% of its value a year to attrition. How long has yours been sitting?',
+  },
+  landing_pages_gap: {
+    hub: 'Marketing Hub',
+    implication: '300 visitors a month and none fill out a form — every one is anonymous. What is it worth to identify even 5%?',
+  },
+  content_seo_gap: {
+    hub: 'Content Hub',
+    implication: 'If competitors own page one for your top service keywords, what share of inbound are you handing them?',
+  },
+  quotes_invoices_split: {
+    hub: 'Commerce Hub',
+    implication: 'If your process adds 7 days from proposal to payment across 50 deals a year, what is the cumulative cash-flow hit?',
+  },
+  kb_faq_repeat: {
+    hub: 'Service Hub',
+    implication: '30 minutes a day answering repeat questions is 10+ hours a month of payroll spent on answers a page could give.',
+  },
+  surveys_nps_blind: {
+    hub: 'Service Hub',
+    implication: 'A client who stays three years vs. one who leaves after year one — if slow service loses you two a year, what is that number?',
+  },
+  reporting_excel_pain: {
+    hub: 'Reporting',
+    implication: 'If your revenue report is always two weeks behind, how many decisions last quarter ran on stale numbers?',
+  },
+  ai_manual_drafting: {
+    hub: 'AI',
+    implication: 'Twenty hand-written emails a day per rep that AI could draft — what is that in hours a month?',
+  },
+  playbook_gap: {
+    hub: 'Sales Hub',
+    implication: 'If every rep sells their own way, your best practices retire the day your best rep does.',
+  },
+  tools_dont_talk: {
+    hub: 'Operations',
+    implication: '30 minutes a day copying data between tools is 10+ hours a month. What is that person\'s hourly cost?',
+  },
+  tasks_slip: {
+    hub: 'Operations',
+    implication: 'One dropped task in client delivery — what is the downstream cost in rework and client trust?',
+  },
+}
+
+Object.entries(SPIN_EXTRAS).forEach(([id, extra]) => {
+  if (SOLUTION_MAP[id]) Object.assign(SOLUTION_MAP[id], extra)
+})
 
 // Match free text (the vent box) to leak ids by keyword. Local fallback that
 // works without any AI key; the Claude-powered version can replace/extend this.

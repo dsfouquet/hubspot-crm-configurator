@@ -23,6 +23,8 @@ export const HUB_PAIN_OPTIONS = [
   { id: 'surveys_nps_blind', label: "We don't know if customers are happy until they're already gone" },
   { id: 'reporting_excel_pain', label: 'Building any report means hours of exporting and Excel wrangling' },
   { id: 'ai_manual_drafting', label: 'My team hand-writes every email and call summary AI could draft' },
+  { id: 'tools_dont_talk', label: "Our tools don't talk — someone re-types the same data into multiple systems" },
+  { id: 'tasks_slip', label: 'Important tasks live in memory and chat messages, and things slip' },
 ]
 
 // Revenue-leak checklist (verbatim from Daniel's discovery script, section 3).
@@ -38,10 +40,18 @@ export const LEAK_OPTIONS = [
   { id: 'inconsistent_onboarding', label: 'New clients get a different experience depending on who handles them' },
   { id: 'ticket_blindness', label: "Can't see tickets or service issues without calling someone" },
   { id: 'ar_visibility', label: "Don't know what's in accounts receivable without running a report" },
+  { id: 'playbook_gap', label: 'No written sales process — every rep sells their own way' },
 ]
 
 export const DISCOVERY_QUESTIONS = [
   // ---------- Section 1: Your Business ----------
+  {
+    key: 'topGoal',
+    section: 'business',
+    prompt: "What's the #1 thing you want to fix or improve in the next 30 days?",
+    type: 'textarea',
+    placeholder: 'In your own words — this becomes the headline of your fix plan.',
+  },
   {
     key: 'businessDescription',
     section: 'business',

@@ -125,11 +125,16 @@ export function scopeOffers(session) {
   retainer.push('Monthly optimization: one new automation, view, or fix every month')
 
   // ---------- Recommendation ----------
-  const recommended = machine.length >= 3 ? 'machine' : 'free'
+  // Routing rule (Discovery-Questions-By-Hub.md): if 2+ HubSpot hubs fire,
+  // that's a Core Offer (30-Day Revenue Machine) conversation, not a Free Setup.
+  const hubsFiring = [
+    ...new Set((session.fixPlan?.problems || []).map((p) => p.hub).filter(Boolean)),
+  ]
+  const recommended = hubsFiring.length >= 2 || machine.length >= 3 ? 'machine' : 'free'
   const diyNote =
     w.teamSize === 'Just me (1)'
       ? 'Solo operator? There is also a self-paced DIY CRM Build Guide if you would rather build it yourself.'
       : null
 
-  return { free, machine, retainer, recommended, diyNote }
+  return { free, machine, retainer, recommended, diyNote, hubsFiring }
 }

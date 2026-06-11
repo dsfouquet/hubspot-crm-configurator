@@ -246,16 +246,38 @@ export default function BlueprintDocument() {
       {session.fixPlan && session.fixPlan.problems.length > 0 && (
         <Page>
           <SectionTitle kicker="Fix Plan">Your Problems → Our Solutions</SectionTitle>
+          {session.fixPlan.topGoal && (
+            <div
+              style={{
+                background: '#2D3E50',
+                borderRadius: 8,
+                padding: '10px 14px',
+                marginBottom: 12,
+              }}
+            >
+              <div style={{ fontSize: 10, color: '#FF7A59', textTransform: 'uppercase', letterSpacing: 1 }}>
+                Your #1 fix for the next 30 days
+              </div>
+              <div style={{ fontSize: 14, color: '#fff', fontStyle: 'italic' }}>
+                “{session.fixPlan.topGoal}”
+              </div>
+            </div>
+          )}
           {session.fixPlan.topLeakCost && (
             <div style={{ fontSize: 13, color: '#F2545B', marginBottom: 10 }}>
               You estimated your biggest leak at: {session.fixPlan.topLeakCost}
             </div>
           )}
           {session.fixPlan.problems.map((p) => (
-            <Card key={p.id} title={`${p.isTop ? '🔥 ' : ''}${p.title}`}>
+            <Card key={p.id} title={`${p.isTop ? '🔥 ' : ''}${p.title}${p.hub ? `  ·  ${p.hub}` : ''}`}>
               <div style={{ fontSize: 11, color: '#7C98B6', marginBottom: 4 }}>
                 You said: “{p.saidLabel}”
               </div>
+              {p.implication && (
+                <div style={{ fontSize: 12, color: '#F2545B', marginBottom: 4 }}>
+                  <strong>The real cost:</strong> {p.implication}
+                </div>
+              )}
               <div style={{ fontSize: 13, color: '#33475B', marginBottom: 8 }}>{p.narrative}</div>
               <div
                 style={{
