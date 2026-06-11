@@ -7,7 +7,22 @@ export const DISCOVERY_SECTIONS = [
   { key: 'business', label: 'Your Business' },
   { key: 'process', label: 'Your Sales Process' },
   { key: 'leaks', label: 'Where Revenue Is Leaking' },
+  { key: 'hubs', label: 'Beyond Sales' },
   { key: 'tools', label: 'Tools & Data' },
+]
+
+// "Beyond Sales" pain checklist — covers the other HubSpot hubs (Marketing,
+// Content, Commerce, Service, Reporting, AI) in the same pain-first voice as
+// the revenue-leak checklist. Authored 2026-06 (no prior question bank existed).
+export const HUB_PAIN_OPTIONS = [
+  { id: 'marketing_email_gap', label: "We never email our list — no newsletter, no nurture, nothing consistent" },
+  { id: 'landing_pages_gap', label: "Our website doesn't capture leads — visitors come and go invisibly" },
+  { id: 'content_seo_gap', label: "Nobody finds us online — we have no blog, SEO, or content presence" },
+  { id: 'quotes_invoices_split', label: 'Quoting and invoicing live in separate tools that don\'t talk to each other' },
+  { id: 'kb_faq_repeat', label: 'We answer the same customer questions over and over by phone or email' },
+  { id: 'surveys_nps_blind', label: "We don't know if customers are happy until they're already gone" },
+  { id: 'reporting_excel_pain', label: 'Building any report means hours of exporting and Excel wrangling' },
+  { id: 'ai_manual_drafting', label: 'My team hand-writes every email and call summary AI could draft' },
 ]
 
 // Revenue-leak checklist (verbatim from Daniel's discovery script, section 3).
@@ -164,7 +179,17 @@ export const DISCOVERY_QUESTIONS = [
     placeholder: 'Type it like you\'d vent to a colleague. We\'ll match it to fixes.',
   },
 
-  // ---------- Section 4: Tools & Data ----------
+  // ---------- Section 4: Beyond Sales (other HubSpot hubs) ----------
+  {
+    key: 'hubPains',
+    section: 'hubs',
+    prompt: 'Any of these sound familiar outside of sales?',
+    type: 'multi',
+    hint: 'Marketing, service, billing, reporting — select all that apply',
+    options: HUB_PAIN_OPTIONS.map((h) => h.label),
+  },
+
+  // ---------- Section 5: Tools & Data ----------
   {
     key: 'currentTracking',
     section: 'tools',
@@ -225,4 +250,8 @@ export const DISCOVERY_QUESTIONS = [
 // Map a leak label back to its id (answers store labels for readability).
 export function leakIdFromLabel(label) {
   return LEAK_OPTIONS.find((l) => l.label === label)?.id || null
+}
+
+export function hubPainIdFromLabel(label) {
+  return HUB_PAIN_OPTIONS.find((h) => h.label === label)?.id || null
 }

@@ -109,7 +109,7 @@ export const SOLUTION_MAP = {
     viewIds: [],
     widgets: ['won_vs_lost'],
     cadenceRules: {},
-    enterpriseFeatures: ['multi_touch_attribution'],
+    tierFeatures: [{ feature: 'multi_touch_attribution', tier: 'enterprise' }],
     ccBuild: [
       'Lead-source tracking enforced on every new contact and deal',
       'Source-to-revenue reporting (full multi-touch attribution requires Enterprise — we scope what tier you actually need)',
@@ -180,6 +180,135 @@ export const SOLUTION_MAP = {
       'Alerts when an invoice ages past your threshold',
     ],
     keywords: ['receivable', 'invoice', 'ar ', 'owed', 'payment', 'quickbooks', 'unpaid'],
+  },
+
+  // ---------------- BEYOND SALES: other HubSpot hubs ----------------
+  marketing_email_gap: {
+    title: 'Your list finally hears from you',
+    narrative:
+      'A welcome-and-nurture sequence runs automatically for every new contact, plus a monthly newsletter template your team can actually keep up with.',
+    workflows: ['new_contact_welcome'],
+    viewIds: [],
+    widgets: ['emails_sent'],
+    cadenceRules: {},
+    tierFeatures: [{ feature: 'email_sending', tier: 'starter' }],
+    ccBuild: [
+      'Nurture sequence written in your voice, not template-speak',
+      'Monthly newsletter template your team fills in, not builds',
+      'List segments so the right people get the right message',
+    ],
+    keywords: ['newsletter', 'email list', 'nurture', 'email marketing', 'never email'],
+  },
+  landing_pages_gap: {
+    title: 'A website that captures, not just sits there',
+    narrative:
+      'Lead forms and landing pages wired straight into the CRM — every visitor who raises a hand becomes a routed, owned lead.',
+    workflows: ['new_lead_assignment'],
+    viewIds: [],
+    widgets: [],
+    cadenceRules: {},
+    tierFeatures: [{ feature: 'forms', tier: 'starter' }],
+    ccBuild: [
+      'Lead capture forms embedded on your site (with auto-acknowledgment)',
+      'Landing pages for your offers and ads',
+      'Form-to-CRM-to-follow-up routing, no manual handoff',
+    ],
+    keywords: ['landing page', 'website lead', 'web form', 'capture', 'website visitors'],
+  },
+  content_seo_gap: {
+    title: 'Getting found online',
+    narrative:
+      'Content and SEO are their own discipline — HubSpot Content Hub can host it, but the writing and strategy are a separate engagement we scope with you.',
+    workflows: [],
+    viewIds: [],
+    widgets: [],
+    cadenceRules: {},
+    ccBuild: [
+      'Honest scoping: content creation is not part of the CRM install',
+      'Content Hub readiness assessment if you want HubSpot to host blog/SEO',
+      'Referral or separate content engagement, scoped to your market',
+    ],
+    keywords: ['blog', 'seo', 'content', 'google ranking', 'found online', 'social media'],
+  },
+  quotes_invoices_split: {
+    title: 'Quote to invoice in one motion',
+    narrative:
+      'Quotes generate from deal records, invoices follow from quotes, and payment status shows up right on the deal. One system, no re-typing.',
+    workflows: [],
+    viewIds: ['quotes_awaiting'],
+    widgets: [],
+    cadenceRules: {},
+    tierFeatures: [{ feature: 'quotes_payments', tier: 'starter' }],
+    ccBuild: [
+      'HubSpot Quotes module branded to your business',
+      'Quote-to-invoice flow connected to your accounting software',
+      'Payment status visible on every deal record',
+    ],
+    keywords: ['invoice', 'quoting tool', 'billing', 'payment', 're-enter', 'retype'],
+  },
+  kb_faq_repeat: {
+    title: 'Answer it once, reuse it forever',
+    narrative:
+      'The questions your team answers daily become a chatbot flow and a help library, so customers self-serve and your inbox quiets down.',
+    workflows: [],
+    viewIds: [],
+    widgets: [],
+    cadenceRules: {},
+    tierFeatures: [{ feature: 'knowledge_base', tier: 'pro' }],
+    ccBuild: [
+      'FAQ chatbot flow built from your real top-10 questions',
+      'Knowledge base articles drafted from how your team already answers',
+      'Chat-to-ticket escalation when self-serve isn\'t enough',
+    ],
+    keywords: ['same questions', 'faq', 'knowledge base', 'over and over', 'repeat'],
+  },
+  surveys_nps_blind: {
+    title: 'Hear unhappiness before the churn',
+    narrative:
+      'Automatic satisfaction surveys after every closed ticket and milestone — unhappy scores alert you while there is still time to save the account.',
+    workflows: [],
+    viewIds: [],
+    widgets: ['avg_ticket_resolution'],
+    cadenceRules: {},
+    tierFeatures: [{ feature: 'customer_surveys', tier: 'pro' }],
+    ccBuild: [
+      'NPS / CSAT surveys triggered at the moments that matter',
+      'Low-score alerts routed to the account owner immediately',
+      'Review-request automation for the happy ones',
+    ],
+    keywords: ['nps', 'survey', 'csat', 'happy', 'churn', 'unhappy', 'reviews'],
+  },
+  reporting_excel_pain: {
+    title: 'Reports that build themselves',
+    narrative:
+      'The numbers you wrangle in Excel become live dashboards — always current, zero exports.',
+    workflows: [],
+    viewIds: ['revenue_forecast'],
+    widgets: ['won_vs_lost', 'deal_velocity'],
+    cadenceRules: {},
+    tierFeatures: [{ feature: 'custom_reporting', tier: 'pro' }],
+    ccBuild: [
+      'Your Excel reports rebuilt as live HubSpot dashboards',
+      'Custom report builder configured for your specific metrics',
+      'A Monday-morning dashboard that replaces the spreadsheet ritual',
+    ],
+    keywords: ['excel', 'export', 'spreadsheet report', 'hours', 'wrangling', 'manual report'],
+  },
+  ai_manual_drafting: {
+    title: 'AI drafts it, your team approves it',
+    narrative:
+      'Follow-up emails, call summaries, and record overviews drafted by AI inside HubSpot — your team reviews and sends instead of starting from blank.',
+    workflows: [],
+    viewIds: [],
+    widgets: [],
+    cadenceRules: {},
+    tierFeatures: [{ feature: 'ai_features', tier: 'pro' }],
+    ccBuild: [
+      'AI-drafted follow-up emails tuned to your voice (owner approves before send)',
+      'AI call and meeting summaries configured on every record',
+      'Team training on where AI saves time and where it doesn\'t',
+    ],
+    keywords: ['ai', 'chatgpt', 'drafting', 'summaries', 'hand-write', 'manually write'],
   },
 }
 

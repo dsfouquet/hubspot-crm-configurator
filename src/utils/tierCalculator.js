@@ -3,6 +3,7 @@
 // a feature -> tier breakdown. Reads labels/colors/pricing from hubspotTiers.json.
 
 import tiers from '../data/hubspotTiers.json'
+import { SOLUTION_MAP } from '../constants/solutionMap'
 import { activeViews } from './recommendations'
 import { actionCount } from '../constants/workflowTemplates'
 
@@ -66,10 +67,13 @@ function collectTriggers(session) {
   // Custom report widgets → Custom Report Builder (Pro).
   if ((session.dashboards?.customWidgets?.length || 0) > 0) add('custom_reporting', 'pro')
 
-  // Fix-plan problems that imply Enterprise features (e.g. marketing attribution).
-  if ((session.fixPlan?.problems || []).some((p) => p.id === 'marketing_attribution')) {
-    add('multi_touch_attribution', 'enterprise', 'from your marketing-attribution problem')
-  }
+  // Fix-plan problems carry their own tier triggers (solutionMap tierFeatures) —
+  // e.g. marketing attribution -> Enterprise, surveys/KB/AI/reporting -> Pro.
+  ;(session.fixPlan?.problems || []).forEach((p) => {
+    ;(SOLUTION_MAP[p.id]?.tierFeatures || []).forEach((tf) =>
+      add(tf.feature, tf.tier, 'from your fix plan')
+    )
+  })
 
   // Dedupe by feature, keeping the highest tier + first detail seen.
   const byFeature = {}

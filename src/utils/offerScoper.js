@@ -41,7 +41,9 @@ export function scopeOffers(session) {
   if (w.emailPlatform?.includes('Gmail')) free.push('Gmail + Google Calendar connected')
   else if (w.emailPlatform?.includes('Outlook')) free.push('Outlook + calendar connected')
   else free.push('Email + calendar connected')
-  if (arr(w.connectTools).includes('Website forms')) free.push('1 website lead form wired in')
+  if (arr(w.connectTools).includes('Website forms') || leaks.includes('landing_pages_gap'))
+    free.push('1 website lead form wired in')
+  if (leaks.includes('kb_faq_repeat')) free.push('1 basic FAQ chatbot flow')
   if (w.dataImport?.startsWith('Yes — clean'))
     free.push('Your contact list imported & de-duped (up to 5,000 records)')
 
@@ -94,6 +96,21 @@ export function scopeOffers(session) {
   if (tools.includes('Facebook / Instagram ads')) machine.push('Ad platform lead sync')
   if (leaks.includes('inconsistent_onboarding'))
     machine.push('Sales-to-service handoff workflows and onboarding playbook')
+  // Beyond-sales hub pains
+  if (leaks.includes('marketing_email_gap'))
+    machine.push('Marketing automation: nurture sequence + monthly newsletter template')
+  if (leaks.includes('landing_pages_gap'))
+    machine.push('Full lead capture: up to 5 forms + landing pages with routing')
+  if (leaks.includes('quotes_invoices_split'))
+    machine.push('HubSpot Quotes + payments, connected to your accounting')
+  if (leaks.includes('kb_faq_repeat'))
+    machine.push('Knowledge base + chat-to-ticket escalation (beyond the basic chatbot)')
+  if (leaks.includes('surveys_nps_blind'))
+    machine.push('NPS/CSAT survey automation with low-score alerts')
+  if (leaks.includes('reporting_excel_pain'))
+    machine.push('Your Excel reports rebuilt as live custom dashboards')
+  if (leaks.includes('ai_manual_drafting'))
+    machine.push('AI summaries + AI-drafted follow-ups configured for your team')
 
   // ---------- Sales Activation Retainer (ongoing execution) ----------
   if (arr(w.leadSources).includes('Cold outreach'))
@@ -103,6 +120,8 @@ export function scopeOffers(session) {
   const meetingsOn = (session.cadence?.meetings || []).filter((m) => m.enabled)
   if (meetingsOn.length > 0)
     retainer.push('Dashboard reviews on your cadence — we read the numbers with you')
+  if (leaks.includes('content_seo_gap'))
+    retainer.push('Content / SEO: its own engagement — we scope it with you after the install')
   retainer.push('Monthly optimization: one new automation, view, or fix every month')
 
   // ---------- Recommendation ----------

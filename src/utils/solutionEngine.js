@@ -3,7 +3,7 @@
 // applied to the session (workflows, widgets, cadence rules, pipeline stages).
 
 import { SOLUTION_MAP, matchTextToLeaks } from '../constants/solutionMap'
-import { leakIdFromLabel } from '../constants/discoveryQuestions'
+import { leakIdFromLabel, hubPainIdFromLabel } from '../constants/discoveryQuestions'
 import { WORKFLOW_TEMPLATES, instantiateTemplate } from '../constants/workflowTemplates'
 
 // Parse "Lead → Site Visit → Quote Sent → Won" (or commas, dashes, numbered
@@ -155,8 +155,11 @@ export function collectLeakIds(wizard) {
   const fromChecklist = (Array.isArray(wizard.leaks) ? wizard.leaks : [])
     .map(leakIdFromLabel)
     .filter(Boolean)
+  const fromHubs = (Array.isArray(wizard.hubPains) ? wizard.hubPains : [])
+    .map(hubPainIdFromLabel)
+    .filter(Boolean)
   const fromVent = matchTextToLeaks(wizard.ventBox)
-  return [...new Set([...fromChecklist, ...fromVent])]
+  return [...new Set([...fromChecklist, ...fromHubs, ...fromVent])]
 }
 
 // Global Crescent Connect build items driven by tools/data answers (not leak-specific).
@@ -227,6 +230,8 @@ export function buildFixPlan(wizard) {
         saidLabel:
           (Array.isArray(wizard.leaks) &&
             wizard.leaks.find((l) => leakIdFromLabel(l) === id)) ||
+          (Array.isArray(wizard.hubPains) &&
+            wizard.hubPains.find((h) => hubPainIdFromLabel(h) === id)) ||
           sol.title,
         narrative: sol.narrative,
         workflows: sol.workflows,

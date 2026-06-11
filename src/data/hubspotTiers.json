@@ -27,7 +27,8 @@
         "email_sending",
         "forms",
         "simple_automation",
-        "goals"
+        "goals",
+        "quotes_payments"
       ]
     },
     "pro": {
@@ -43,7 +44,10 @@
         "custom_reporting",
         "ab_testing",
         "calculated_properties",
-        "deal_scoring"
+        "deal_scoring",
+        "knowledge_base",
+        "customer_surveys",
+        "ai_features"
       ]
     },
     "enterprise": {
@@ -88,6 +92,10 @@
     "multi_touch_attribution": "Multi-Touch Attribution",
     "sandboxes": "Sandboxes",
     "conversation_intelligence": "Conversation Intelligence",
-    "recurring_revenue_tracking": "Recurring Revenue Tracking"
+    "recurring_revenue_tracking": "Recurring Revenue Tracking",
+    "quotes_payments": "Quotes & Payments",
+    "knowledge_base": "Knowledge Base",
+    "customer_surveys": "Customer Surveys (NPS/CSAT)",
+    "ai_features": "AI Assistants & Summaries"
   }
 }
