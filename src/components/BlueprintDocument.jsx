@@ -1,6 +1,7 @@
 import { useStore } from '../store/useStore'
 import { calculateRequiredTier } from '../utils/tierCalculator'
 import { activeViews } from '../utils/recommendations'
+import { scopeOffers, OFFERS } from '../utils/offerScoper'
 import { WIDGET_LABELS, AUTOMATION_HEALTH_WIDGETS } from '../constants/defaultWidgets'
 import { actionCount } from '../constants/workflowTemplates'
 
@@ -311,6 +312,96 @@ export default function BlueprintDocument() {
               </div>
             </Card>
           )}
+        </Page>
+      )}
+
+      {/* ---- Scope of work mapped to the Crescent Connect offer ladder ---- */}
+      {session.fixPlan && (
+        <Page>
+          <SectionTitle kicker="Scope of Work">How This Gets Built</SectionTitle>
+          {(() => {
+            const scope = scopeOffers(session)
+            const block = (offer, items, footnote, recommended) =>
+              items.length > 0 && (
+                <div
+                  key={offer.key}
+                  style={{
+                    border: `2px solid ${recommended ? '#FF7A59' : '#CBD6E2'}`,
+                    borderRadius: 8,
+                    marginBottom: 12,
+                    pageBreakInside: 'avoid',
+                    breakInside: 'avoid',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div style={{ background: `${offer.color}12`, padding: '8px 14px' }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: offer.color }}>
+                      {offer.name}
+                    </span>
+                    {recommended && (
+                      <span
+                        style={{
+                          fontSize: 9,
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          color: '#fff',
+                          background: '#FF7A59',
+                          borderRadius: 3,
+                          padding: '2px 6px',
+                          marginLeft: 8,
+                        }}
+                      >
+                        Your starting point
+                      </span>
+                    )}
+                    <div style={{ fontSize: 11, color: '#33475B', marginTop: 2 }}>
+                      {offer.tagline}
+                    </div>
+                  </div>
+                  <div style={{ padding: '8px 14px' }}>
+                    {items.map((item, i) => (
+                      <div key={i} style={{ fontSize: 12, color: '#33475B', marginBottom: 3 }}>
+                        <span style={{ color: offer.color }}>✓</span> {item}
+                      </div>
+                    ))}
+                    {footnote && (
+                      <div
+                        style={{
+                          fontSize: 10,
+                          color: '#7C98B6',
+                          fontStyle: 'italic',
+                          marginTop: 6,
+                        }}
+                      >
+                        {footnote}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            return (
+              <>
+                {block(
+                  OFFERS.free,
+                  scope.free,
+                  '7-day done-for-you setup. Capped scope, 4 businesses per month.',
+                  scope.recommended === 'free'
+                )}
+                {block(
+                  OFFERS.machine,
+                  scope.machine,
+                  'The 30-day full install — built, tested, and trained.',
+                  scope.recommended === 'machine'
+                )}
+                {block(
+                  OFFERS.retainer,
+                  scope.retainer,
+                  'Optional, after your install. We run it so you don’t have to.',
+                  false
+                )}
+              </>
+            )
+          })()}
         </Page>
       )}
 

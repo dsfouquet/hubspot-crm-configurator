@@ -199,6 +199,7 @@ export const useStore = create((set, get) => ({
       dashboards: { ...s.dashboards, widgets: patch.widgets },
       cadence: { ...s.cadence, rules: { ...s.cadence.rules, ...patch.rulePatch } },
       deals: patch.stages ? { ...s.deals, pipelineStages: patch.stages } : s.deals,
+      customObjects: [...s.customObjects, ...(patch.newCustomObjects || [])],
     }))
   },
 
