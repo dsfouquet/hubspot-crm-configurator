@@ -1,15 +1,28 @@
 import { useStore } from '../store/useStore'
-import { DISCOVERY_QUESTIONS, DISCOVERY_SECTIONS } from '../constants/discoveryQuestions'
+import {
+  DISCOVERY_QUESTIONS,
+  DISCOVERY_SECTIONS,
+  painParts,
+} from '../constants/discoveryQuestions'
 
 // Step 1 preview: a discovery summary card that fills in as the prospect answers.
 export default function PreviewDiscovery() {
   const wizard = useStore((s) => s.session.wizard)
   const name = useStore((s) => s.session.gate.name)
 
-  const answered = DISCOVERY_QUESTIONS.filter((q) => {
+  // Resolve a question's display answer (pains filter the shared id array).
+  const answerFor = (q) => {
     const a = wizard[q.key]
-    return Array.isArray(a) ? a.length > 0 : Boolean(a && String(a).trim())
-  }).length
+    if (q.type === 'pain-multi') {
+      const ids = (Array.isArray(a) ? a : []).filter((id) => q.painIds.includes(id))
+      return ids.length ? ids.map((id) => painParts(id).pain) : null
+    }
+    if (q.type === 'single-from-pains') return a ? [painParts(a).pain] : null
+    if (Array.isArray(a)) return a.length ? a : null
+    return a && String(a).trim() ? a : null
+  }
+
+  const answered = DISCOVERY_QUESTIONS.filter((q) => answerFor(q)).length
 
   return (
     <div className="p-6">
@@ -27,25 +40,21 @@ export default function PreviewDiscovery() {
         <div className="p-5 space-y-4">
           {DISCOVERY_SECTIONS.map((sec) => {
             const qs = DISCOVERY_QUESTIONS.filter((q) => q.section === sec.key)
-            const sectionAnswered = qs.some((q) => {
-              const a = wizard[q.key]
-              return Array.isArray(a) ? a.length > 0 : Boolean(a && String(a).trim())
-            })
+            const any = qs.some((q) => answerFor(q))
             return (
               <div key={sec.key}>
                 <p className="text-[11px] font-preview font-semibold uppercase tracking-wide text-hs-orange mb-1.5">
                   {sec.label}
                 </p>
-                {!sectionAnswered ? (
+                {!any ? (
                   <p className="text-[12px] font-preview text-hs-border italic">Not started</p>
                 ) : (
                   <div className="space-y-2">
                     {qs.map((q) => {
-                      const a = wizard[q.key]
-                      const has = Array.isArray(a) ? a.length > 0 : Boolean(a && String(a).trim())
-                      if (!has) return null
+                      const a = answerFor(q)
+                      if (!a) return null
                       return (
-                        <div key={q.key}>
+                        <div key={q.qid}>
                           <p className="text-[10px] font-preview text-hs-text-light">{q.prompt}</p>
                           {Array.isArray(a) ? (
                             <div className="flex flex-wrap gap-1 mt-0.5">

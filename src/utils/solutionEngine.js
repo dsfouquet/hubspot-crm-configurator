@@ -2,8 +2,7 @@
 // with narratives and Crescent Connect build scope — and (2) a config patch
 // applied to the session (workflows, widgets, cadence rules, pipeline stages).
 
-import { SOLUTION_MAP, matchTextToLeaks } from '../constants/solutionMap'
-import { leakIdFromLabel, hubPainIdFromLabel } from '../constants/discoveryQuestions'
+import { SOLUTION_MAP, matchTextToLeaks, painLabel } from '../constants/solutionMap'
 import { WORKFLOW_TEMPLATES, instantiateTemplate } from '../constants/workflowTemplates'
 
 // Parse "Lead → Site Visit → Quote Sent → Won" (or commas, dashes, numbered
@@ -152,14 +151,12 @@ export function industryObjectFor(industry) {
 
 // Collect the leak ids the prospect selected (checklist + vent-box keyword match).
 export function collectLeakIds(wizard) {
-  const fromChecklist = (Array.isArray(wizard.leaks) ? wizard.leaks : [])
-    .map(leakIdFromLabel)
-    .filter(Boolean)
-  const fromHubs = (Array.isArray(wizard.hubPains) ? wizard.hubPains : [])
-    .map(hubPainIdFromLabel)
-    .filter(Boolean)
+  // Pain checklists store SOLUTION_MAP ids directly in wizard.pains.
+  const fromChecklist = (Array.isArray(wizard.pains) ? wizard.pains : []).filter(
+    (id) => SOLUTION_MAP[id]
+  )
   const fromVent = matchTextToLeaks(wizard.ventBox)
-  return [...new Set([...fromChecklist, ...fromHubs, ...fromVent])]
+  return [...new Set([...fromChecklist, ...fromVent])]
 }
 
 // Global Crescent Connect build items driven by tools/data answers (not leak-specific).
@@ -218,7 +215,7 @@ export function buildGlobalScope(wizard) {
 // Build the full fix plan from wizard answers.
 export function buildFixPlan(wizard) {
   const leakIds = collectLeakIds(wizard)
-  const topLeakId = leakIdFromLabel(wizard.topLeak) || null
+  const topLeakId = SOLUTION_MAP[wizard.topLeak] ? wizard.topLeak : null
 
   const problems = leakIds
     .map((id) => {
@@ -227,12 +224,7 @@ export function buildFixPlan(wizard) {
       return {
         id,
         title: sol.title,
-        saidLabel:
-          (Array.isArray(wizard.leaks) &&
-            wizard.leaks.find((l) => leakIdFromLabel(l) === id)) ||
-          (Array.isArray(wizard.hubPains) &&
-            wizard.hubPains.find((h) => hubPainIdFromLabel(h) === id)) ||
-          sol.title,
+        saidLabel: painLabel(id),
         narrative: sol.narrative,
         implication: sol.implication || '',
         hub: sol.hub || 'Sales Hub',

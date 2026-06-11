@@ -458,6 +458,42 @@ Object.entries(SPIN_EXTRAS).forEach(([id, extra]) => {
   if (SOLUTION_MAP[id]) Object.assign(SOLUTION_MAP[id], extra)
 })
 
+// Checklist display labels: one-word pain (bold in UI) + short description.
+const PAIN_LABELS = {
+  quotes_no_followup: { pain: 'Quotes', painDesc: 'follow-up goes silent after we send them' },
+  unknown_close_rate: { pain: 'Close rate', painDesc: 'unknown without digging through emails' },
+  leads_fall_through: { pain: 'Leads', painDesc: 'fall through the cracks before anyone responds' },
+  pipeline_in_head: { pain: 'Pipeline', painDesc: 'lives in one head or a spreadsheet, not a shared system' },
+  rep_workload_unproven: { pain: 'Reps', painDesc: "a couple do most of the work and we can't prove it" },
+  no_reengagement: { pain: 'Re-engagement', painDesc: 'past clients never hear from us again' },
+  marketing_attribution: { pain: 'Attribution', painDesc: 'marketing spend has no clear tie to closed revenue' },
+  admin_overload: { pain: 'Admin', painDesc: 'data entry and manual emails eat selling time' },
+  inconsistent_onboarding: { pain: 'Onboarding', painDesc: 'every client gets a different experience' },
+  ticket_blindness: { pain: 'Tickets', painDesc: "can't see service issues without calling someone" },
+  ar_visibility: { pain: 'Receivables', painDesc: "don't know what's owed without running a report" },
+  playbook_gap: { pain: 'Process', painDesc: 'nothing written down — every rep sells their own way' },
+  marketing_email_gap: { pain: 'Email', painDesc: 'we never email our list — no newsletter, no nurture' },
+  landing_pages_gap: { pain: 'Capture', painDesc: "our website doesn't turn visitors into leads" },
+  content_seo_gap: { pain: 'Visibility', painDesc: 'nobody finds us online — no blog, SEO, or content' },
+  quotes_invoices_split: { pain: 'Billing', painDesc: "quoting and invoicing live in tools that don't talk" },
+  kb_faq_repeat: { pain: 'FAQs', painDesc: 'we answer the same customer questions over and over' },
+  surveys_nps_blind: { pain: 'Feedback', painDesc: "we don't know customers are unhappy until they're gone" },
+  reporting_excel_pain: { pain: 'Reports', painDesc: 'every report means hours of exports and Excel' },
+  ai_manual_drafting: { pain: 'AI', painDesc: 'team hand-writes everything AI could draft' },
+  tools_dont_talk: { pain: 'Sync', painDesc: 'same data re-typed into multiple systems daily' },
+  tasks_slip: { pain: 'Tasks', painDesc: 'live in memory and chat messages, and things slip' },
+}
+
+Object.entries(PAIN_LABELS).forEach(([id, labels]) => {
+  if (SOLUTION_MAP[id]) Object.assign(SOLUTION_MAP[id], labels)
+})
+
+// Full display label for a pain id, e.g. "Quotes — follow-up goes silent...".
+export function painLabel(id) {
+  const s = SOLUTION_MAP[id]
+  return s ? `${s.pain} — ${s.painDesc}` : id
+}
+
 // Match free text (the vent box) to leak ids by keyword. Local fallback that
 // works without any AI key; the Claude-powered version can replace/extend this.
 export function matchTextToLeaks(text) {

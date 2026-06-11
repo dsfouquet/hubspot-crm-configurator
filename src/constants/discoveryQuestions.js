@@ -1,52 +1,62 @@
-// Discovery intake (replaces the old 5-question wizard). Curated from Daniel's
-// full discovery call script — only questions that drive the solution engine,
-// tier calculation, or Crescent Connect build scoping. Call-only questions
-// (team access detail, urgency/decision, branding) are intentionally excluded.
+// Discovery intake, organized by HubSpot's hubs (Daniel's request 2026-06):
+// Your Business → CRM & Data → Sales → Marketing → Service → Commerce →
+// Ops & Reporting → Priorities. Pain checklists store SOLUTION_MAP ids in the
+// shared `pains` answer key; display labels (bold word + short desc) come from
+// the solution map (single source of truth). Curated from Daniel's discovery
+// call script + sales/discovery-questions/Discovery-Questions-By-Hub.md.
+// Call-only questions (team access, urgency/decision, branding) stay out.
+
+import { SOLUTION_MAP } from './solutionMap'
 
 export const DISCOVERY_SECTIONS = [
   { key: 'business', label: 'Your Business' },
-  { key: 'process', label: 'Your Sales Process' },
-  { key: 'leaks', label: 'Where Revenue Is Leaking' },
-  { key: 'hubs', label: 'Beyond Sales' },
-  { key: 'tools', label: 'Tools & Data' },
+  { key: 'crm', label: 'CRM & Data' },
+  { key: 'sales', label: 'Sales' },
+  { key: 'marketing', label: 'Marketing' },
+  { key: 'service', label: 'Service' },
+  { key: 'commerce', label: 'Commerce' },
+  { key: 'ops', label: 'Ops & Reporting' },
+  { key: 'priorities', label: 'Priorities' },
 ]
 
-// "Beyond Sales" pain checklist — covers the other HubSpot hubs (Marketing,
-// Content, Commerce, Service, Reporting, AI) in the same pain-first voice as
-// the revenue-leak checklist. Authored 2026-06 (no prior question bank existed).
-export const HUB_PAIN_OPTIONS = [
-  { id: 'marketing_email_gap', label: "We never email our list — no newsletter, no nurture, nothing consistent" },
-  { id: 'landing_pages_gap', label: "Our website doesn't capture leads — visitors come and go invisibly" },
-  { id: 'content_seo_gap', label: "Nobody finds us online — we have no blog, SEO, or content presence" },
-  { id: 'quotes_invoices_split', label: 'Quoting and invoicing live in separate tools that don\'t talk to each other' },
-  { id: 'kb_faq_repeat', label: 'We answer the same customer questions over and over by phone or email' },
-  { id: 'surveys_nps_blind', label: "We don't know if customers are happy until they're already gone" },
-  { id: 'reporting_excel_pain', label: 'Building any report means hours of exporting and Excel wrangling' },
-  { id: 'ai_manual_drafting', label: 'My team hand-writes every email and call summary AI could draft' },
-  { id: 'tools_dont_talk', label: "Our tools don't talk — someone re-types the same data into multiple systems" },
-  { id: 'tasks_slip', label: 'Important tasks live in memory and chat messages, and things slip' },
-]
+// Pain ids per hub section (each pain appears exactly once).
+export const PAINS_BY_SECTION = {
+  crm: ['pipeline_in_head', 'no_reengagement', 'tasks_slip'],
+  sales: [
+    'quotes_no_followup',
+    'leads_fall_through',
+    'playbook_gap',
+    'rep_workload_unproven',
+    'admin_overload',
+  ],
+  marketing: [
+    'marketing_email_gap',
+    'landing_pages_gap',
+    'content_seo_gap',
+    'marketing_attribution',
+  ],
+  service: ['ticket_blindness', 'kb_faq_repeat', 'surveys_nps_blind', 'inconsistent_onboarding'],
+  commerce: ['quotes_invoices_split', 'ar_visibility'],
+  ops: ['tools_dont_talk', 'reporting_excel_pain', 'unknown_close_rate', 'ai_manual_drafting'],
+}
 
-// Revenue-leak checklist (verbatim from Daniel's discovery script, section 3).
-export const LEAK_OPTIONS = [
-  { id: 'quotes_no_followup', label: 'Quotes go out and we never follow up consistently' },
-  { id: 'unknown_close_rate', label: "We don't know our close rate without digging through emails" },
-  { id: 'leads_fall_through', label: 'Leads come in and fall through the cracks before anyone responds' },
-  { id: 'pipeline_in_head', label: 'Our pipeline lives in my head or a spreadsheet, not a shared system' },
-  { id: 'rep_workload_unproven', label: "A couple reps do most of the work and we can't prove it" },
-  { id: 'no_reengagement', label: "Past clients aren't getting re-engaged or renewed automatically" },
-  { id: 'marketing_attribution', label: 'Marketing spend has no clear connection to closed revenue' },
-  { id: 'admin_overload', label: 'Too much time on admin, data entry, and manual emails' },
-  { id: 'inconsistent_onboarding', label: 'New clients get a different experience depending on who handles them' },
-  { id: 'ticket_blindness', label: "Can't see tickets or service issues without calling someone" },
-  { id: 'ar_visibility', label: "Don't know what's in accounts receivable without running a report" },
-  { id: 'playbook_gap', label: 'No written sales process — every rep sells their own way' },
-]
+export const ALL_PAIN_IDS = Object.values(PAINS_BY_SECTION).flat()
+
+const painQuestion = (section, prompt) => ({
+  key: 'pains', // all checklists share one answer array of ids
+  qid: `pains_${section}`,
+  section,
+  prompt,
+  type: 'pain-multi',
+  hint: 'Select all that apply',
+  painIds: PAINS_BY_SECTION[section],
+})
 
 export const DISCOVERY_QUESTIONS = [
-  // ---------- Section 1: Your Business ----------
+  // ---------- Your Business ----------
   {
     key: 'topGoal',
+    qid: 'topGoal',
     section: 'business',
     prompt: "What's the #1 thing you want to fix or improve in the next 30 days?",
     type: 'textarea',
@@ -54,13 +64,15 @@ export const DISCOVERY_QUESTIONS = [
   },
   {
     key: 'businessDescription',
+    qid: 'businessDescription',
     section: 'business',
     prompt: 'What does your business do, and who do you sell to?',
     type: 'textarea',
-    placeholder: 'e.g. "Commercial HVAC install and service for hospitals and schools across south Louisiana."',
+    placeholder: 'e.g. "Commercial HVAC install and service for hospitals and schools."',
   },
   {
     key: 'industry',
+    qid: 'industry',
     section: 'business',
     prompt: 'What industry are you in?',
     type: 'single',
@@ -77,6 +89,7 @@ export const DISCOVERY_QUESTIONS = [
   },
   {
     key: 'teamType',
+    qid: 'teamType',
     section: 'business',
     prompt: 'How does your team sell?',
     type: 'multi',
@@ -92,6 +105,7 @@ export const DISCOVERY_QUESTIONS = [
   },
   {
     key: 'teamSize',
+    qid: 'teamSize',
     section: 'business',
     prompt: 'How many people are on your team, including you?',
     type: 'single',
@@ -99,13 +113,15 @@ export const DISCOVERY_QUESTIONS = [
   },
   {
     key: 'monthlyVolume',
+    qid: 'monthlyVolume',
     section: 'business',
-    prompt: 'How many new leads, quotes, or proposals do you generate per month?',
+    prompt: 'How many new leads, quotes, or proposals per month?',
     type: 'single',
     options: ['Fewer than 10', '10–25', '25–50', '50–100', '100+'],
   },
   {
     key: 'recurringRevenue',
+    qid: 'recurringRevenue',
     section: 'business',
     prompt: 'Does your business have recurring revenue?',
     type: 'multi',
@@ -113,10 +129,38 @@ export const DISCOVERY_QUESTIONS = [
     options: ['Service contracts', 'Retainers', 'Subscriptions', 'Renewals', 'No recurring revenue'],
   },
 
-  // ---------- Section 2: Your Sales Process ----------
+  // ---------- CRM & Data ----------
+  {
+    key: 'currentTracking',
+    qid: 'currentTracking',
+    section: 'crm',
+    prompt: 'What do you use today to track leads, deals, and customers?',
+    type: 'single',
+    allowOther: true,
+    options: [
+      'Spreadsheet',
+      'Email inbox',
+      'Paper / whiteboard',
+      'HubSpot (barely using it)',
+      'Another CRM (Salesforce, GHL, Pipedrive...)',
+      'Nothing structured',
+    ],
+  },
+  {
+    key: 'dataImport',
+    qid: 'dataImport',
+    section: 'crm',
+    prompt: 'Do you have an existing list of contacts or clients to bring in?',
+    type: 'single',
+    options: ['Yes — clean and exportable', 'Yes — but messy and incomplete', 'No existing list'],
+  },
+  painQuestion('crm', 'Any of these CRM problems sound familiar?'),
+
+  // ---------- Sales ----------
   {
     key: 'dealStages',
-    section: 'process',
+    qid: 'dealStages',
+    section: 'sales',
     prompt: 'Name the stages a deal goes through, in order, in your own words.',
     type: 'textarea',
     hint: 'We build your actual pipeline from this',
@@ -124,7 +168,8 @@ export const DISCOVERY_QUESTIONS = [
   },
   {
     key: 'leadSources',
-    section: 'process',
+    qid: 'leadSources',
+    section: 'sales',
     prompt: 'How does most of your new business come in?',
     type: 'multi',
     hint: 'Select all that apply',
@@ -140,98 +185,52 @@ export const DISCOVERY_QUESTIONS = [
   },
   {
     key: 'avgDealSize',
-    section: 'process',
+    qid: 'avgDealSize',
+    section: 'sales',
     prompt: "What's your average deal or project size?",
     type: 'single',
     options: ['Under $5K', '$5K–$25K', '$25K–$100K', '$100K+'],
   },
   {
     key: 'salesCycle',
-    section: 'process',
+    qid: 'salesCycle',
+    section: 'sales',
     prompt: 'How long is your typical sales cycle, first contact to close?',
     type: 'single',
     options: ['Days', 'A few weeks', '1–3 months', '3–12 months', 'Over a year'],
   },
+  painQuestion('sales', 'Where is your sales process leaking?'),
 
-  // ---------- Section 3: Where Revenue Is Leaking ----------
-  {
-    key: 'leaks',
-    section: 'leaks',
-    prompt: 'Which of these are problems in your business right now?',
-    type: 'multi',
-    hint: 'Be honest — select all that apply',
-    options: LEAK_OPTIONS.map((l) => l.label),
-  },
-  {
-    key: 'topLeak',
-    section: 'leaks',
-    prompt: 'Which one is costing you the most money right now?',
-    type: 'single-from-leaks', // options come from the user's `leaks` selections
-    optionalText: {
-      key: 'topLeakCost',
-      label: 'Put a number on it if you can (optional)',
-      placeholder: 'e.g. $50K/year in quotes that go quiet',
-    },
-  },
-  {
-    key: 'mondayScreen',
-    section: 'leaks',
-    prompt: "What's the one screen or report you'd open every Monday morning if it existed?",
-    type: 'textarea',
-    placeholder: 'e.g. "Every open quote, who owns it, and how long it\'s been sitting."',
-  },
-  {
-    key: 'ventBox',
-    section: 'leaks',
-    prompt: 'Anything else broken? Describe it in your own words.',
-    type: 'textarea',
-    optional: true,
-    placeholder: 'Type it like you\'d vent to a colleague. We\'ll match it to fixes.',
-  },
+  // ---------- Marketing ----------
+  painQuestion('marketing', 'How is marketing actually going?'),
 
-  // ---------- Section 4: Beyond Sales (other HubSpot hubs) ----------
-  {
-    key: 'hubPains',
-    section: 'hubs',
-    prompt: 'Any of these sound familiar outside of sales?',
-    type: 'multi',
-    hint: 'Marketing, service, billing, reporting — select all that apply',
-    options: HUB_PAIN_OPTIONS.map((h) => h.label),
-  },
+  // ---------- Service ----------
+  painQuestion('service', 'What happens after the sale?'),
 
-  // ---------- Section 5: Tools & Data ----------
+  // ---------- Commerce ----------
   {
-    key: 'currentTracking',
-    section: 'tools',
-    prompt: 'What do you use right now to track leads, quotes, and follow-ups?',
+    key: 'accounting',
+    qid: 'accounting',
+    section: 'commerce',
+    prompt: 'What accounting software are you on?',
     type: 'single',
-    allowOther: true,
-    options: [
-      'Spreadsheet',
-      'Email inbox',
-      'Paper / whiteboard',
-      'HubSpot (barely using it)',
-      'Another CRM (Salesforce, GHL, Pipedrive...)',
-      'Nothing structured',
-    ],
+    options: ['QuickBooks', 'Xero', 'FreshBooks', 'Something else', 'None'],
   },
+  painQuestion('commerce', 'Any friction between selling and getting paid?'),
+
+  // ---------- Ops & Reporting ----------
   {
     key: 'emailPlatform',
-    section: 'tools',
+    qid: 'emailPlatform',
+    section: 'ops',
     prompt: 'What email does your team use for business?',
     type: 'single',
     options: ['Gmail / Google Workspace', 'Outlook / Microsoft 365', 'Other'],
   },
   {
-    key: 'accounting',
-    section: 'tools',
-    prompt: 'What accounting software are you on?',
-    type: 'single',
-    options: ['QuickBooks', 'Xero', 'FreshBooks', 'Something else', 'None'],
-  },
-  {
     key: 'connectTools',
-    section: 'tools',
+    qid: 'connectTools',
+    section: 'ops',
     prompt: 'What else would you want connected to your CRM?',
     type: 'multi',
     hint: 'Select all that apply',
@@ -244,24 +243,42 @@ export const DISCOVERY_QUESTIONS = [
       'Facebook / Instagram ads',
     ],
   },
+  painQuestion('ops', 'How do systems and numbers feel day to day?'),
+
+  // ---------- Priorities ----------
   {
-    key: 'dataImport',
-    section: 'tools',
-    prompt: 'Do you have an existing list of contacts or clients to bring in?',
-    type: 'single',
-    options: [
-      'Yes — clean and exportable',
-      'Yes — but messy and incomplete',
-      'No existing list',
-    ],
+    key: 'topLeak',
+    qid: 'topLeak',
+    section: 'priorities',
+    prompt: 'Of everything you checked, which one is costing you the most money?',
+    type: 'single-from-pains',
+    optionalText: {
+      key: 'topLeakCost',
+      label: 'Put a number on it if you can (optional)',
+      placeholder: 'e.g. $50K/year in quotes that go quiet',
+    },
+  },
+  {
+    key: 'mondayScreen',
+    qid: 'mondayScreen',
+    section: 'priorities',
+    prompt: "What's the one screen or report you'd open every Monday morning if it existed?",
+    type: 'textarea',
+    placeholder: 'e.g. "Every open quote, who owns it, and how long it\'s been sitting."',
+  },
+  {
+    key: 'ventBox',
+    qid: 'ventBox',
+    section: 'priorities',
+    prompt: 'Anything else broken? Describe it in your own words.',
+    type: 'textarea',
+    optional: true,
+    placeholder: "Type it like you'd vent to a colleague. We'll match it to fixes.",
   },
 ]
 
-// Map a leak label back to its id (answers store labels for readability).
-export function leakIdFromLabel(label) {
-  return LEAK_OPTIONS.find((l) => l.label === label)?.id || null
-}
-
-export function hubPainIdFromLabel(label) {
-  return HUB_PAIN_OPTIONS.find((h) => h.label === label)?.id || null
+// Display label parts for a pain id (bold word + description).
+export function painParts(id) {
+  const s = SOLUTION_MAP[id]
+  return s ? { pain: s.pain || id, desc: s.painDesc || '' } : { pain: id, desc: '' }
 }

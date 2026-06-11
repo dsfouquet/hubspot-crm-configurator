@@ -2,21 +2,27 @@ import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import DownloadPdfButton from '../components/DownloadPdfButton'
 
-import PreviewRecord from '../preview/PreviewRecord'
-import PreviewDealRecord from '../preview/PreviewDealRecord'
+import HubCRM from '../preview/hubs/HubCRM'
+import HubSales from '../preview/hubs/HubSales'
+import HubMarketing from '../preview/hubs/HubMarketing'
+import HubCommerce from '../preview/hubs/HubCommerce'
+import HubService from '../preview/hubs/HubService'
+import HubReporting from '../preview/hubs/HubReporting'
 import PreviewAutomations from '../preview/PreviewAutomations'
-import PreviewDashboard from '../preview/PreviewDashboard'
-import PreviewViews from '../preview/PreviewViews'
 import PreviewCadence from '../preview/PreviewCadence'
 
-const TABS = [
-  { key: 'contact', label: 'Contact', render: () => <PreviewRecord slice="contacts" /> },
-  { key: 'company', label: 'Company', render: () => <PreviewRecord slice="companies" /> },
-  { key: 'deal', label: 'Deals', render: () => <PreviewDealRecord /> },
-  { key: 'automations', label: 'Automations', render: () => <PreviewAutomations /> },
-  { key: 'dashboard', label: 'Dashboard', render: () => <PreviewDashboard /> },
-  { key: 'views', label: 'Views', render: () => <PreviewViews /> },
-  { key: 'accountability', label: 'Accountability', render: () => <PreviewCadence /> },
+// HubSpot-light demo: left rail mirrors HubSpot's real hub navigation; each hub
+// is a polished multi-screen demo view (benefits only — the Crescent Connect
+// build work behind it lives in the Fix Plan, not here).
+const HUBS = [
+  { key: 'crm', label: 'CRM', icon: '👥', render: () => <HubCRM /> },
+  { key: 'marketing', label: 'Marketing', icon: '📣', render: () => <HubMarketing /> },
+  { key: 'sales', label: 'Sales', icon: '💰', render: () => <HubSales /> },
+  { key: 'commerce', label: 'Commerce', icon: '🧾', render: () => <HubCommerce /> },
+  { key: 'service', label: 'Service', icon: '🛟', render: () => <HubService /> },
+  { key: 'automations', label: 'Automations', icon: '⚡', render: () => <PreviewAutomations /> },
+  { key: 'reporting', label: 'Reporting', icon: '📊', render: () => <HubReporting /> },
+  { key: 'cadence', label: 'Accountability', icon: '🗓', render: () => <PreviewCadence /> },
 ]
 
 // ---- Final gate (async only): capture name + email for lead records, no sending ----
@@ -35,10 +41,10 @@ function FinalGate({ onUnlock }) {
       <div className="w-full max-w-md bg-white rounded-xl border border-hs-border shadow-sm overflow-hidden">
         <div className="bg-hs-navy px-6 py-5">
           <h2 className="font-preview font-semibold text-white text-xl">
-            Your HubSpot blueprint is ready
+            Your HubSpot demo is ready
           </h2>
           <p className="text-[13px] font-preview text-white/70 mt-1">
-            See the full interactive preview and download your blueprint as a PDF.
+            Walk through every hub and download your blueprint as a PDF.
           </p>
         </div>
         <div className="p-6 space-y-3">
@@ -58,7 +64,7 @@ function FinalGate({ onUnlock }) {
             onClick={submit}
             className="w-full bg-hs-orange hover:bg-hs-orange/90 text-white font-ui font-semibold py-2.5 rounded-md"
           >
-            View My HubSpot Blueprint →
+            View My HubSpot Demo →
           </button>
         </div>
       </div>
@@ -84,12 +90,11 @@ function ActionBar() {
   )
 }
 
-// ---- Main full-width Step 11 ----
 export default function Step11_Preview() {
   const session = useStore((s) => s.session)
   const unlockPreview = useStore((s) => s.unlockPreview)
   const beginAsyncSession = useStore((s) => s.beginAsyncSession)
-  const [tab, setTab] = useState('contact')
+  const [hub, setHub] = useState('crm')
 
   const isLive = session.mode === 'live'
   const unlocked = isLive || session.previewUnlocked
@@ -103,30 +108,48 @@ export default function Step11_Preview() {
     return <FinalGate onUnlock={handleUnlock} />
   }
 
-  const active = TABS.find((t) => t.key === tab) || TABS[0]
+  const active = HUBS.find((h) => h.key === hub) || HUBS[0]
 
   return (
     <div className="h-full flex flex-col bg-hs-canvas">
-      {/* Mock HubSpot top nav */}
-      <div className="shrink-0 bg-hs-navy px-5 py-0 flex items-center gap-1 overflow-x-auto hs-scroll">
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`text-[13px] font-preview px-3 py-3 border-b-2 whitespace-nowrap ${
-              t.key === tab
-                ? 'border-hs-orange text-white font-medium'
-                : 'border-transparent text-white/60 hover:text-white'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <div className="flex-1 flex min-h-0">
+        {/* HubSpot-style left rail */}
+        <nav className="shrink-0 w-44 bg-hs-navy flex flex-col py-2 overflow-y-auto hs-scroll">
+          {/* Sprocket-ish brand mark */}
+          <div className="px-4 py-2 mb-1 flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-hs-orange flex items-center justify-center text-white text-[13px]">
+              ⚙
+            </span>
+            <span className="text-white/90 font-preview font-semibold text-[13px]">
+              Your HubSpot
+            </span>
+          </div>
+          {HUBS.map((h) => {
+            const isActive = h.key === hub
+            return (
+              <button
+                key={h.key}
+                onClick={() => setHub(h.key)}
+                className={`flex items-center gap-2.5 px-4 py-2.5 text-left text-[13px] font-preview transition-colors ${
+                  isActive
+                    ? 'bg-white/10 text-white border-l-[3px] border-hs-orange'
+                    : 'text-white/60 hover:text-white hover:bg-white/5 border-l-[3px] border-transparent'
+                }`}
+              >
+                <span className="text-[14px]">{h.icon}</span>
+                {h.label}
+              </button>
+            )
+          })}
+          <div className="mt-auto px-4 py-3 text-[10px] font-preview text-white/40 leading-snug">
+            Demo preview — your real portal is built by Crescent Connect.
+          </div>
+        </nav>
 
-      {/* Tab content (also the PDF export root) */}
-      <div id="preview-export-root" className="flex-1 min-h-0 overflow-y-auto hs-scroll">
-        {active.render()}
+        {/* Active hub view (also the PDF export root) */}
+        <div id="preview-export-root" className="flex-1 min-w-0 min-h-0">
+          {active.render()}
+        </div>
       </div>
 
       <ActionBar />

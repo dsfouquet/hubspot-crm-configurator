@@ -3,27 +3,31 @@ import { useStore } from '../store/useStore'
 import {
   DISCOVERY_QUESTIONS,
   DISCOVERY_SECTIONS,
+  ALL_PAIN_IDS,
+  painParts,
 } from '../constants/discoveryQuestions'
 import { StepHeader, StepBody } from '../shared/StepLayout'
 import { buildFixPlan, buildConfigPatch } from '../utils/solutionEngine'
 
-// One question's input control (single / multi / textarea / single-from-leaks),
-// shared by the full section view and the quick-essentials skip path.
+// One question's input control. Types: single / multi / textarea / pain-multi
+// (checklist of pain ids rendered as bold word + short description) /
+// single-from-pains (pick one of the pains already selected).
 function QuestionControl({ question, compact = false }) {
   const wizard = useStore((s) => s.session.wizard)
   const setWizardAnswer = useStore((s) => s.setWizardAnswer)
   const answer = wizard[question.key]
 
-  const options =
-    question.type === 'single-from-leaks'
-      ? Array.isArray(wizard.leaks) && wizard.leaks.length
-        ? wizard.leaks
-        : []
-      : question.options || []
-
-  const isSingle = question.type === 'single' || question.type === 'single-from-leaks'
-  const isMulti = question.type === 'multi'
+  const isPainMulti = question.type === 'pain-multi'
+  const isPainSingle = question.type === 'single-from-pains'
+  const isSingle = question.type === 'single' || isPainSingle
+  const isMulti = question.type === 'multi' || isPainMulti
   const isText = question.type === 'textarea'
+
+  const options = isPainMulti
+    ? question.painIds
+    : isPainSingle
+      ? (Array.isArray(wizard.pains) ? wizard.pains : [])
+      : question.options || []
 
   const isSelected = (opt) =>
     isSingle ? answer === opt : Array.isArray(answer) && answer.includes(opt)
@@ -60,6 +64,20 @@ function QuestionControl({ question, compact = false }) {
     setWizardAnswer(question.key, text.trim() ? [...presets, text] : presets)
   }
 
+  // Render an option label — pains get bold word + light description.
+  const OptionLabel = ({ opt }) => {
+    if (isPainMulti || isPainSingle) {
+      const { pain, desc } = painParts(opt)
+      return (
+        <span className="min-w-0">
+          <span className="font-semibold text-hs-navy">{pain}</span>
+          {desc && <span className="text-hs-text-dark"> — {desc}</span>}
+        </span>
+      )
+    }
+    return <span>{opt}</span>
+  }
+
   return (
     <div>
       {isText && (
@@ -71,22 +89,28 @@ function QuestionControl({ question, compact = false }) {
         />
       )}
 
-      {question.type === 'single-from-leaks' && options.length === 0 && (
+      {isPainSingle && options.length === 0 && (
         <p className="text-[12px] font-ui text-hs-text-light">
-          Select at least one problem above first.
+          Check at least one problem in the earlier sections first.
         </p>
       )}
 
-      {(isSingle || isMulti) && (
-        <div className="flex flex-wrap gap-1.5">
+      {(isSingle || isMulti) && !isText && (
+        <div
+          className={
+            isPainMulti || isPainSingle ? 'space-y-1.5' : 'flex flex-wrap gap-1.5'
+          }
+        >
           {options.map((opt) => (
             <button
               key={opt}
               onClick={() => toggle(opt)}
               className={`text-left flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-[13px] font-ui transition-colors ${
+                isPainMulti || isPainSingle ? 'w-full' : ''
+              } ${
                 isSelected(opt)
-                  ? 'border-hs-orange bg-hs-orange/10 text-hs-navy'
-                  : 'border-hs-border bg-white text-hs-text-dark hover:border-hs-text-light'
+                  ? 'border-hs-orange bg-hs-orange/10'
+                  : 'border-hs-border bg-white hover:border-hs-text-light'
               }`}
             >
               <span
@@ -100,7 +124,7 @@ function QuestionControl({ question, compact = false }) {
               >
                 {isSelected(opt) && <span className="text-[9px] leading-none">✓</span>}
               </span>
-              {opt}
+              <OptionLabel opt={opt} />
             </button>
           ))}
         </div>
@@ -140,8 +164,17 @@ function OptionalTextInput({ optionalText }) {
   )
 }
 
-// The two questions that make a fix plan possible — required before skipping.
-const ESSENTIAL_KEYS = ['leaks', 'dealStages']
+// Quick-essentials path: every pain in one compact checklist + deal stages.
+const QUICK_QUESTIONS = [
+  {
+    key: 'pains',
+    qid: 'pains_all',
+    prompt: 'Which of these are problems right now?',
+    type: 'pain-multi',
+    painIds: ALL_PAIN_IDS,
+  },
+  DISCOVERY_QUESTIONS.find((q) => q.qid === 'dealStages'),
+]
 
 export default function Step1_Discovery({ index }) {
   const applyFixPlan = useStore((s) => s.applyFixPlan)
@@ -166,22 +199,19 @@ export default function Step1_Discovery({ index }) {
     setBuilding(false)
   }
 
-  // ---- Quick-essentials skip path: just the leak checklist + deal stages ----
+  // ---- Quick-essentials skip path ----
   if (quickMode) {
-    const essentials = DISCOVERY_QUESTIONS.filter((q) => ESSENTIAL_KEYS.includes(q.key))
     return (
       <StepBody>
         <StepHeader
           index={index}
-          intro="30 seconds, two questions — enough to build your fix plan. You can fill in the rest later."
+          intro="60 seconds, two questions — enough to build your fix plan. You can fill in the rest later."
         />
         <div className="space-y-4">
-          {essentials.map((q) => (
-            <div key={q.key} className="rounded-lg border border-hs-border bg-white p-4">
-              <h3 className="font-ui font-semibold text-hs-navy text-[15px] mb-2.5">
-                {q.prompt}
-              </h3>
-              <QuestionControl question={q} />
+          {QUICK_QUESTIONS.map((q) => (
+            <div key={q.qid} className="rounded-lg border border-hs-border bg-white p-4">
+              <h3 className="font-ui font-semibold text-hs-navy text-[15px] mb-2.5">{q.prompt}</h3>
+              <QuestionControl question={q} compact />
             </div>
           ))}
         </div>
@@ -194,7 +224,7 @@ export default function Step1_Discovery({ index }) {
           </button>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => goToStep(index + 2)} // skip everything → Contacts
+              onClick={() => goToStep(index + 2)}
               className="text-[12px] font-ui text-hs-text-light hover:text-hs-navy underline"
             >
               Skip everything
@@ -212,12 +242,12 @@ export default function Step1_Discovery({ index }) {
     )
   }
 
-  // ---- Full discovery: one SECTION per screen, all questions visible ----
+  // ---- Full discovery: one HUB SECTION per screen ----
   return (
     <StepBody>
       <StepHeader
         index={index}
-        intro="Tell us how your business actually runs. We'll build your HubSpot fix from it."
+        intro="Organized the way HubSpot is — answer what applies, skip what doesn't."
       />
 
       {/* Section tabs */}
@@ -234,7 +264,7 @@ export default function Step1_Discovery({ index }) {
                   : 'bg-hs-canvas text-hs-text-light hover:text-hs-navy'
             }`}
           >
-            {i + 1}. {s.label}
+            {s.label}
           </button>
         ))}
       </div>
@@ -242,7 +272,7 @@ export default function Step1_Discovery({ index }) {
       {/* All questions in this section, stacked */}
       <div className="space-y-4">
         {sectionQuestions.map((q) => (
-          <div key={q.key} className="rounded-lg border border-hs-border bg-white p-4">
+          <div key={q.qid} className="rounded-lg border border-hs-border bg-white p-4">
             <div className="flex items-baseline justify-between gap-3 mb-2.5">
               <h3 className="font-ui font-semibold text-hs-navy text-[15px]">{q.prompt}</h3>
               {(q.hint || q.type === 'multi' || q.optional) && (

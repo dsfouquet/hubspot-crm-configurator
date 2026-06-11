@@ -2,6 +2,59 @@ import { useStore } from '../store/useStore'
 import { activeViews } from '../utils/recommendations'
 import { WIDGET_LABELS } from '../constants/defaultWidgets'
 import WorkflowDiagram from './WorkflowDiagram'
+import { ReportCard, BarChart, LineChart, HBarChart, DonutChart } from './charts'
+import {
+  REVENUE_TREND,
+  MONTHS,
+  REP_PERFORMANCE,
+  LEAD_SOURCES,
+  AR_AGING,
+} from './demoData'
+
+// Pick a realistic chart for a widget id (used when a fix has no workflow diagram).
+function WidgetChart({ id }) {
+  const label = WIDGET_LABELS[id] || id
+  if (/revenue|won|closed|forecast|weighted/i.test(label)) {
+    return (
+      <ReportCard title={label} subtitle="LAST 6 MONTHS">
+        <LineChart
+          series={[{ name: 'Revenue', color: '#FF7A59', points: REVENUE_TREND }]}
+          labels={MONTHS}
+          money
+        />
+      </ReportCard>
+    )
+  }
+  if (/rep|leaderboard/i.test(label)) {
+    return (
+      <ReportCard title={label} subtitle="THIS QUARTER">
+        <HBarChart data={REP_PERFORMANCE} money />
+      </ReportCard>
+    )
+  }
+  if (/source|lifecycle|attribution/i.test(label)) {
+    return (
+      <ReportCard title={label} subtitle="LAST 6 MONTHS">
+        <DonutChart data={LEAD_SOURCES} centerValue="103" centerLabel="leads" />
+      </ReportCard>
+    )
+  }
+  if (/ticket|resolution/i.test(label)) {
+    return (
+      <ReportCard title={label} subtitle="OPEN BY AGE">
+        <HBarChart data={AR_AGING.slice(0, 4)} color="#F2545B" />
+      </ReportCard>
+    )
+  }
+  return (
+    <ReportCard title={label} subtitle="LAST 6 MONTHS">
+      <BarChart
+        data={MONTHS.map((m, i) => ({ label: m, value: [42, 51, 47, 63, 58, 71][i] }))}
+        color="#0091AE"
+      />
+    </ReportCard>
+  )
+}
 
 // Step 2 preview: the focused problem's fix, shown live — workflow diagram if it
 // has one, plus the views and widgets it installed.
@@ -84,32 +137,24 @@ export default function PreviewFixPlan() {
         {installedWorkflows.length > 0 ? (
           <WorkflowDiagram workflow={installedWorkflows[0]} />
         ) : (
-          <div className="h-full flex items-center justify-center p-6">
-            <div className="w-full max-w-sm space-y-2">
-              {widgets.length > 0 ? (
-                widgets.map((w) => (
-                  <div key={w} className="bg-white rounded-lg border border-hs-border p-3">
-                    <p className="text-[12px] font-preview font-medium text-hs-text-dark mb-2">
-                      {w}
-                    </p>
-                    <div className="flex items-end gap-1 h-9">
-                      {[5, 9, 6, 11, 8, 12].map((h, i) => (
-                        <div
-                          key={i}
-                          className="w-3 rounded-t bg-hs-blue/60"
-                          style={{ height: h * 3 }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-[13px] font-preview text-hs-text-light">
-                  This fix lives in your views and integrations — see the full preview in the
-                  final step.
+          <div className="h-full overflow-y-auto hs-scroll p-5">
+            {problem.widgets.length > 0 ? (
+              <div className="max-w-lg mx-auto space-y-3">
+                {problem.widgets.map((id) => (
+                  <WidgetChart key={id} id={id} />
+                ))}
+                <p className="text-center text-[11px] font-preview text-hs-text-light">
+                  Sample data — your real numbers populate these automatically.
                 </p>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <p className="text-center text-[13px] font-preview text-hs-text-light max-w-xs">
+                  This fix lives in your views and integrations — see it in the full HubSpot
+                  demo on the final step.
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>

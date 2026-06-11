@@ -1,0 +1,153 @@
+// Shared realistic demo data for the HubSpot-light preview. Louisiana-flavored,
+// internally consistent (same companies/reps/amounts reappear across hubs so the
+// demo feels like one real portal, not random lorem ipsum).
+
+export const REPS = ['Marcus Hebert', 'Aimee Landry', 'Catherine Roy', 'You']
+
+export const COMPANIES = [
+  { name: 'Gulf Coast Chemical', city: 'Baton Rouge, LA', industry: 'Chemical Mfg', tier: 'Tier 1' },
+  { name: 'Bayou Fabrication', city: 'Houma, LA', industry: 'Metal Fabrication', tier: 'Tier 2' },
+  { name: 'Pelican Industrial Services', city: 'Gonzales, LA', industry: 'Industrial Services', tier: 'Tier 1' },
+  { name: 'Acadiana Builders Group', city: 'Lafayette, LA', industry: 'Construction', tier: 'Tier 2' },
+  { name: 'Crescent City Logistics', city: 'New Orleans, LA', industry: 'Transportation', tier: 'Tier 3' },
+  { name: 'Red Stick Mechanical', city: 'Baton Rouge, LA', industry: 'HVAC / Mechanical', tier: 'Tier 2' },
+]
+
+export const CONTACTS = [
+  { name: 'Maria Chen', title: 'VP of Operations', company: 'Gulf Coast Chemical', email: 'mchen@gulfcoastchem.com', phone: '(225) 555-0142', owner: 'You', lastActivity: '2 days ago' },
+  { name: 'James Boudreaux', title: 'Maintenance Manager', company: 'Gulf Coast Chemical', email: 'jboudreaux@gulfcoastchem.com', phone: '(225) 555-0177', owner: 'You', lastActivity: '5 days ago' },
+  { name: 'Priya Nair', title: 'Procurement Lead', company: 'Pelican Industrial Services', email: 'pnair@pelicanind.com', phone: '(225) 555-0263', owner: 'Marcus Hebert', lastActivity: '1 day ago' },
+  { name: 'Tommy Guidry', title: 'Owner', company: 'Bayou Fabrication', email: 'tguidry@bayoufab.com', phone: '(985) 555-0314', owner: 'Aimee Landry', lastActivity: '3 hours ago' },
+  { name: 'Sarah Thibodeaux', title: 'Office Manager', company: 'Acadiana Builders Group', email: 'sarah@acadianabuilders.com', phone: '(337) 555-0458', owner: 'Aimee Landry', lastActivity: '1 week ago' },
+  { name: 'David Okafor', title: 'Plant Manager', company: 'Crescent City Logistics', email: 'dokafor@cclogistics.com', phone: '(504) 555-0529', owner: 'Catherine Roy', lastActivity: '2 weeks ago' },
+  { name: 'Lauren Fontenot', title: 'Controller', company: 'Red Stick Mechanical', email: 'lfontenot@redstickmech.com', phone: '(225) 555-0671', owner: 'Marcus Hebert', lastActivity: '4 days ago' },
+]
+
+export const DEALS = [
+  { name: 'Gulf Coast — Vacuum Pump Package', company: 'Gulf Coast Chemical', amount: 84500, stage: 2, closeDate: 'Jun 30, 2026', owner: 'You', age: 12 },
+  { name: 'Bayou Fab — Plasma Table Install', company: 'Bayou Fabrication', amount: 47200, stage: 3, closeDate: 'Jun 21, 2026', owner: 'Aimee Landry', age: 8 },
+  { name: 'Pelican — Annual Service Contract', company: 'Pelican Industrial Services', amount: 36000, stage: 1, closeDate: 'Jul 15, 2026', owner: 'Marcus Hebert', age: 4 },
+  { name: 'Acadiana — Site Equipment Phase 2', company: 'Acadiana Builders Group', amount: 128000, stage: 2, closeDate: 'Aug 1, 2026', owner: 'Aimee Landry', age: 19 },
+  { name: 'Red Stick — Chiller Replacement', company: 'Red Stick Mechanical', amount: 62400, stage: 0, closeDate: 'Jul 30, 2026', owner: 'Marcus Hebert', age: 2 },
+  { name: 'Crescent City — Fleet Sensors', company: 'Crescent City Logistics', amount: 23800, stage: 1, closeDate: 'Jul 8, 2026', owner: 'Catherine Roy', age: 6 },
+]
+
+export const TICKETS = [
+  { name: 'Pump seal leak — Unit 4', company: 'Gulf Coast Chemical', priority: 'High', status: 'In Progress', owner: 'Catherine Roy', age: '1 day' },
+  { name: 'Invoice discrepancy — May order', company: 'Red Stick Mechanical', priority: 'Medium', status: 'Waiting on Customer', owner: 'You', age: '3 days' },
+  { name: 'Replacement part ETA request', company: 'Bayou Fabrication', priority: 'Low', status: 'New', owner: 'Marcus Hebert', age: '2 hours' },
+  { name: 'Training session scheduling', company: 'Acadiana Builders Group', priority: 'Low', status: 'In Progress', owner: 'Aimee Landry', age: '2 days' },
+  { name: 'Warranty claim — compressor', company: 'Pelican Industrial Services', priority: 'High', status: 'New', owner: 'Catherine Roy', age: '4 hours' },
+]
+
+export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+
+// Revenue trend (closed-won by month) — trending up, realistic variance.
+export const REVENUE_TREND = [182000, 154000, 217000, 198000, 246000, 261000]
+
+// Pipeline by stage (uses index positions; stages come from the session config).
+export const PIPELINE_VALUES = [148000, 226400, 212500, 47200, 261000]
+
+export const REP_PERFORMANCE = [
+  { label: 'Aimee Landry', value: 175200 },
+  { label: 'You', value: 144500 },
+  { label: 'Marcus Hebert', value: 98400 },
+  { label: 'Catherine Roy', value: 61300 },
+]
+
+export const REP_ACTIVITY = [
+  { label: 'Aimee Landry', calls: 64, emails: 188, meetings: 14 },
+  { label: 'You', calls: 51, emails: 142, meetings: 12 },
+  { label: 'Marcus Hebert', calls: 47, emails: 121, meetings: 9 },
+  { label: 'Catherine Roy', calls: 33, emails: 97, meetings: 7 },
+]
+
+export const LEAD_SOURCES = [
+  { label: 'Referrals', value: 34 },
+  { label: 'Website', value: 27 },
+  { label: 'Cold outreach', value: 19 },
+  { label: 'Repeat clients', value: 15 },
+  { label: 'Events', value: 8 },
+]
+
+export const EMAIL_PERFORMANCE = {
+  sent: 1240,
+  openRate: '41.2%',
+  clickRate: '6.8%',
+  replies: 87,
+  trend: [28, 34, 31, 42, 39, 47], // opens % by month
+}
+
+export const INVOICES = [
+  { number: 'INV-1042', company: 'Gulf Coast Chemical', amount: 42250, status: 'Paid', due: 'Jun 1, 2026' },
+  { number: 'INV-1043', company: 'Bayou Fabrication', amount: 23600, status: 'Open', due: 'Jun 20, 2026' },
+  { number: 'INV-1044', company: 'Acadiana Builders Group', amount: 64000, status: 'Open', due: 'Jun 28, 2026' },
+  { number: 'INV-1038', company: 'Crescent City Logistics', amount: 11900, status: 'Overdue', due: 'May 30, 2026' },
+  { number: 'INV-1031', company: 'Red Stick Mechanical', amount: 31200, status: 'Overdue', due: 'May 12, 2026' },
+]
+
+export const AR_AGING = [
+  { label: 'Current', value: 87600 },
+  { label: '1-30 days', value: 23600 },
+  { label: '31-60 days', value: 11900 },
+  { label: '61-90 days', value: 31200 },
+  { label: '90+ days', value: 8400 },
+]
+
+export const NPS_DATA = {
+  score: 62,
+  promoters: 58,
+  passives: 27,
+  detractors: 15,
+  responses: [
+    { company: 'Gulf Coast Chemical', score: 9, comment: 'Response time on the Unit 4 issue was outstanding.' },
+    { company: 'Bayou Fabrication', score: 10, comment: 'Tommy says y\'all are the only vendor that answers the phone.' },
+    { company: 'Crescent City Logistics', score: 6, comment: 'Good work but the quote took too long to arrive.' },
+  ],
+}
+
+export const KB_ARTICLES = [
+  { title: 'How to request a service call', views: 412, helpful: '94%' },
+  { title: 'Warranty coverage explained', views: 287, helpful: '89%' },
+  { title: 'Preventive maintenance schedule', views: 198, helpful: '96%' },
+  { title: 'How to read your invoice', views: 154, helpful: '91%' },
+]
+
+export const SEQUENCE_DEMO = {
+  name: 'Quote Follow-Up',
+  enrolled: 14,
+  openRate: '52%',
+  replyRate: '21%',
+  steps: [
+    { day: 'Day 0', type: 'Email', label: 'Quote delivered — confirmation + summary' },
+    { day: 'Day 2', type: 'Email', label: 'Check-in: any questions on the quote?' },
+    { day: 'Day 5', type: 'Task', label: 'Call task created for deal owner' },
+    { day: 'Day 9', type: 'Email', label: 'Case study + gentle nudge' },
+    { day: 'Day 14', type: 'Email', label: 'Last touch: timeline check' },
+  ],
+}
+
+export const MEETINGS_DEMO = [
+  { time: 'Today 2:00 PM', with: 'Maria Chen', company: 'Gulf Coast Chemical', type: 'Site walkthrough' },
+  { time: 'Tomorrow 9:30 AM', with: 'Tommy Guidry', company: 'Bayou Fabrication', type: 'Quote review' },
+  { time: 'Thu 1:00 PM', with: 'Priya Nair', company: 'Pelican Industrial Services', type: 'Contract renewal' },
+]
+
+export const DOCUMENTS_DEMO = [
+  { name: 'Capabilities Overview.pdf', views: 48, lastViewed: 'Maria Chen · 2h ago' },
+  { name: 'Service Contract Template.pdf', views: 31, lastViewed: 'Priya Nair · 1d ago' },
+  { name: 'Equipment Spec Sheet.pdf', views: 22, lastViewed: 'Tommy Guidry · 3d ago' },
+]
+
+export const FORMS_DEMO = [
+  { name: 'Request a Quote', submissions: 47, conversion: '31%' },
+  { name: 'Service Call Request', submissions: 38, conversion: '44%' },
+  { name: 'Newsletter Signup', submissions: 112, conversion: '12%' },
+]
+
+export const CAMPAIGNS_DEMO = [
+  { name: 'Spring Maintenance Push', channel: 'Email', leads: 34, revenue: 86400 },
+  { name: 'Google Ads — Service Keywords', channel: 'Paid Search', leads: 21, revenue: 47200 },
+  { name: 'Trade Show Follow-Up', channel: 'Email + Calls', leads: 18, revenue: 128000 },
+  { name: 'Facebook Lead Gen', channel: 'Paid Social', leads: 26, revenue: 23800 },
+]

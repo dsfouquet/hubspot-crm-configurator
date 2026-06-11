@@ -4,49 +4,45 @@ import {
   AUTOMATION_HEALTH_WIDGETS,
   WIDGET_LABELS,
 } from '../constants/defaultWidgets'
+import { BarChart, LineChart, HBarChart, DonutChart } from './charts'
+import { REVENUE_TREND, MONTHS, REP_PERFORMANCE, LEAD_SOURCES, AR_AGING } from './demoData'
 
-// A small placeholder chart glyph that varies by widget id for visual variety.
-function MiniChart({ id }) {
-  const kind = id.charCodeAt(0) % 3
-  if (kind === 0) {
-    // bars
+// Real-feeling chart per widget, picked by what the label describes.
+function WidgetBody({ label }) {
+  if (/revenue|won|closed|forecast|weighted/i.test(label)) {
     return (
-      <div className="flex items-end gap-1 h-10">
-        {[6, 10, 7, 12, 9].map((h, i) => (
-          <div key={i} className="w-2 rounded-t bg-hs-blue/70" style={{ height: h * 3 }} />
-        ))}
-      </div>
-    )
-  }
-  if (kind === 1) {
-    // donut-ish
-    return (
-      <div
-        className="w-10 h-10 rounded-full"
-        style={{ background: 'conic-gradient(#FF7A59 0 60%, #CBD6E2 60% 100%)' }}
+      <LineChart
+        series={[{ name: 'Revenue', color: '#FF7A59', points: REVENUE_TREND }]}
+        labels={MONTHS}
+        money
+        height={120}
       />
     )
   }
-  // line
+  if (/rep|leaderboard/i.test(label)) return <HBarChart data={REP_PERFORMANCE} money />
+  if (/source|lifecycle|attribution/i.test(label))
+    return <DonutChart data={LEAD_SOURCES} centerValue="103" centerLabel="leads" size={90} />
+  if (/ticket|resolution/i.test(label))
+    return <HBarChart data={AR_AGING.slice(0, 4)} color="#F2545B" />
   return (
-    <svg viewBox="0 0 60 30" className="w-16 h-10">
-      <polyline
-        points="0,25 12,18 24,20 36,8 48,12 60,4"
-        fill="none"
-        stroke="#00BDA5"
-        strokeWidth="2"
-      />
-    </svg>
+    <BarChart
+      data={MONTHS.map((m, i) => ({ label: m, value: [42, 51, 47, 63, 58, 71][i] }))}
+      color="#0091AE"
+      height={120}
+    />
   )
 }
 
 function WidgetCard({ id, label }) {
   return (
     <div className="bg-white rounded-lg border border-hs-border p-3">
-      <p className="text-[12px] font-preview font-medium text-hs-text-dark mb-2 leading-tight">
+      <p className="text-[12px] font-preview font-semibold text-hs-navy mb-0.5 leading-tight">
         {label}
       </p>
-      <MiniChart id={id} />
+      <p className="text-[9px] font-preview uppercase tracking-wide text-hs-text-light mb-1.5">
+        Last 6 months
+      </p>
+      <WidgetBody label={label} />
     </div>
   )
 }
