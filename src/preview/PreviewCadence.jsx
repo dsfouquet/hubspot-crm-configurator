@@ -72,14 +72,50 @@ export default function PreviewCadence() {
         <p className="text-[11px] font-preview font-semibold uppercase tracking-wide text-hs-text-light mb-2">
           Notifications · {cadence.notifications.frequency}
         </p>
-        <div className="rounded-md border border-hs-orange/30 bg-hs-orange/5 px-3 py-2 flex items-start gap-2">
-          <span>🔔</span>
-          <div>
-            <p className="text-[13px] font-preview text-hs-text-dark leading-snug">
-              <strong>Gulf Coast — SIHI Vacuum Pump</strong> has had no activity in 15 days.
-            </p>
-            <p className="text-[11px] font-preview text-hs-text-light">Re-engage this deal →</p>
-          </div>
+        <div className="space-y-2">
+          {[
+            {
+              icon: '🔔',
+              text: <><strong>Gulf Coast — Vacuum Pump Package</strong> has had no activity in 15 days.</>,
+              action: 'Re-engage this deal →',
+              style: 'border-hs-orange/30 bg-hs-orange/5',
+            },
+            {
+              icon: '👀',
+              text: <><strong>Maria Chen</strong> just viewed your quote — 3rd time today.</>,
+              action: 'Strike while it\'s hot: call now →',
+              style: 'border-hs-green/30 bg-hs-green/5',
+            },
+            {
+              icon: '⚠️',
+              text: <><strong>Crescent City Logistics</strong> rated their last service a 4/10.</>,
+              action: 'Account owner alerted — save the relationship →',
+              style: 'border-hs-red/30 bg-hs-red/5',
+            },
+            {
+              icon: '🎯',
+              text: <><strong>Gloria Washington</strong> crossed the lead-score threshold — now a sales-qualified lead.</>,
+              action: 'Assigned to Catherine with full history →',
+              style: 'border-hs-blue/30 bg-hs-blue/5',
+            },
+            {
+              icon: '✅',
+              text: <>3 tasks overdue for <strong>Marcus Hebert</strong> — auto-reminder sent.</>,
+              action: 'View his task queue →',
+              style: 'border-hs-border bg-white',
+            },
+          ].map((n, i) => (
+            <div
+              key={i}
+              className={`rounded-md border px-3 py-2 flex items-start gap-2 ${n.style}`}
+            >
+              <span>{n.icon}</span>
+              <div>
+                <p className="text-[13px] font-preview text-hs-text-dark leading-snug">{n.text}</p>
+                <p className="text-[11px] font-preview text-hs-text-light">{n.action}</p>
+              </div>
+            </div>
+          ))}
         </div>
         <div className="flex gap-1.5 mt-2">
           {cadence.notifications.channels.map((ch) => (

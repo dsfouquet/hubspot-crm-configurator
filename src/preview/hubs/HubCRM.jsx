@@ -11,8 +11,43 @@ import {
   Pill,
 } from '../charts'
 import { CONTACTS, COMPANIES, DEALS, TICKETS, REPS } from '../demoData'
+import PreviewRecord from '../PreviewRecord'
+import PreviewDealRecord from '../PreviewDealRecord'
 
 const TABS = ['Contacts', 'Companies', 'Deals', 'Tickets']
+
+// Record-page popup: clicking any row/card opens the same record preview the
+// configurator steps show (exactly as the user configured it on the left tabs).
+function RecordModal({ slice, onClose }) {
+  if (!slice) return null
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-hs-navy/50 flex items-center justify-center p-6"
+      onClick={onClose}
+    >
+      <div
+        className="bg-hs-canvas rounded-xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="shrink-0 flex items-center justify-between bg-white border-b border-hs-border px-4 py-2.5">
+          <span className="text-[12px] font-medium text-hs-text-light">
+            Record preview · exactly as you configured it
+          </span>
+          <button
+            onClick={onClose}
+            className="text-hs-text-light hover:text-hs-navy text-[18px] leading-none px-1"
+            title="Close"
+          >
+            ×
+          </button>
+        </div>
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          {slice === 'deals' ? <PreviewDealRecord /> : <PreviewRecord slice={slice} />}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // ---- small shared bits -----------------------------------------------------
 
@@ -156,7 +191,7 @@ const LIFECYCLE_COLOR = {
   'Past client': 'gray',
 }
 
-function ContactsTab({ session }) {
+function ContactsTab({ session, onOpen }) {
   const recommended = activeViews(session).filter((v) => v.recordType === 'Contacts')
   const [view, setView] = useState('all')
   const viewDefs = CONTACT_VIEWS.map((v) => ({ ...v, count: CONTACTS.filter(v.filter).length }))
@@ -201,7 +236,7 @@ function ContactsTab({ session }) {
       <IndexHeader count={rows.length} noun="contacts" createLabel="Create contact" />
       <IndexCard>
         <SavedViews views={viewDefs} active={view} onPick={setView} extraViews={recommended} />
-        <DataTable columns={columns} rows={rows} />
+        <DataTable columns={columns} rows={rows} onRowClick={() => onOpen('contacts')} />
       </IndexCard>
     </div>
   )
@@ -219,7 +254,7 @@ const COMPANY_VIEWS = [
   { id: 'tier1', name: 'Key Accounts', filter: (c) => c.tier === 'Tier 1' },
 ]
 
-function CompaniesTab({ session }) {
+function CompaniesTab({ session, onOpen }) {
   const recommended = activeViews(session).filter((v) => v.recordType === 'Companies')
   const [view, setView] = useState('all')
   const viewDefs = COMPANY_VIEWS.map((v) => ({ ...v, count: COMPANIES.filter(v.filter).length }))
@@ -251,7 +286,7 @@ function CompaniesTab({ session }) {
       <IndexHeader count={rows.length} noun="companies" createLabel="Create company" />
       <IndexCard>
         <SavedViews views={viewDefs} active={view} onPick={setView} extraViews={recommended} />
-        <DataTable columns={columns} rows={rows} />
+        <DataTable columns={columns} rows={rows} onRowClick={() => onOpen('companies')} />
       </IndexCard>
     </div>
   )
@@ -259,9 +294,12 @@ function CompaniesTab({ session }) {
 
 // ---- Deals (kanban) --------------------------------------------------------
 
-function DealCard({ deal }) {
+function DealCard({ deal, onClick }) {
   return (
-    <div className="bg-white rounded-md border border-hs-border px-3 py-2.5 shadow-sm">
+    <div
+      onClick={onClick}
+      className="bg-white rounded-md border border-hs-border px-3 py-2.5 shadow-sm cursor-pointer hover:border-hs-orange"
+    >
       <div className="text-[12px] font-semibold text-hs-navy leading-tight truncate">
         {deal.name}
       </div>
@@ -286,7 +324,7 @@ function DealCard({ deal }) {
 // Board / Table / Calendar — the three ways HubSpot lets you look at a pipeline.
 const DEAL_VIEW_MODES = ['Board', 'Table', 'Calendar']
 
-function DealsBoard({ cols }) {
+function DealsBoard({ cols, onOpen }) {
   return (
     <div className="flex gap-3 overflow-x-auto pb-2">
       {cols.map((col) => {
@@ -303,7 +341,9 @@ function DealsBoard({ cols }) {
               {col.deals.length === 0 ? (
                 <div className="text-[10px] text-hs-text-light text-center py-6">No deals</div>
               ) : (
-                col.deals.map((d, i) => <DealCard key={i} deal={d} />)
+                col.deals.map((d, i) => (
+                  <DealCard key={i} deal={d} onClick={() => onOpen('deals')} />
+                ))
               )}
             </div>
           </div>
@@ -313,7 +353,7 @@ function DealsBoard({ cols }) {
   )
 }
 
-function DealsTable({ cols }) {
+function DealsTable({ cols, onOpen }) {
   const rows = cols.flatMap((col) => col.deals.map((d) => ({ ...d, stageLabel: col.label })))
   const columns = [
     {
@@ -348,7 +388,7 @@ function DealsTable({ cols }) {
   ]
   return (
     <IndexCard>
-      <DataTable columns={columns} rows={rows} />
+      <DataTable columns={columns} rows={rows} onRowClick={() => onOpen('deals')} />
     </IndexCard>
   )
 }
@@ -421,7 +461,7 @@ function DealsCalendar() {
   )
 }
 
-function DealsTab({ session }) {
+function DealsTab({ session, onOpen }) {
   const [mode, setMode] = useState('Board')
   const stages =
     session.deals?.pipelineStages?.length > 0
@@ -463,8 +503,8 @@ function DealsTab({ session }) {
           Create deal
         </button>
       </div>
-      {mode === 'Board' && <DealsBoard cols={cols} />}
-      {mode === 'Table' && <DealsTable cols={cols} />}
+      {mode === 'Board' && <DealsBoard cols={cols} onOpen={onOpen} />}
+      {mode === 'Table' && <DealsTable cols={cols} onOpen={onOpen} />}
       {mode === 'Calendar' && <DealsCalendar />}
     </div>
   )
@@ -485,7 +525,7 @@ function norm(s) {
   return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '')
 }
 
-function TicketsTab({ session }) {
+function TicketsTab({ session, onOpen }) {
   const stages =
     session.tickets?.pipelineStages?.length > 0
       ? session.tickets.pipelineStages
@@ -537,7 +577,8 @@ function TicketsTab({ session }) {
                 col.tickets.map((t, i) => (
                   <div
                     key={i}
-                    className="bg-white rounded-md border border-hs-border px-3 py-2.5 shadow-sm"
+                    onClick={() => onOpen('tickets')}
+                    className="bg-white rounded-md border border-hs-border px-3 py-2.5 shadow-sm cursor-pointer hover:border-hs-orange"
                   >
                     <div className="text-[12px] font-semibold text-hs-navy leading-tight">
                       {t.name}
@@ -571,6 +612,7 @@ function TicketsTab({ session }) {
 
 export default function HubCRM() {
   const [tab, setTab] = useState('Contacts')
+  const [openRecord, setOpenRecord] = useState(null)
   const session = useStore((s) => s.session)
 
   return (
@@ -598,11 +640,13 @@ export default function HubCRM() {
 
       {/* content */}
       <div className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
-        {tab === 'Contacts' && <ContactsTab session={session} />}
-        {tab === 'Companies' && <CompaniesTab session={session} />}
-        {tab === 'Deals' && <DealsTab session={session} />}
-        {tab === 'Tickets' && <TicketsTab session={session} />}
+        {tab === 'Contacts' && <ContactsTab session={session} onOpen={setOpenRecord} />}
+        {tab === 'Companies' && <CompaniesTab session={session} onOpen={setOpenRecord} />}
+        {tab === 'Deals' && <DealsTab session={session} onOpen={setOpenRecord} />}
+        {tab === 'Tickets' && <TicketsTab session={session} onOpen={setOpenRecord} />}
       </div>
+
+      <RecordModal slice={openRecord} onClose={() => setOpenRecord(null)} />
     </div>
   )
 }

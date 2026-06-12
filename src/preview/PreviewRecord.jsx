@@ -1,6 +1,51 @@
 import { useState, useEffect } from 'react'
 import { useStore } from '../store/useStore'
 import { SAMPLE, SAMPLE_ACTIVITY } from './sampleData'
+import { DataTable, Pill } from './charts'
+import { CONTACTS, COMPANIES, TICKETS } from './demoData'
+
+// Compact example index table per record type (shown under the record preview
+// on the configurator steps, mirroring the final demo's list views).
+const INDEX_TABLES = {
+  contacts: {
+    title: 'Example list view — Contacts',
+    columns: [
+      { key: 'name', label: 'Name', render: (v, r) => (
+        <span>
+          <span className="font-semibold text-hs-navy">{v}</span>
+          <span className="block text-[10px] text-hs-text-light">{r.title}</span>
+        </span>
+      ) },
+      { key: 'company', label: 'Company' },
+      { key: 'lifecycle', label: 'Lifecycle', render: (v) => <Pill color={{ Lead: 'blue', MQL: 'purple', Customer: 'green', Evangelist: 'orange' }[v] || 'gray'}>{v}</Pill> },
+      { key: 'owner', label: 'Owner' },
+      { key: 'lastActivity', label: 'Last Activity', render: (v) => <span className="text-hs-text-light">{v}</span> },
+    ],
+    rows: () => CONTACTS.slice(0, 6),
+  },
+  companies: {
+    title: 'Example list view — Companies',
+    columns: [
+      { key: 'name', label: 'Company', render: (v) => <span className="font-semibold text-hs-navy">{v}</span> },
+      { key: 'city', label: 'City' },
+      { key: 'industry', label: 'Industry' },
+      { key: 'tier', label: 'Tier', render: (v) => <Pill color={{ 'Tier 1': 'green', 'Tier 2': 'blue' }[v] || 'gray'}>{v}</Pill> },
+      { key: 'lifecycle', label: 'Lifecycle', render: (v) => <Pill color={{ Customer: 'green', Target: 'blue' }[v] || 'gray'}>{v}</Pill> },
+    ],
+    rows: () => COMPANIES.slice(0, 6),
+  },
+  tickets: {
+    title: 'Example list view — Tickets',
+    columns: [
+      { key: 'name', label: 'Ticket', render: (v) => <span className="font-semibold text-hs-navy">{v}</span> },
+      { key: 'company', label: 'Company' },
+      { key: 'priority', label: 'Priority', render: (v) => <Pill color={{ High: 'red', Medium: 'orange' }[v] || 'gray'}>{v}</Pill> },
+      { key: 'status', label: 'Status', render: (v) => <Pill color={{ New: 'blue', 'In Progress': 'orange', Resolved: 'green' }[v] || 'purple'}>{v}</Pill> },
+      { key: 'owner', label: 'Owner' },
+    ],
+    rows: () => TICKETS.slice(0, 6),
+  },
+}
 
 const ACCENT = {
   contacts: '#0091AE',
@@ -107,7 +152,8 @@ function SectionContent({ label, record }) {
 }
 
 // Generic HubSpot-style record preview driven by the slice's enabled props/sections/activities.
-export default function PreviewRecord({ slice }) {
+// showIndexTable appends the example list view (used on configurator steps, not in popups).
+export default function PreviewRecord({ slice, showIndexTable = false }) {
   const record = useStore((s) => s.session[slice])
   const sample = SAMPLE[slice]
   const accent = ACCENT[slice] || '#0091AE'
@@ -203,6 +249,20 @@ export default function PreviewRecord({ slice }) {
           )}
         </div>
       </div>
+
+      {/* Example list view (mirrors the final demo's index pages) */}
+      {showIndexTable && INDEX_TABLES[slice] && (
+        <div className="mt-4 bg-white rounded-lg border border-hs-border p-4">
+          <h3 className="text-[12px] font-preview font-semibold uppercase tracking-wide text-hs-text-light mb-2">
+            {INDEX_TABLES[slice].title}
+          </h3>
+          <DataTable
+            columns={INDEX_TABLES[slice].columns}
+            rows={INDEX_TABLES[slice].rows()}
+            compact
+          />
+        </div>
+      )}
     </div>
   )
 }

@@ -261,7 +261,7 @@ export function DonutChart({ data, centerLabel, centerValue, size = 110 }) {
 
 // ---- HubSpot-style data table ----
 // columns: [{key, label, align?, render?}] ; rows: objects
-export function DataTable({ columns, rows, compact = false }) {
+export function DataTable({ columns, rows, compact = false, onRowClick }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full" style={{ fontFamily: 'Lexend Deca' }}>
@@ -281,7 +281,13 @@ export function DataTable({ columns, rows, compact = false }) {
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={i} className="border-b border-hs-canvas hover:bg-hs-canvas/60">
+            <tr
+              key={i}
+              onClick={onRowClick ? () => onRowClick(r) : undefined}
+              className={`border-b border-hs-canvas hover:bg-hs-canvas/60 ${
+                onRowClick ? 'cursor-pointer' : ''
+              }`}
+            >
               {columns.map((c) => (
                 <td
                   key={c.key}

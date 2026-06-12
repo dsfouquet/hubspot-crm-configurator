@@ -99,8 +99,8 @@ export default function HubJourney() {
       title: 'Or they just call or email you directly',
       summary: 'Inbound calls and emails log themselves — every conversation lands on the contact record.',
       detail:
-        'Calls are tracked and recorded right in HubSpot; team email and live chat flow into one shared inbox. Whether they found you through a form or just picked up the phone, the record is the same — nothing lives only in one person\'s inbox.',
-      tools: ['Call tracking', 'Shared inbox', 'Email logging'],
+        'Calls are tracked and recorded right in HubSpot — office lines and cell phones alike — while team email and live chat flow into one shared inbox. Whether they found you through a form or just picked up the phone, the record is the same; nothing lives only in one person\'s inbox.',
+      tools: ['Call tracking', 'Office & cell phones', 'Shared inbox', 'Email logging'],
     },
     {
       id: 'form',
@@ -164,6 +164,17 @@ export default function HubJourney() {
         'When fit + engagement cross your threshold, the lifecycle stage advances and the owner is notified with the full engagement history. Marketing and sales stop arguing about lead quality — the data decides.',
       tools: ['Lifecycle stages', 'Scoring thresholds', 'Auto-notifications'],
       handoff: { from: 'Marketing', to: 'Sales' },
+    },
+
+    {
+      id: 'sales_nurture',
+      phase: 'CONVERT',
+      icon: '🤙',
+      title: 'Sales nurtures the qualified lead — their way',
+      summary: 'Calls, emails, drop-bys, lunches — every touch logs itself, and tasks queue the next one.',
+      detail:
+        'Once sales owns the lead, the relationship work starts: phone calls from the truck, personal emails, in-person visits. HubSpot logs each touch automatically and creates the next follow-up task, so a 3-month courtship never goes quiet by accident. Sales sequences handle the routine touches while the rep handles the human ones.',
+      tools: ['Sales sequences', 'Call + visit logging', 'Follow-up task cadences', 'Mobile app'],
     },
 
     // ---------------- CLOSE ----------------
@@ -276,7 +287,7 @@ export default function HubJourney() {
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h2 className="font-semibold text-hs-navy text-[16px]">
-              Your customer journey, with HubSpot in it
+              Your customer journey, run as one revenue operation
             </h2>
             <p className="text-[12px] text-hs-text-light">
               First touch to rising LTV — click any step for detail. 🔌 shows what plugs in.
@@ -317,6 +328,21 @@ export default function HubJourney() {
 
       <div className="flex-1 min-h-0 overflow-y-auto hs-scroll bg-hs-canvas">
         <div className="max-w-2xl mx-auto px-6 py-6">
+          {/* RevOps framing — why one system across every step matters */}
+          <div className="mb-5 rounded-lg bg-white border border-hs-border p-4">
+            <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-hs-orange mb-1">
+              This is Revenue Operations (RevOps)
+            </div>
+            <p className="text-[12px] text-hs-text-dark leading-relaxed">
+              Most businesses run marketing, sales, fulfillment, billing, and service as separate
+              systems with people re-typing data in between — and revenue leaks at every seam.
+              RevOps connects all of it on one platform, so a customer moves from first click to
+              renewal as <span className="font-semibold text-hs-navy">one continuous process</span>:
+              every team sees the same record, every handoff is automatic, and every step below
+              feeds the next. Companies staff a VP of RevOps at $250K+/year to run this — HubSpot
+              is how it runs itself.
+            </p>
+          </div>
           {STEPS.map((step, i) => {
             const color = PHASE_COLORS[step.phase]
             const isOpen = open === step.id

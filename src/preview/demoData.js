@@ -11,6 +11,10 @@ export const COMPANIES = [
   { name: 'Acadiana Builders Group', city: 'Lafayette, LA', industry: 'Construction', tier: 'Tier 2', lifecycle: 'Target' },
   { name: 'Crescent City Logistics', city: 'New Orleans, LA', industry: 'Transportation', tier: 'Tier 3', lifecycle: 'Past client' },
   { name: 'Red Stick Mechanical', city: 'Baton Rouge, LA', industry: 'HVAC / Mechanical', tier: 'Tier 2', lifecycle: 'Customer' },
+  { name: 'Atchafalaya Marine', city: 'Morgan City, LA', industry: 'Marine Services', tier: 'Tier 3', lifecycle: 'Past client' },
+  { name: 'Pontchartrain Packaging', city: 'Slidell, LA', industry: 'Packaging', tier: 'Tier 1', lifecycle: 'Customer' },
+  { name: 'Magnolia Healthcare Group', city: 'Baton Rouge, LA', industry: 'Healthcare', tier: 'Tier 2', lifecycle: 'Target' },
+  { name: 'Arceneaux Bros. Construction', city: 'Lafayette, LA', industry: 'Construction', tier: 'Tier 3', lifecycle: 'Past client' },
 ]
 
 // lifecycle: Lead | MQL | Customer | Evangelist | Past client
@@ -23,6 +27,14 @@ export const CONTACTS = [
   { name: 'Sarah Thibodeaux', title: 'Office Manager', company: 'Acadiana Builders Group', email: 'sarah@acadianabuilders.com', phone: '(337) 555-0458', owner: 'Aimee Landry', lastActivity: '1 week ago', lifecycle: 'MQL', decisionMaker: false, engaged: true },
   { name: 'David Okafor', title: 'Plant Manager', company: 'Crescent City Logistics', email: 'dokafor@cclogistics.com', phone: '(504) 555-0529', owner: 'Catherine Roy', lastActivity: '2 weeks ago', lifecycle: 'Past client', decisionMaker: true, engaged: false },
   { name: 'Lauren Fontenot', title: 'Controller', company: 'Red Stick Mechanical', email: 'lfontenot@redstickmech.com', phone: '(225) 555-0671', owner: 'Marcus Hebert', lastActivity: '4 days ago', lifecycle: 'Lead', decisionMaker: true, engaged: false },
+  { name: 'Ray Broussard', title: 'Purchasing Manager', company: 'Atchafalaya Marine', email: 'rbroussard@atchmarine.com', phone: '(337) 555-0712', owner: 'You', lastActivity: '4 months ago', lifecycle: 'Past client', decisionMaker: true, engaged: false },
+  { name: 'Nicole Tran', title: 'CEO', company: 'Pontchartrain Packaging', email: 'ntran@pontpack.com', phone: '(504) 555-0788', owner: 'Aimee Landry', lastActivity: '6 days ago', lifecycle: 'Customer', decisionMaker: true, engaged: true },
+  { name: 'Hank Melancon', title: 'Shop Foreman', company: 'Bayou Fabrication', email: 'hmelancon@bayoufab.com', phone: '(985) 555-0821', owner: 'Aimee Landry', lastActivity: '2 days ago', lifecycle: 'Customer', decisionMaker: false, engaged: true },
+  { name: 'Gloria Washington', title: 'Facilities Director', company: 'Magnolia Healthcare Group', email: 'gwashington@magnoliahc.com', phone: '(225) 555-0903', owner: 'Catherine Roy', lastActivity: '3 weeks ago', lifecycle: 'MQL', decisionMaker: true, engaged: true },
+  { name: 'Pete Arceneaux', title: 'Owner', company: 'Arceneaux Bros. Construction', email: 'pete@arceneauxbros.com', phone: '(337) 555-0954', owner: 'Marcus Hebert', lastActivity: '5 months ago', lifecycle: 'Past client', decisionMaker: true, engaged: false },
+  { name: 'Dana Lirette', title: 'Operations Coordinator', company: 'Pelican Industrial Services', email: 'dlirette@pelicanind.com', phone: '(225) 555-1037', owner: 'Marcus Hebert', lastActivity: '8 days ago', lifecycle: 'Lead', decisionMaker: false, engaged: true },
+  { name: 'Marcus Dupre', title: 'VP of Sales', company: 'Pontchartrain Packaging', email: 'mdupre@pontpack.com', phone: '(504) 555-1102', owner: 'You', lastActivity: '1 day ago', lifecycle: 'Evangelist', decisionMaker: true, engaged: true },
+  { name: 'Cheryl Naquin', title: 'Office Administrator', company: 'Atchafalaya Marine', email: 'cnaquin@atchmarine.com', phone: '(337) 555-1156', owner: 'Catherine Roy', lastActivity: '7 months ago', lifecycle: 'Past client', decisionMaker: false, engaged: false },
 ]
 
 export const DEALS = [
@@ -32,6 +44,11 @@ export const DEALS = [
   { name: 'Acadiana — Site Equipment Phase 2', company: 'Acadiana Builders Group', amount: 128000, stage: 2, closeDate: 'Aug 1, 2026', owner: 'Aimee Landry', age: 19 },
   { name: 'Red Stick — Chiller Replacement', company: 'Red Stick Mechanical', amount: 62400, stage: 0, closeDate: 'Jul 30, 2026', owner: 'Marcus Hebert', age: 2 },
   { name: 'Crescent City — Fleet Sensors', company: 'Crescent City Logistics', amount: 23800, stage: 1, closeDate: 'Jul 8, 2026', owner: 'Catherine Roy', age: 6 },
+  { name: 'Pontchartrain — Line 3 Conveyor Retrofit', company: 'Pontchartrain Packaging', amount: 91500, stage: 3, closeDate: 'Jun 26, 2026', owner: 'You', age: 15 },
+  { name: 'Magnolia — Facility Maintenance Contract', company: 'Magnolia Healthcare Group', amount: 54000, stage: 1, closeDate: 'Jul 22, 2026', owner: 'Catherine Roy', age: 9 },
+  { name: 'Bayou Fab — Compressor Upgrade', company: 'Bayou Fabrication', amount: 18700, stage: 0, closeDate: 'Jun 18, 2026', owner: 'Aimee Landry', age: 3 },
+  { name: 'Atchafalaya — Dock Crane Service', company: 'Atchafalaya Marine', amount: 33200, stage: 2, closeDate: 'Jul 12, 2026', owner: 'Marcus Hebert', age: 22 },
+  { name: 'Gulf Coast — Spare Parts Blanket PO', company: 'Gulf Coast Chemical', amount: 42000, stage: 4, closeDate: 'Jun 12, 2026', owner: 'You', age: 5 },
 ]
 
 export const TICKETS = [
@@ -40,6 +57,9 @@ export const TICKETS = [
   { name: 'Replacement part ETA request', company: 'Bayou Fabrication', priority: 'Low', status: 'New', owner: 'Marcus Hebert', age: '2 hours' },
   { name: 'Training session scheduling', company: 'Acadiana Builders Group', priority: 'Low', status: 'In Progress', owner: 'Aimee Landry', age: '2 days' },
   { name: 'Warranty claim — compressor', company: 'Pelican Industrial Services', priority: 'High', status: 'New', owner: 'Catherine Roy', age: '4 hours' },
+  { name: 'Conveyor belt alignment — Line 3', company: 'Pontchartrain Packaging', priority: 'Medium', status: 'In Progress', owner: 'Catherine Roy', age: '1 day' },
+  { name: 'Quarterly PM visit scheduling', company: 'Magnolia Healthcare Group', priority: 'Low', status: 'Resolved', owner: 'Aimee Landry', age: '5 days' },
+  { name: 'Noise complaint — rooftop unit', company: 'Red Stick Mechanical', priority: 'Medium', status: 'Resolved', owner: 'You', age: '6 days' },
 ]
 
 export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']

@@ -34,10 +34,10 @@ function PreviewPlaceholder({ index }) {
 export const PREVIEW_COMPONENTS = {
   wizard: () => <PreviewDiscovery />,
   fixPlan: () => <PreviewFixPlan />,
-  contacts: () => <PreviewRecord slice="contacts" />,
-  companies: () => <PreviewRecord slice="companies" />,
+  contacts: () => <PreviewRecord slice="contacts" showIndexTable />,
+  companies: () => <PreviewRecord slice="companies" showIndexTable />,
   deals: () => <PreviewDealRecord />,
-  tickets: () => <PreviewRecord slice="tickets" />,
+  tickets: () => <PreviewRecord slice="tickets" showIndexTable />,
   customObjects: () => <PreviewCustomObjects />,
   workflows: () => <PreviewAutomations />,
   views: () => <PreviewViews />,

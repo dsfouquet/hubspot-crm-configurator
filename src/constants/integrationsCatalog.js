@@ -23,7 +23,7 @@ export const INTEGRATIONS = [
   { name: 'Chargebee', category: 'Payments', blurb: 'Subscription billing synced to CRM deals', hubspotBuilt: false, journeySteps: ['retain'] },
 
   // Calling & SMS
-  { name: 'Aircall', category: 'Calling & SMS', blurb: 'Cloud calling with logging and recording in CRM', hubspotBuilt: false, journeySteps: ['direct', 'route'] },
+  { name: 'Aircall', category: 'Calling & SMS', blurb: 'Cloud calling with logging and recording in CRM', hubspotBuilt: false, journeySteps: ['direct', 'route', 'sales_nurture'] },
   { name: 'JustCall', category: 'Calling & SMS', blurb: 'Calls and SMS logged automatically to contacts', hubspotBuilt: false, journeySteps: ['direct', 'feedback'] },
   { name: 'CallRail', category: 'Calling & SMS', blurb: 'Call tracking and attribution synced to records', hubspotBuilt: false, journeySteps: ['direct', 'ads'] },
   { name: 'Twilio', category: 'Calling & SMS', blurb: 'Programmable SMS/voice triggered from workflows', hubspotBuilt: false, journeySteps: ['feedback'] },
@@ -36,8 +36,8 @@ export const INTEGRATIONS = [
   { name: 'Outlook Calendar', category: 'Meetings & scheduling', blurb: 'Microsoft 365 calendar sync with meetings tool', hubspotBuilt: true, journeySteps: ['meeting'] },
   { name: 'Calendly', category: 'Meetings & scheduling', blurb: 'Push booked meetings and contacts into CRM', hubspotBuilt: false, journeySteps: ['meeting'] },
   { name: 'Zoom', category: 'Meetings & scheduling', blurb: 'Meeting links + call recordings for intelligence', hubspotBuilt: false, journeySteps: ['meeting', 'ai_prep'] },
-  { name: 'Microsoft Teams', category: 'Meetings & scheduling', blurb: 'Teams meetings, notifications, and record sharing', hubspotBuilt: false, journeySteps: ['meeting', 'handoff'] },
-  { name: 'Google Meet', category: 'Meetings & scheduling', blurb: 'Attach Meet links to scheduled meetings', hubspotBuilt: true, journeySteps: ['meeting'] },
+  { name: 'Microsoft Teams', category: 'Meetings & scheduling', blurb: 'Teams meetings, pings, recordings, and record sharing', hubspotBuilt: false, journeySteps: ['meeting', 'handoff', 'ai_prep', 'stages'] },
+  { name: 'Google Meet', category: 'Meetings & scheduling', blurb: 'Meet links on meetings; recordings feed AI summaries', hubspotBuilt: true, journeySteps: ['meeting', 'ai_prep'] },
 
   // Email & communication
   { name: 'Gmail', category: 'Email & communication', blurb: 'Send, track, and log emails from inbox to CRM', hubspotBuilt: true, journeySteps: ['direct', 'intel'] },
@@ -54,16 +54,18 @@ export const INTEGRATIONS = [
   { name: 'SurveyMonkey', category: 'Marketing & ads', blurb: 'Survey responses synced to contact records', hubspotBuilt: false, journeySteps: ['feedback'] },
   { name: 'Unbounce', category: 'Marketing & ads', blurb: 'Landing-page leads into the CRM', hubspotBuilt: false, journeySteps: ['form', 'ads'] },
   { name: 'WordPress', category: 'Marketing & ads', blurb: 'Forms and visitor tracking via HubSpot plugin', hubspotBuilt: true, journeySteps: ['search', 'form'] },
+  { name: 'Squarespace', category: 'Marketing & ads', blurb: 'HubSpot tracking + forms embedded on your Squarespace site', hubspotBuilt: false, journeySteps: ['search', 'form'] },
+  { name: 'Lead gen agency', category: 'Marketing & ads', blurb: 'Agency-sourced leads flow straight into the CRM with source tagging', hubspotBuilt: false, journeySteps: ['ads'] },
 
   // Social & video
-  { name: 'LinkedIn Sales Navigator', category: 'Social & video', blurb: 'Sales Navigator insights on CRM records', hubspotBuilt: false, journeySteps: ['social', 'intel'] },
-  { name: 'Vidyard', category: 'Social & video', blurb: 'Embed and track sales videos in emails', hubspotBuilt: false, journeySteps: ['nurture', 'social'] },
+  { name: 'LinkedIn Sales Navigator', category: 'Social & video', blurb: 'Sales Navigator insights on CRM records', hubspotBuilt: false, journeySteps: ['social', 'intel', 'sales_nurture'] },
+  { name: 'Vidyard', category: 'Social & video', blurb: 'Embed and track sales videos in emails', hubspotBuilt: false, journeySteps: ['nurture', 'social', 'sales_nurture'] },
   { name: 'Loom', category: 'Social & video', blurb: 'Record and share videos logged to CRM', hubspotBuilt: false, journeySteps: ['nurture'] },
 
   // Project management & ops
   { name: 'Asana', category: 'Project management & ops', blurb: 'Create and sync tasks/projects from deals', hubspotBuilt: false, journeySteps: ['fulfill', 'handoff'] },
   { name: 'Monday.com', category: 'Project management & ops', blurb: 'Sync deals and contacts to work boards', hubspotBuilt: false, journeySteps: ['fulfill', 'handoff'] },
-  { name: 'ClickUp', category: 'Project management & ops', blurb: 'Turn deals into tasks and sync status', hubspotBuilt: false, journeySteps: ['fulfill', 'handoff'] },
+  { name: 'ClickUp', category: 'Project management & ops', blurb: 'Turn deals into tasks and sync status', hubspotBuilt: false, journeySteps: ['fulfill', 'handoff', 'stages'] },
   { name: 'Trello', category: 'Project management & ops', blurb: 'Create cards from CRM records and workflows', hubspotBuilt: false, journeySteps: ['fulfill'] },
   { name: 'Jira', category: 'Project management & ops', blurb: 'Link dev/support issues to tickets and contacts', hubspotBuilt: false, journeySteps: ['support'] },
   { name: 'Teamwork', category: 'Project management & ops', blurb: 'Sync clients and projects with CRM deals', hubspotBuilt: false, journeySteps: ['fulfill'] },
@@ -91,6 +93,7 @@ export const INTEGRATIONS = [
   { name: 'Microsoft Dynamics 365', category: 'ERP / industry', blurb: 'Contacts and deals synced between systems', hubspotBuilt: false, journeySteps: ['fulfill'] },
   { name: 'Salesforce', category: 'ERP / industry', blurb: 'Native bi-directional contact/deal/activity sync', hubspotBuilt: true, journeySteps: ['handoff'] },
   { name: 'ServiceTitan', category: 'ERP / industry', blurb: 'Field-service jobs and customers synced to CRM', hubspotBuilt: false, journeySteps: ['fulfill', 'support'] },
+  { name: 'BQE Core', category: 'ERP / industry', blurb: 'Time, billing, and project accounting synced with deals and invoices', hubspotBuilt: false, journeySteps: ['quote', 'fulfill', 'support'] },
 
   // Proposals & CPQ
   { name: 'Proposify', category: 'Proposals & CPQ', blurb: 'Branded proposals populated from deals', hubspotBuilt: false, journeySteps: ['quote'] },
