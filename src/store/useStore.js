@@ -68,6 +68,14 @@ function resolveInitialSession() {
 
 const { session: initialSession, restored } = resolveInitialSession()
 
+// Resume a restored session at its first incomplete step (last step if all done).
+function resumeStepIndex(session) {
+  const steps = stepsForMode(session.mode)
+  const completed = session.completedSteps || []
+  const firstIncomplete = steps.findIndex((st) => !completed.includes(st.key))
+  return firstIncomplete === -1 ? steps.length - 1 : firstIncomplete
+}
+
 // Debounced persistence (spec Section 6: auto-save on every change, debounced 500ms).
 let saveTimer = null
 function scheduleSave(session) {
@@ -81,7 +89,7 @@ export const useStore = create((set, get) => ({
   restored,
 
   // ---- UI state (not persisted) ----
-  currentStep: 0, // index into STEPS
+  currentStep: restored ? resumeStepIndex(initialSession) : 0, // index into the mode's step list
   presenterMode: false,
   advisorOpen: false,
   focusedWorkflowId: null, // which workflow diagram the preview pane shows
@@ -178,7 +186,7 @@ export const useStore = create((set, get) => ({
     syncUrlSession(restoredSession.sessionId)
     set({
       session: restoredSession,
-      currentStep: 0,
+      currentStep: resumeStepIndex(restoredSession),
       gatePassed:
         Boolean(restoredSession.gate?.email) || restoredSession.mode === 'live',
     })
@@ -271,25 +279,37 @@ export const useStore = create((set, get) => ({
 
   // ---- Pipeline stage helpers (Deals / Tickets) ----
   addStage(slice, label) {
-    const key = label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
-    get().patchSlice(slice, (s) => ({
-      pipelineStages: [
-        ...s.pipelineStages,
-        { key: `${key}_${Date.now()}`, label, probability: null },
-      ],
-    }))
+    const clean = String(label || '').trim().slice(0, 40)
+    if (!clean) return
+    const key = clean.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
+    get().patchSlice(slice, (s) => {
+      // Skip exact-duplicate stage labels.
+      if (s.pipelineStages.some((st) => st.label.toLowerCase() === clean.toLowerCase()))
+        return {}
+      return {
+        pipelineStages: [
+          ...s.pipelineStages,
+          { key: `${key}_${Date.now()}`, label: clean, probability: null },
+        ],
+      }
+    })
   },
   renameStage(slice, key, label) {
+    const clean = String(label || '').slice(0, 40)
     get().patchSlice(slice, (s) => ({
       pipelineStages: s.pipelineStages.map((st) =>
-        st.key === key ? { ...st, label } : st
+        st.key === key ? { ...st, label: clean } : st
       ),
     }))
   },
   setStageProbability(slice, key, probability) {
+    const clamped =
+      probability === null || probability === ''
+        ? null
+        : Math.max(0, Math.min(100, Number(probability) || 0))
     get().patchSlice(slice, (s) => ({
       pipelineStages: s.pipelineStages.map((st) =>
-        st.key === key ? { ...st, probability } : st
+        st.key === key ? { ...st, probability: clamped } : st
       ),
     }))
   },

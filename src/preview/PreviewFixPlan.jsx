@@ -3,7 +3,7 @@ import { useStore } from '../store/useStore'
 import { activeViews } from '../utils/recommendations'
 import { WIDGET_LABELS } from '../constants/defaultWidgets'
 import { scopeOffers, OFFERS } from '../utils/offerScoper'
-import WorkflowDiagram from './WorkflowDiagram'
+import WorkflowDiagram from './LazyWorkflowDiagram'
 import { ReportCard, BarChart, LineChart, HBarChart, DonutChart } from './charts'
 import {
   REVENUE_TREND,

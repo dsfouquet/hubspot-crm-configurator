@@ -1,5 +1,5 @@
 import { useStore } from '../store/useStore'
-import WorkflowDiagram from './WorkflowDiagram'
+import WorkflowDiagram from './LazyWorkflowDiagram'
 import TierBadge from '../shared/TierBadge'
 
 // Step 7 preview: a chip selector + the focused workflow's live ReactFlow diagram.

@@ -557,6 +557,9 @@ export default function BlueprintDocument() {
           >
             Book a call →
           </div>
+          <div style={{ marginTop: 14, fontSize: 13, color: '#33475B' }}>
+            meetings-na2.hubspot.com/crescent/crm-demo-call
+          </div>
           <div style={{ marginTop: 40, fontSize: 13, color: '#7C98B6' }}>
             crescentconnectla.com
           </div>

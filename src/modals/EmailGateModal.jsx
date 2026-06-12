@@ -35,8 +35,13 @@ export default function EmailGateModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-hs-navy/60 p-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-hs-navy/60 p-4 overflow-y-auto">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Get started"
+        className="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden my-auto"
+      >
         <div className="bg-hs-canvas px-7 pt-7 pb-5 border-b border-hs-border">
           <Logo />
           <h1 className="mt-4 font-ui font-bold text-hs-navy text-2xl leading-tight">
@@ -56,8 +61,9 @@ export default function EmailGateModal() {
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-md border border-hs-border px-3 py-2 text-sm font-ui focus:outline-none focus:border-hs-blue"
+              className="hs-input w-full px-3 py-2 text-sm font-ui"
               placeholder="Jane Smith"
+              autoFocus
             />
           </div>
           <div>
@@ -67,7 +73,7 @@ export default function EmailGateModal() {
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md border border-hs-border px-3 py-2 text-sm font-ui focus:outline-none focus:border-hs-blue"
+              className="hs-input w-full px-3 py-2 text-sm font-ui"
               placeholder="jane@company.com"
             />
           </div>

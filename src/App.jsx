@@ -59,7 +59,20 @@ export default function App() {
         <div className="flex-1 flex min-h-0 relative">
           {stepKey === 'wizard' && <CustomerIntake />}
           {stepKey === 'fixPlan' && (
-            <SplitPane left={<ConfigPanel />} right={<PreviewPane />} />
+            <>
+              {/* Desktop: side-by-side split. Mobile: stacked, scrollable. */}
+              <div className="hidden md:flex flex-1 min-w-0">
+                <SplitPane left={<ConfigPanel />} right={<PreviewPane />} />
+              </div>
+              <div className="flex md:hidden flex-1 min-w-0 flex-col overflow-y-auto hs-scroll">
+                <div className="shrink-0 bg-white border-b border-hs-border">
+                  <ConfigPanel />
+                </div>
+                <div className="shrink-0 h-[70vh]">
+                  <PreviewPane />
+                </div>
+              </div>
+            </>
           )}
           {stepKey === 'preview' && (
             <div className="flex-1 min-w-0">

@@ -11,21 +11,86 @@ import HubService from '../preview/hubs/HubService'
 import HubReporting from '../preview/hubs/HubReporting'
 import PreviewAutomations from '../preview/PreviewAutomations'
 import PreviewCadence from '../preview/PreviewCadence'
+import {
+  IconJourney,
+  IconCRM,
+  IconMarketing,
+  IconSales,
+  IconCommerce,
+  IconService,
+  IconAutomations,
+  IconReporting,
+  IconCadence,
+  IconSearch,
+  IconGear,
+  IconBell,
+  IconHelp,
+  Sprocket,
+} from '../preview/hubIcons'
 
 // HubSpot-light demo: left rail mirrors HubSpot's real hub navigation; each hub
 // is a polished multi-screen demo view (benefits only — the Crescent Connect
 // build work behind it lives in the Fix Plan, not here).
 const HUBS = [
-  { key: 'journey', label: 'Journey', icon: '🧭', render: () => <HubJourney /> },
-  { key: 'crm', label: 'CRM', icon: '👥', render: () => <HubCRM /> },
-  { key: 'marketing', label: 'Marketing', icon: '📣', render: () => <HubMarketing /> },
-  { key: 'sales', label: 'Sales', icon: '💰', render: () => <HubSales /> },
-  { key: 'commerce', label: 'Commerce', icon: '🧾', render: () => <HubCommerce /> },
-  { key: 'service', label: 'Service', icon: '🛟', render: () => <HubService /> },
-  { key: 'automations', label: 'Automations', icon: '⚡', render: () => <PreviewAutomations /> },
-  { key: 'reporting', label: 'Reporting', icon: '📊', render: () => <HubReporting /> },
-  { key: 'cadence', label: 'Accountability', icon: '🗓', render: () => <PreviewCadence /> },
+  { key: 'journey', label: 'Journey', Icon: IconJourney, render: () => <HubJourney /> },
+  { key: 'crm', label: 'CRM', Icon: IconCRM, render: () => <HubCRM /> },
+  { key: 'marketing', label: 'Marketing', Icon: IconMarketing, render: () => <HubMarketing /> },
+  { key: 'sales', label: 'Sales', Icon: IconSales, render: () => <HubSales /> },
+  { key: 'commerce', label: 'Commerce', Icon: IconCommerce, render: () => <HubCommerce /> },
+  { key: 'service', label: 'Service', Icon: IconService, render: () => <HubService /> },
+  { key: 'automations', label: 'Automations', Icon: IconAutomations, render: () => <PreviewAutomations /> },
+  { key: 'reporting', label: 'Reporting', Icon: IconReporting, render: () => <HubReporting /> },
+  { key: 'cadence', label: 'Accountability', Icon: IconCadence, render: () => <PreviewCadence /> },
 ]
+
+// HubSpot-style global top bar: sprocket, search pill, settings/notifications,
+// account chip — the chrome that makes the demo read as the real product.
+function TopBar() {
+  const gate = useStore((s) => s.session.gate)
+  const initials =
+    (gate?.name || 'You')
+      .split(' ')
+      .map((w) => w[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase() || 'YO'
+  const company = gate?.email?.split('@')[1]?.split('.')[0]
+
+  return (
+    <div className="shrink-0 h-12 bg-hs-navy flex items-center gap-3 px-3 font-preview">
+      <span className="text-hs-orange flex items-center" aria-hidden>
+        <Sprocket size={24} />
+      </span>
+      {/* Search pill */}
+      <div className="flex-1 max-w-xs">
+        <div className="flex items-center gap-2 h-8 px-3 rounded bg-white/10 border border-white/20 text-white/50 text-[12.5px]">
+          <IconSearch width={13} height={13} />
+          Search {company ? `${company} CRM` : 'HubSpot'}
+        </div>
+      </div>
+      <div className="flex-1" />
+      <div className="flex items-center gap-1 text-white/70">
+        <span className="p-2 rounded hover:bg-white/10" title="Settings">
+          <IconGear width={15} height={15} />
+        </span>
+        <span className="p-2 rounded hover:bg-white/10" title="Notifications">
+          <IconBell width={15} height={15} />
+        </span>
+        <span className="p-2 rounded hover:bg-white/10" title="Help">
+          <IconHelp width={15} height={15} />
+        </span>
+      </div>
+      <div className="flex items-center gap-2 pl-2 border-l border-white/15">
+        <span className="w-7 h-7 rounded-full bg-hs-calypso text-white text-[11px] font-semibold flex items-center justify-center">
+          {initials}
+        </span>
+        <span className="text-white/80 text-[12.5px] hidden sm:block">
+          {company ? `${company[0].toUpperCase()}${company.slice(1)}` : 'Your Company'}
+        </span>
+      </div>
+    </div>
+  )
+}
 
 // ---- Final gate (async only): capture name + email for lead records, no sending ----
 function FinalGate({ onUnlock }) {
@@ -54,13 +119,13 @@ function FinalGate({ onUnlock }) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Your name"
-            className="w-full rounded-md border border-hs-border px-3 py-2 text-sm font-ui focus:outline-none focus:border-hs-blue"
+            className="hs-input w-full px-3 py-2 text-sm font-ui"
           />
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Work email"
-            className="w-full rounded-md border border-hs-border px-3 py-2 text-sm font-ui focus:outline-none focus:border-hs-blue"
+            className="hs-input w-full px-3 py-2 text-sm font-ui"
           />
           <button
             onClick={submit}
@@ -133,36 +198,31 @@ export default function Step11_Preview() {
 
   return (
     <div className="h-full flex flex-col bg-hs-canvas">
+      <TopBar />
       <div className="flex-1 flex min-h-0">
         {/* HubSpot-style left rail */}
-        <nav className="shrink-0 w-44 bg-hs-navy flex flex-col py-2 overflow-y-auto hs-scroll">
-          {/* Sprocket-ish brand mark */}
-          <div className="px-4 py-2 mb-1 flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-hs-orange flex items-center justify-center text-white text-[13px]">
-              ⚙
-            </span>
-            <span className="text-white/90 font-preview font-semibold text-[13px]">
-              Your HubSpot
-            </span>
-          </div>
+        <nav className="shrink-0 w-12 md:w-44 bg-hs-navy flex flex-col py-2 overflow-y-auto hs-scroll">
           {HUBS.map((h) => {
             const isActive = h.key === hub
+            const Icon = h.Icon
             return (
               <button
                 key={h.key}
                 onClick={() => setHub(h.key)}
-                className={`flex items-center gap-2.5 px-4 py-2.5 text-left text-[13px] font-preview transition-colors ${
+                title={h.label}
+                aria-label={h.label}
+                className={`flex items-center gap-2.5 px-3.5 md:px-4 py-2.5 text-left text-[13px] font-preview transition-colors ${
                   isActive
                     ? 'bg-white/10 text-white border-l-[3px] border-hs-orange'
                     : 'text-white/60 hover:text-white hover:bg-white/5 border-l-[3px] border-transparent'
                 }`}
               >
-                <span className="text-[14px]">{h.icon}</span>
-                {h.label}
+                <Icon width={15} height={15} className="shrink-0" />
+                <span className="hidden md:inline">{h.label}</span>
               </button>
             )
           })}
-          <div className="mt-auto px-4 py-3 text-[10px] font-preview text-white/40 leading-snug">
+          <div className="mt-auto px-4 py-3 text-[10px] font-preview text-white/40 leading-snug hidden md:block">
             Demo preview — your real portal is built by Crescent Connect.
           </div>
         </nav>

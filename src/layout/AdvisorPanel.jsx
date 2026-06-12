@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from '../store/useStore'
 import TierIndicator from '../shared/TierIndicator'
 import { shareableUrl } from '../utils/sessionId'
@@ -20,19 +20,35 @@ export default function AdvisorPanel() {
     setTimeout(() => setCopied(''), 1500)
   }
 
+  // Escape closes the drawer.
+  useEffect(() => {
+    if (!advisorOpen) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') toggleAdvisor()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [advisorOpen, toggleAdvisor])
+
   if (!advisorOpen) return null
 
   return (
     <>
       {/* Click-away scrim (transparent — preview stays visible) */}
       <div className="fixed inset-0 z-30" onClick={toggleAdvisor} />
-      <aside className="fixed top-0 right-0 z-40 h-full w-80 bg-white border-l border-hs-border shadow-xl flex flex-col">
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label="Advisor panel"
+        className="fixed top-0 right-0 z-40 h-full w-80 bg-white border-l border-hs-border shadow-xl flex flex-col"
+      >
         <div className="flex items-center justify-between px-4 h-14 border-b border-hs-border shrink-0">
           <span className="font-ui font-semibold text-hs-navy text-sm flex items-center gap-1.5">
-            🔒 Advisor Panel
+            <span aria-hidden>🔒</span> Advisor Panel
           </span>
           <button
             onClick={toggleAdvisor}
+            aria-label="Close advisor panel"
             className="text-hs-text-light hover:text-hs-navy text-lg leading-none"
           >
             ×
