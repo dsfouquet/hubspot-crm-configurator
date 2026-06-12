@@ -11,7 +11,7 @@ export default function StepNav({ collapsed = false }) {
   return (
     <nav
       className={`${
-        collapsed ? 'w-14' : 'w-56'
+        collapsed ? 'w-28' : 'w-56'
       } shrink-0 bg-white border-r border-hs-border overflow-y-auto hs-scroll py-3`}
     >
       <ol className="flex flex-col gap-0.5 px-2">
@@ -40,15 +40,13 @@ export default function StepNav({ collapsed = false }) {
                 >
                   {isDone ? '✓' : i + 1}
                 </span>
-                {!collapsed && (
-                  <span
-                    className={`text-[13px] font-ui leading-tight ${
-                      isActive ? 'font-semibold' : 'font-normal'
-                    }`}
-                  >
-                    {step.label}
-                  </span>
-                )}
+                <span
+                  className={`${collapsed ? 'text-[11px]' : 'text-[13px]'} font-ui leading-tight ${
+                    isActive ? 'font-semibold' : 'font-normal'
+                  }`}
+                >
+                  {collapsed ? step.short : step.label}
+                </span>
               </button>
             </li>
           )

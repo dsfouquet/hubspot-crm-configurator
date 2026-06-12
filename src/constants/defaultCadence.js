@@ -95,7 +95,14 @@ export function defaultCadence() {
   }
 }
 
-export const NOTIFICATION_CHANNELS = ['In-app', 'Email digest', 'Slack']
+export const NOTIFICATION_CHANNELS = [
+  'In-app',
+  'Email digest',
+  'Mobile push (HubSpot app)',
+  'SMS / text',
+  'Slack',
+  'Microsoft Teams',
+]
 export const NOTIFICATION_FREQUENCIES = ['Real-time', 'Daily', 'Weekly']
 export const DAYS = [
   'Every weekday',

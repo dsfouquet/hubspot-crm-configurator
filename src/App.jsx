@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useStore } from './store/useStore'
+import WelcomeSplash from './components/WelcomeSplash'
 import Header from './layout/Header'
 import StepNav from './layout/StepNav'
 import ConfigPanel from './layout/ConfigPanel'
@@ -21,6 +22,14 @@ export default function App() {
 
   const isPreviewStep = STEPS[currentStep].key === 'preview'
 
+  // Welcome splash: fires once when the gate transitions to passed.
+  const [showSplash, setShowSplash] = useState(false)
+  const prevGate = useRef(gatePassed)
+  useEffect(() => {
+    if (!prevGate.current && gatePassed) setShowSplash(true)
+    prevGate.current = gatePassed
+  }, [gatePassed])
+
   // Flush the session to localStorage on tab close / hide (beats the 500ms debounce).
   useEffect(() => {
     const flush = () => saveNow()
@@ -37,6 +46,7 @@ export default function App() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
+      {showSplash && <WelcomeSplash onDone={() => setShowSplash(false)} />}
       <Header />
 
       {/* Main split area */}

@@ -7,11 +7,13 @@ import {
 } from '../../constants/integrationsCatalog'
 import { journeyEnabled } from '../../constants/journeyMilestones'
 
-// The Customer Journey tab: every milestone from first touch to rising LTV,
-// with HubSpot woven through and an integration node on each step showing what
-// existing software plugs in. Clean from afar; click any step for detail.
+// The Customer Journey tab, rebuilt as a HORIZONTAL PHASE BOARD: one column per
+// phase (Attract → Convert → Close → Deliver → Retain), each holding compact
+// title-only milestone cards. Click any card for a right-side detail drawer.
 // Touchpoint descriptions informed by HubSpot-published product docs
 // (flywheel, lifecycle stages, Breeze AI, Commerce Hub — June 2026).
+
+const PHASE_ORDER = ['ATTRACT', 'CONVERT', 'CLOSE', 'DELIVER', 'RETAIN']
 
 const PHASE_COLORS = {
   ATTRACT: '#FF7A59',
@@ -33,20 +35,6 @@ const Chip = ({ children, accent }) => (
   </span>
 )
 
-// Handoff banner between teams — the "seamless baton pass" moments.
-function Handoff({ from, to }) {
-  return (
-    <div className="flex items-center gap-2 ml-12 mb-3">
-      <span className="text-[10px] font-preview font-bold uppercase tracking-wide bg-white border border-hs-border rounded-full px-2.5 py-1 text-hs-text-dark">
-        {from} <span className="text-hs-orange mx-0.5">→</span> {to}
-      </span>
-      <span className="text-[10px] font-preview text-hs-text-light">
-        automatic handoff — nothing dropped, nothing re-typed
-      </span>
-    </div>
-  )
-}
-
 export default function HubJourney() {
   const session = useStore((s) => s.session)
   const [open, setOpen] = useState(null)
@@ -57,7 +45,8 @@ export default function HubJourney() {
   const stages = session.deals?.pipelineStages?.map((s) => s.label) || []
   const stageStr = stages.length ? stages.join(' → ') : 'Prospecting → Qualified → Proposal → Won'
   const accounting =
-    session.wizard?.accounting && !['None', 'Something else'].includes(session.wizard.accounting)
+    session.wizard?.accounting &&
+    !['None', 'Something else', 'Spreadsheets / manual'].includes(session.wizard.accounting)
       ? session.wizard.accounting
       : 'your accounting software'
 
@@ -296,17 +285,22 @@ export default function HubJourney() {
     setHighlight(integ.journeySteps)
     setQuery(integ.name)
     const first = visibleSteps.find((s) => integ.journeySteps.includes(s.id))
-    if (first) {
-      setOpen(first.id)
-      document.getElementById(`journey-${first.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
+    if (first) setOpen(first.id)
   }
 
-  let lastPhase = null
+  // Group visible steps into phase columns, preserving phase order.
+  const phases = PHASE_ORDER.map((phase) => ({
+    phase,
+    color: PHASE_COLORS[phase],
+    steps: visibleSteps.filter((s) => s.phase === phase),
+  })).filter((p) => p.steps.length > 0)
+
+  const openStep = visibleSteps.find((s) => s.id === open) || null
+  const openIntegs = openStep ? integrationsForStep(openStep.id) : []
 
   return (
-    <div className="h-full flex flex-col font-preview">
-      {/* Header + integration search */}
+    <div className="h-full flex flex-col font-preview relative">
+      {/* 1) Header + integration search */}
       <div className="shrink-0 bg-white border-b border-hs-border px-5 py-3">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
@@ -328,7 +322,7 @@ export default function HubJourney() {
               className="w-72 rounded-md border border-hs-border px-3 py-1.5 text-[12px] focus:outline-none focus:border-hs-blue"
             />
             {results.length > 0 && highlight.length === 0 && (
-              <div className="absolute right-0 mt-1 w-72 bg-white border border-hs-border rounded-md shadow-lg z-20 overflow-hidden">
+              <div className="absolute right-0 mt-1 w-72 bg-white border border-hs-border rounded-md shadow-lg z-30 overflow-hidden">
                 {results.map((r) => (
                   <button
                     key={r.name}
@@ -350,134 +344,155 @@ export default function HubJourney() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto hs-scroll bg-hs-canvas">
-        <div className="max-w-2xl mx-auto px-6 py-6">
-          {/* RevOps framing — why one system across every step matters */}
-          <div className="mb-5 rounded-lg bg-white border border-hs-border p-4">
-            <div className="text-[10px] font-bold uppercase tracking-[0.15em] text-hs-orange mb-1">
-              This is Revenue Operations (RevOps)
-            </div>
-            <p className="text-[12px] text-hs-text-dark leading-relaxed">
-              Most businesses run marketing, sales, fulfillment, billing, and service as separate
-              systems with people re-typing data in between — and revenue leaks at every seam.
-              RevOps connects all of it on one platform, so a customer moves from first click to
-              renewal as <span className="font-semibold text-hs-navy">one continuous process</span>:
-              every team sees the same record, every handoff is automatic, and every step below
-              feeds the next. Companies staff a VP of RevOps at $250K+/year to run this — HubSpot
-              is how it runs itself.
-            </p>
-          </div>
-          {visibleSteps.map((step, i) => {
-            const color = PHASE_COLORS[step.phase]
-            const isOpen = open === step.id
-            const isHighlighted = highlight.includes(step.id)
-            const showPhase = step.phase !== lastPhase
-            lastPhase = step.phase
-            const isLast = i === visibleSteps.length - 1
-            const integs = integrationsForStep(step.id)
+      {/* 2) RevOps banner — single compact strip */}
+      <div className="shrink-0 bg-white border-b border-hs-border px-5 py-2">
+        <p className="text-[11px] text-hs-text-dark leading-snug">
+          <span className="font-bold uppercase tracking-wide text-hs-orange">This is RevOps:</span>{' '}
+          Marketing, sales, billing, and service as one continuous process — every handoff automatic,
+          nothing re-typed. Companies pay a $250K/yr VP to run this; HubSpot runs it itself.
+        </p>
+      </div>
 
-            return (
-              <div key={step.id} id={`journey-${step.id}`}>
-                {showPhase && (
-                  <div className={`flex items-center gap-2 ${i === 0 ? '' : 'mt-5'} mb-2.5`}>
-                    <span
-                      className="text-[10px] font-bold uppercase tracking-[0.15em] text-white rounded px-2 py-0.5"
-                      style={{ backgroundColor: color }}
-                    >
-                      {step.phase}
-                    </span>
-                    <span className="flex-1 h-px" style={{ backgroundColor: `${color}40` }} />
-                  </div>
-                )}
-
-                {step.handoff && <Handoff from={step.handoff.from} to={step.handoff.to} />}
-
-                <div className="flex gap-3">
-                  {/* Timeline rail */}
-                  <div className="flex flex-col items-center shrink-0 w-10">
-                    <span
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-[17px] bg-white shadow-sm"
-                      style={{ border: `2px solid ${color}` }}
-                    >
-                      {step.icon}
-                    </span>
-                    {!isLast && (
-                      <span className="w-0.5 flex-1 my-1" style={{ backgroundColor: '#CBD6E2' }} />
-                    )}
-                  </div>
-
-                  {/* Card */}
-                  <button
-                    onClick={() => setOpen(isOpen ? null : step.id)}
-                    className={`flex-1 text-left bg-white rounded-lg border mb-3 transition-all ${
-                      isOpen ? 'shadow-md' : 'hover:shadow-sm'
-                    } ${isHighlighted ? 'ring-2 ring-hs-green' : ''}`}
-                    style={{ borderColor: isOpen ? color : '#CBD6E2' }}
+      {/* 3) THE BOARD — horizontal phase columns */}
+      <div className="flex-1 min-h-0 overflow-x-auto hs-scroll bg-hs-canvas">
+        <div className="h-full flex items-stretch gap-0 px-4 py-4">
+          {phases.map((p, pi) => (
+            <div key={p.phase} className="flex items-stretch">
+              <div className="min-w-[200px] flex-1 flex flex-col">
+                {/* Phase header chip + underline */}
+                <div className="mb-2.5">
+                  <span
+                    className="inline-block text-[10px] font-bold uppercase tracking-[0.15em] text-white rounded px-2 py-0.5"
+                    style={{ backgroundColor: p.color }}
                   >
-                    <div className="px-4 py-3">
-                      <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-[14px] font-semibold text-hs-navy leading-snug">
-                          {step.title}
-                        </h3>
-                        <span className="flex items-center gap-1.5 shrink-0 mt-0.5">
+                    {p.phase}
+                  </span>
+                  <span className="block mt-1.5 h-px w-full" style={{ backgroundColor: `${p.color}55` }} />
+                </div>
+
+                {/* Stacked compact milestone cards */}
+                <div className="flex flex-col gap-2">
+                  {p.steps.map((step) => {
+                    const isHighlighted = highlight.includes(step.id)
+                    const isOpen = open === step.id
+                    const integs = integrationsForStep(step.id)
+                    return (
+                      <div key={step.id}>
+                        {step.handoff && (
+                          <div className="mb-1">
+                            <span className="inline-block text-[9px] font-preview bg-white border border-hs-border rounded-full px-2 py-0.5 text-hs-text-dark">
+                              {step.handoff.from} <span className="text-hs-orange">→</span> {step.handoff.to}
+                            </span>
+                          </div>
+                        )}
+                        <button
+                          onClick={() => setOpen(isOpen ? null : step.id)}
+                          className={`w-full text-left flex items-center gap-2 bg-white rounded-md border px-2.5 py-2 transition-all hover:shadow-md ${
+                            isHighlighted ? 'ring-2 ring-hs-green' : ''
+                          }`}
+                          style={{ borderColor: isOpen ? p.color : '#CBD6E2' }}
+                        >
+                          <span className="text-[15px] leading-none shrink-0">{step.icon}</span>
+                          <span className="flex-1 text-[12px] font-semibold text-hs-navy leading-snug">
+                            {step.title}
+                          </span>
                           {integs.length > 0 && (
                             <span
-                              className="text-[9px] text-hs-text-light bg-hs-canvas border border-hs-border rounded-full px-1.5 py-0.5"
+                              className="shrink-0 text-[9px] text-hs-text-light bg-hs-canvas border border-hs-border rounded-full px-1.5 py-0.5"
                               title={`${integs.length} integrations plug in here`}
                             >
                               🔌 {integs.length}
                             </span>
                           )}
-                          <span
-                            className={`text-hs-text-light text-[12px] transition-transform ${
-                              isOpen ? 'rotate-180' : ''
-                            }`}
-                          >
-                            ▾
-                          </span>
-                        </span>
+                        </button>
                       </div>
-                      <p className="text-[12px] text-hs-text-dark mt-0.5">{step.summary}</p>
-                    </div>
-
-                    {isOpen && (
-                      <div className="px-4 pb-3.5 border-t border-hs-canvas pt-3">
-                        <p className="text-[12px] text-hs-text-dark leading-relaxed">{step.detail}</p>
-                        <div className="flex flex-wrap gap-1.5 mt-2.5">
-                          {step.tools.map((t) => (
-                            <Chip key={t}>{t}</Chip>
-                          ))}
-                        </div>
-                        {integs.length > 0 && (
-                          <div className="mt-3">
-                            <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1">
-                              🔌 Plug in what you already use
-                            </p>
-                            <div className="flex flex-wrap gap-1.5">
-                              {integs.map((g) => (
-                                <Chip key={g.name} accent={highlight.length > 0 && query === g.name}>
-                                  {g.name}
-                                </Chip>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </button>
+                    )
+                  })}
                 </div>
               </div>
-            )
-          })}
 
-          {/* LTV closer */}
-          <div className="mt-1 mb-4 ml-13 rounded-lg bg-hs-navy px-5 py-4 text-center">
-            <p className="text-[13px] text-white font-medium">
-              Same customers. Same team. Every step connected —
-              <span className="text-hs-orange"> and lifetime value climbing on its own.</span>
-            </p>
-          </div>
+              {/* Flow connector between phases */}
+              {pi < phases.length - 1 && (
+                <div className="flex items-center px-1.5 self-stretch">
+                  <span className="text-hs-text-light text-[18px]">→</span>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
+      </div>
+
+      {/* 4) DETAIL DRAWER — right-side overlay inside the journey area */}
+      {openStep && (
+        <>
+          {/* Dimmed backdrop closes the drawer */}
+          <button
+            aria-label="Close detail"
+            onClick={() => setOpen(null)}
+            className="absolute inset-0 bg-hs-navy/20 z-30"
+          />
+          <div className="absolute right-0 top-0 bottom-0 w-[26rem] max-w-[85%] bg-white border-l border-hs-border shadow-xl z-40 flex flex-col">
+            <div className="flex-1 overflow-y-auto hs-scroll px-5 py-4">
+              <div className="flex items-start justify-between gap-3">
+                <span
+                  className="inline-block text-[10px] font-bold uppercase tracking-[0.15em] text-white rounded px-2 py-0.5"
+                  style={{ backgroundColor: PHASE_COLORS[openStep.phase] }}
+                >
+                  {openStep.phase}
+                </span>
+                <button
+                  onClick={() => setOpen(null)}
+                  className="text-hs-text-light hover:text-hs-text-dark text-[20px] leading-none -mt-1"
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2.5 mt-3">
+                <span className="text-[22px] leading-none">{openStep.icon}</span>
+                <h3 className="text-[15px] font-semibold text-hs-navy leading-snug">{openStep.title}</h3>
+              </div>
+
+              <p className="text-[12px] text-hs-text-dark mt-2 font-medium">{openStep.summary}</p>
+              <p className="text-[12px] text-hs-text-dark leading-relaxed mt-2.5">{openStep.detail}</p>
+
+              <div className="mt-4">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
+                  HubSpot tools
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {openStep.tools.map((t) => (
+                    <Chip key={t}>{t}</Chip>
+                  ))}
+                </div>
+              </div>
+
+              {openIntegs.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
+                    🔌 Plug in what you already use
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {openIntegs.map((g) => (
+                      <Chip key={g.name} accent={highlight.length > 0 && query === g.name}>
+                        {g.name}
+                      </Chip>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* 5) Footer — navy LTV closer band */}
+      <div className="shrink-0 bg-hs-navy px-5 py-2.5 text-center">
+        <p className="text-[12px] text-white font-medium">
+          Same customers. Same team. Every step connected —
+          <span className="text-hs-orange"> and lifetime value climbing on its own.</span>
+        </p>
       </div>
     </div>
   )

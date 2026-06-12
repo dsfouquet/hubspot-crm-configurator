@@ -1,3 +1,5 @@
+import { ALL_VIEW_TEMPLATES } from '../constants/defaultViews'
+
 // View recommendation engine (spec Step 8). Maps wizardAnswers + workflows to a
 // UNIONED list of suggested views — every matching motion contributes, so a team
 // that does outbound + field gets both the Cold Call Queue and the Site Visit Schedule.
@@ -151,13 +153,17 @@ export function recommendViews(session) {
   }).map(({ when, ...view }) => view)
 }
 
-// Final view list for previews/outputs: recommended (minus dismissed) + custom.
+// Final view list for previews/outputs: recommended (minus dismissed) +
+// chosen library templates + custom.
 export function activeViews(session) {
-  const views = session.views || { off: [], custom: [] }
+  const views = session.views || { off: [], custom: [], templates: [] }
   const off = views.off || []
   const recommended = recommendViews(session)
     .filter((v) => !off.includes(v.id))
     .map((v) => ({ ...v, source: 'recommended' }))
+  const templates = ALL_VIEW_TEMPLATES.filter((t) =>
+    (views.templates || []).includes(t.id)
+  ).map((t) => ({ ...t, source: 'template' }))
   const custom = (views.custom || []).map((v) => ({ ...v, source: 'custom' }))
-  return [...recommended, ...custom]
+  return [...recommended, ...templates, ...custom]
 }

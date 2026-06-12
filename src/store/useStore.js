@@ -379,6 +379,17 @@ export const useStore = create((set, get) => ({
       return { off: off.includes(id) ? off.filter((x) => x !== id) : [...off, id] }
     })
   },
+  // Toggle a library template view on/off (views.templates holds chosen ids).
+  toggleTemplateView(id) {
+    get().patchSlice('views', (v) => {
+      const templates = v.templates || []
+      return {
+        templates: templates.includes(id)
+          ? templates.filter((x) => x !== id)
+          : [...templates, id],
+      }
+    })
+  },
   addCustomView(view) {
     get().patchSlice('views', (v) => ({
       custom: [...(v.custom || []), { ...view, id: `view_${Date.now()}` }],

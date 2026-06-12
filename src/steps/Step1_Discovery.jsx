@@ -4,6 +4,7 @@ import {
   DISCOVERY_QUESTIONS,
   DISCOVERY_SECTIONS,
   ALL_PAIN_IDS,
+  CLASSIC_LEAKS,
   painParts,
 } from '../constants/discoveryQuestions'
 import { StepHeader, StepBody } from '../shared/StepLayout'
@@ -19,9 +20,21 @@ function QuestionControl({ question, compact = false }) {
 
   const isPainMulti = question.type === 'pain-multi'
   const isPainSingle = question.type === 'single-from-pains'
+  const isHabit = question.type === 'habit-matrix'
   const isSingle = question.type === 'single' || isPainSingle
   const isMulti = question.type === 'multi' || isPainMulti
   const isText = question.type === 'textarea'
+
+  // Habit matrix (Always / Sometimes / Never): stores wizard[key] = {id: state}
+  // and syncs the mapped pain into wizard.pains (always clears it).
+  const setHabit = (id, state) => {
+    const live = useStore.getState().session.wizard
+    const habits = { ...(live[question.key] || {}), [id]: state }
+    setWizardAnswer(question.key, habits)
+    const pains = Array.isArray(live.pains) ? live.pains : []
+    const without = pains.filter((p) => p !== id)
+    setWizardAnswer('pains', state === 'always' ? without : [...without, id])
+  }
 
   const options = isPainMulti
     ? question.painIds
@@ -81,19 +94,115 @@ function QuestionControl({ question, compact = false }) {
   return (
     <div>
       {isText && (
-        <textarea
-          value={answer || ''}
-          onChange={(e) => setWizardAnswer(question.key, e.target.value)}
-          placeholder={question.placeholder}
-          rows={2}
-          className="w-full rounded-md border border-hs-border px-2.5 py-1.5 text-[13px] font-ui resize-none focus:outline-none focus:border-hs-blue"
-        />
+        <>
+          <textarea
+            value={answer || ''}
+            onChange={(e) => setWizardAnswer(question.key, e.target.value)}
+            placeholder={question.placeholder}
+            rows={2}
+            className="w-full rounded-md border border-hs-border px-2.5 py-1.5 text-[13px] font-ui resize-none focus:outline-none focus:border-hs-blue"
+          />
+          {question.quickPicks && (
+            <div className="flex flex-wrap gap-1.5 mt-1">
+              {question.quickPicks.map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setWizardAnswer(question.key, p)}
+                  className={`rounded-full border px-2.5 py-0.5 text-[11.5px] font-ui ${
+                    answer === p
+                      ? 'border-hs-orange bg-hs-orange text-white'
+                      : 'border-hs-border bg-hs-canvas text-hs-text-dark hover:border-hs-text-light'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {isHabit && (
+        <div className="space-y-1.5">
+          {question.statements.map((s) => {
+            const state = (answer || {})[s.id]
+            return (
+              <div
+                key={s.id}
+                className="flex items-center justify-between gap-2 rounded-md border border-hs-border bg-white px-2.5 py-1.5"
+              >
+                <span className="text-[12.5px] font-ui text-hs-text-dark min-w-0">
+                  {s.statement}
+                </span>
+                <span className="inline-flex rounded-full border border-hs-border bg-hs-canvas p-0.5 shrink-0">
+                  {['always', 'sometimes', 'never'].map((opt) => {
+                    const colors = {
+                      always: 'bg-hs-green text-white',
+                      sometimes: 'bg-hs-orange text-white',
+                      never: 'bg-hs-red text-white',
+                    }
+                    return (
+                      <button
+                        key={opt}
+                        onClick={() => setHabit(s.id, opt)}
+                        className={`text-[10.5px] font-ui font-medium px-2 py-0.5 rounded-full capitalize ${
+                          state === opt ? colors[opt] : 'text-hs-text-light hover:text-hs-navy'
+                        }`}
+                      >
+                        {opt}
+                      </button>
+                    )
+                  })}
+                </span>
+              </div>
+            )
+          })}
+        </div>
       )}
 
       {isPainSingle && options.length === 0 && (
         <p className="text-[12px] font-ui text-hs-text-light">
           Check at least one problem in the earlier sections first.
         </p>
+      )}
+
+      {/* Classic research-backed leaks — picking one also checks the pain */}
+      {isPainSingle && (
+        <div className="mt-2.5">
+          <p className="text-[10px] font-ui font-semibold uppercase tracking-wide text-hs-text-light mb-1">
+            Or one of the classics — where most companies bleed
+          </p>
+          <div className="space-y-1">
+            {CLASSIC_LEAKS.map((c) => {
+              const { pain } = painParts(c.painId)
+              const sel = answer === c.painId
+              return (
+                <button
+                  key={c.painId + c.stat}
+                  onClick={() => {
+                    const live = useStore.getState().session.wizard
+                    const pains = Array.isArray(live.pains) ? live.pains : []
+                    if (!pains.includes(c.painId)) setWizardAnswer('pains', [...pains, c.painId])
+                    setWizardAnswer(question.key, sel ? undefined : c.painId)
+                  }}
+                  className={`w-full text-left rounded-md border px-2.5 py-1.5 ${
+                    sel
+                      ? 'border-hs-orange bg-hs-orange/10'
+                      : 'border-hs-border bg-white hover:border-hs-text-light'
+                  }`}
+                >
+                  <span className="text-[12px] font-ui">
+                    <span className="font-semibold text-hs-navy">{pain}:</span>{' '}
+                    <span className="text-hs-text-dark">{c.stat}</span>
+                  </span>
+                  <span className="block text-[9.5px] font-ui text-hs-text-light">
+                    — {c.source}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
       )}
 
       {(isSingle || isMulti) && !isText && (
@@ -197,6 +306,9 @@ function hasAnswer(wizard, q) {
   if (q.type === 'pain-multi') {
     return Array.isArray(a) && a.some((id) => q.painIds.includes(id))
   }
+  if (q.type === 'habit-matrix') {
+    return a && Object.keys(a).length > 0
+  }
   if (Array.isArray(a)) return a.length > 0
   return Boolean(a && String(a).trim())
 }
@@ -288,6 +400,35 @@ export default function Step1_Discovery({ index }) {
     )
   }
 
+  // Prev / Next section controls — rendered both above and below the questions.
+  const SectionNav = ({ className = '' }) => (
+    <div className={`flex items-center justify-between ${className}`}>
+      <button
+        onClick={() => setSectionIdx((n) => Math.max(0, n - 1))}
+        disabled={sectionIdx === 0}
+        className="text-[12px] font-ui font-medium text-hs-text-dark px-2.5 py-1 rounded-md border border-hs-border disabled:opacity-40"
+      >
+        ← {sectionIdx > 0 ? DISCOVERY_SECTIONS[sectionIdx - 1].label : 'Back'}
+      </button>
+      {isLastSection ? (
+        <button
+          onClick={finish}
+          disabled={building}
+          className="text-[12px] font-ui font-semibold text-white bg-hs-orange px-3.5 py-1 rounded-md disabled:opacity-50"
+        >
+          {building ? 'Building…' : '⚡ Build My Fix Plan →'}
+        </button>
+      ) : (
+        <button
+          onClick={() => setSectionIdx((n) => n + 1)}
+          className="text-[12px] font-ui font-semibold text-white bg-hs-orange px-3.5 py-1 rounded-md"
+        >
+          {DISCOVERY_SECTIONS[sectionIdx + 1].label} →
+        </button>
+      )}
+    </div>
+  )
+
   // ---- Full discovery: one HUB SECTION per screen ----
   return (
     <StepBody>
@@ -323,6 +464,8 @@ export default function Step1_Discovery({ index }) {
         })}
       </div>
 
+      <SectionNav className="mb-3" />
+
       {/* One card per section; questions as compact rows */}
       <div className="rounded-lg border border-hs-border bg-white px-4 divide-y divide-hs-canvas">
         {sectionQuestions.map((q) => (
@@ -340,32 +483,7 @@ export default function Step1_Discovery({ index }) {
         ))}
       </div>
 
-      {/* Section nav */}
-      <div className="mt-5 flex items-center justify-between">
-        <button
-          onClick={() => setSectionIdx((n) => Math.max(0, n - 1))}
-          disabled={sectionIdx === 0}
-          className="text-[13px] font-ui font-medium text-hs-text-dark px-3 py-1.5 rounded-md border border-hs-border disabled:opacity-40"
-        >
-          ← {sectionIdx > 0 ? DISCOVERY_SECTIONS[sectionIdx - 1].label : 'Back'}
-        </button>
-        {isLastSection ? (
-          <button
-            onClick={finish}
-            disabled={building}
-            className="text-[13px] font-ui font-semibold text-white bg-hs-orange px-4 py-1.5 rounded-md disabled:opacity-50"
-          >
-            {building ? 'Building…' : '⚡ Build My Fix Plan →'}
-          </button>
-        ) : (
-          <button
-            onClick={() => setSectionIdx((n) => n + 1)}
-            className="text-[13px] font-ui font-semibold text-white bg-hs-orange px-4 py-1.5 rounded-md"
-          >
-            {DISCOVERY_SECTIONS[sectionIdx + 1].label} →
-          </button>
-        )}
-      </div>
+      <SectionNav className="mt-4" />
     </StepBody>
   )
 }

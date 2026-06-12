@@ -156,7 +156,23 @@ export function collectLeakIds(wizard) {
     (id) => SOLUTION_MAP[id]
   )
   const fromVent = matchTextToLeaks(wizard.ventBox)
-  return [...new Set([...fromChecklist, ...fromVent])]
+
+  // Answers that ARE pain signals, even without checking a box:
+  const inferred = []
+  // Tracking leads in 2+ places = scattered systems.
+  const tracking = Array.isArray(wizard.currentTracking) ? wizard.currentTracking : []
+  if (tracking.length >= 2) inferred.push('tools_dont_talk')
+  // Manual/Excel reporting or hours of meeting prep = reporting pain.
+  if (
+    ['Someone builds them manually each time', 'Exports + Excel every time'].includes(
+      wizard.reportsToday
+    ) ||
+    wizard.meetingPrep === 'Someone spends hours prepping numbers'
+  ) {
+    inferred.push('reporting_excel_pain')
+  }
+
+  return [...new Set([...fromChecklist, ...fromVent, ...inferred])]
 }
 
 // Global Crescent Connect build items driven by tools/data answers (not leak-specific).
@@ -190,20 +206,36 @@ export function buildGlobalScope(wizard) {
   else if (wizard.emailPlatform?.includes('Outlook'))
     items.push('Microsoft 365 connection — Outlook email and calendar sync for every rep')
 
-  if (wizard.accounting === 'QuickBooks') items.push('QuickBooks integration synced to deals and invoices')
-  else if (wizard.accounting === 'Xero' || wizard.accounting === 'FreshBooks')
+  if (
+    wizard.accounting &&
+    !['None', 'Something else', 'Spreadsheets / manual'].includes(wizard.accounting)
+  ) {
     items.push(`${wizard.accounting} integration synced to deals and invoices`)
+  }
+
+  if (
+    wizard.sharedInbox === 'Shared inboxes everyone works from' ||
+    wizard.sharedInbox === 'One person forwards things around'
+  ) {
+    items.push('Shared team inbox (sales@/service@) set up in HubSpot Conversations — no more forwarding')
+  }
 
   const tools = arr(wizard.connectTools)
   if (tools.includes('Website forms')) items.push('Website form capture wired into lead routing')
-  if (tools.includes('Slack / Teams')) items.push('Slack/Teams deal and ticket notifications')
+  if (tools.some((t) => t.startsWith('Chat'))) items.push('Slack/Teams deal and ticket notifications')
   if (tools.includes('Zapier / Make')) items.push('Zapier/Make automation bridges to your other tools')
   if (tools.includes('Facebook / Instagram ads')) items.push('Ad platform lead sync with source tracking')
+  if (tools.some((t) => t.startsWith('Proposals'))) items.push('Proposal & e-sign integration (PandaDoc/DocuSign) tied to deals')
+  if (tools.some((t) => t.startsWith('Lead databases'))) items.push('Lead database integration (ZoomInfo/Apollo) feeding clean prospects')
+  if (tools.some((t) => t.startsWith('AI meeting notes'))) items.push('AI meeting notes synced to contact and deal records')
+  if (tools.some((t) => t.startsWith('Project management'))) items.push('Project tool sync (ClickUp/Asana) from closed-won deals')
+  if (tools.some((t) => t.startsWith('Phone'))) items.push('Calling/SMS integration with auto-logging')
+  if (tools.some((t) => t.startsWith('Marketing'))) items.push('Marketing tool migration/sync into HubSpot')
 
   if (wizard.dataImport?.startsWith('Yes — clean'))
     items.push('Import of your existing contact and client list, mapped to the new structure')
-  if (wizard.dataImport?.startsWith('Yes — but messy'))
-    items.push('Data cleanup, dedupe, and import of your existing list — messy is normal, we handle it')
+  if (wizard.dataImport?.startsWith('Yes — but messy') || wizard.dataImport?.startsWith('Sort of'))
+    items.push('Data rescue: spreadsheets, business cards, and phone contacts merged, deduped, and imported')
 
   if (arr(wizard.recurringRevenue).some((r) => r !== 'No recurring revenue' && r))
     items.push('Renewal and contract tracking modeled on your recurring revenue terms')

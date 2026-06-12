@@ -342,6 +342,81 @@ export const SOLUTION_MAP = {
     ],
     keywords: ['re-type', 'retype', 'copy paste', "don't talk", 'sync', 'double entry', 'duplicate entry'],
   },
+  contact_context: {
+    title: 'The whole relationship, on the record',
+    narrative:
+      'What each person is working on, their pain points, their history with you — captured on the contact record automatically, so the knowledge survives vacations, turnover, and bad memories.',
+    workflows: [],
+    viewIds: [],
+    widgets: [],
+    cadenceRules: {},
+    ccBuild: [
+      'Custom properties for the intel you actually use (projects, pain points, preferences)',
+      'AI call summaries writing notes to the record automatically',
+      'Record layouts that put the story front and center',
+    ],
+    keywords: ['notes on', 'remember', 'in their head', 'what they were working', 'context'],
+  },
+  company_picture: {
+    title: 'One screen per company',
+    narrative:
+      'Every company record shows who works there, every open deal and ticket, recent conversations, and even company news — the full account picture without opening five tabs.',
+    workflows: [],
+    viewIds: [],
+    widgets: [],
+    cadenceRules: {},
+    ccBuild: [
+      'Company records wired to all their contacts, deals, and tickets',
+      'Breeze Intelligence enrichment (size, industry, news) on every account',
+      'Account-view layout built for how you actually review accounts',
+    ],
+    keywords: ['who works there', 'company news', 'account view', 'org chart'],
+  },
+  focus_scatter: {
+    title: 'Know exactly who deserves your time',
+    narrative:
+      'When the data lives in one clean system, "who should I call today?" answers itself — who is hot, who has gone quiet, and who has never heard from you at all.',
+    workflows: ['deal_stale_alert'],
+    viewIds: [],
+    widgets: ['contacts_by_lifecycle'],
+    cadenceRules: { flagNoActivityEnabled: true },
+    ccBuild: [
+      'Last-touched and never-contacted views so no one slips through',
+      'Priority ranking for who deserves attention this week',
+      'De-scattering: every list, inbox, and notebook merged into one system',
+    ],
+    keywords: ['data is everywhere', 'who to call', 'heard from us', 'scattered', 'where to spend time'],
+  },
+  vip_segmentation: {
+    title: 'Customers, leads, and VIPs — obvious at a glance',
+    narrative:
+      'Lifecycle stages and tiers label every record automatically: lead vs. customer vs. your best relationships. Every list, view, and email targets exactly the right group.',
+    workflows: [],
+    viewIds: [],
+    widgets: ['contacts_by_lifecycle'],
+    cadenceRules: {},
+    ccBuild: [
+      'Lifecycle stages configured to your definitions (lead → customer → VIP)',
+      'Contact tiering for your most valuable relationships',
+      'Saved segments per group so targeting is one click',
+    ],
+    keywords: ['vip', 'customer vs lead', 'tier', 'who is a customer', 'segment'],
+  },
+  relationship_gap: {
+    title: 'Build the relationships that win the work',
+    narrative:
+      'Consistent, personal touches with the right people — visit cadences, check-in reminders, and personal-detail tracking that make every interaction feel like you remembered everything.',
+    workflows: [],
+    viewIds: ['site_visit_schedule'],
+    widgets: ['meetings_booked'],
+    cadenceRules: { requireNextStep: true },
+    ccBuild: [
+      'Relationship cadences: who to visit, call, or take to lunch — and when',
+      'Personal-detail properties (interests, history, preferences) on key contacts',
+      'Decision-maker mapping per account so you court the right people',
+    ],
+    keywords: ['relationship', 'not close enough', 'rapport', 'trust', 'know them better'],
+  },
   tasks_slip: {
     title: 'Nothing lives in memory anymore',
     narrative:
@@ -448,6 +523,26 @@ const SPIN_EXTRAS = {
     hub: 'Operations',
     implication: '30 minutes a day copying data between tools is 10+ hours a month. What is that person\'s hourly cost?',
   },
+  contact_context: {
+    hub: 'CRM',
+    implication: 'When a rep leaves, every undocumented relationship leaves with them. What did the last departure cost?',
+  },
+  company_picture: {
+    hub: 'CRM',
+    implication: 'If reviewing one account takes five tabs and three people, how many accounts never get reviewed at all?',
+  },
+  focus_scatter: {
+    hub: 'CRM',
+    implication: 'B2B contact data decays ~30% a year. How much of your scattered list is already dead?',
+  },
+  vip_segmentation: {
+    hub: 'CRM',
+    implication: "If your best customers get the same attention as cold leads, you're overpaying for one and underserving the other.",
+  },
+  relationship_gap: {
+    hub: 'Sales Hub',
+    implication: 'You are 60-70% likely to sell to an existing relationship and 5-20% to a stranger. Where is your time actually going?',
+  },
   tasks_slip: {
     hub: 'Operations',
     implication: 'One dropped task in client delivery — what is the downstream cost in rework and client trust?',
@@ -464,7 +559,7 @@ const PAIN_LABELS = {
   unknown_close_rate: { pain: 'Close rate', painDesc: 'unknown without digging through emails' },
   leads_fall_through: { pain: 'Leads', painDesc: 'fall through the cracks before anyone responds' },
   pipeline_in_head: { pain: 'Pipeline', painDesc: 'lives in one head or a spreadsheet, not a shared system' },
-  rep_workload_unproven: { pain: 'Reps', painDesc: "a couple do most of the work and we can't prove it" },
+  rep_workload_unproven: { pain: 'Reps', painDesc: "everyone performs differently and we can't see anyone's activity" },
   no_reengagement: { pain: 'Re-engagement', painDesc: 'past clients never hear from us again' },
   marketing_attribution: { pain: 'Attribution', painDesc: 'marketing spend has no clear tie to closed revenue' },
   admin_overload: { pain: 'Admin', painDesc: 'data entry and manual emails eat selling time' },
@@ -482,6 +577,11 @@ const PAIN_LABELS = {
   ai_manual_drafting: { pain: 'AI', painDesc: 'team hand-writes everything AI could draft' },
   tools_dont_talk: { pain: 'Sync', painDesc: 'same data re-typed into multiple systems daily' },
   tasks_slip: { pain: 'Tasks', painDesc: 'live in memory and chat messages, and things slip' },
+  contact_context: { pain: 'Context', painDesc: "what each person's working on, their pain points — it lives in reps' heads" },
+  company_picture: { pain: 'Org picture', painDesc: "can't see a company, who works there, and what's happening in one view" },
+  focus_scatter: { pain: 'Focus', painDesc: "data's everywhere — we don't know who to spend time on or who's heard from us" },
+  vip_segmentation: { pain: 'VIPs', painDesc: "can't tell customers from leads from our best relationships at a glance" },
+  relationship_gap: { pain: 'Relationships', painDesc: "we haven't built deep enough relationships with the right people yet" },
 }
 
 Object.entries(PAIN_LABELS).forEach(([id, labels]) => {
