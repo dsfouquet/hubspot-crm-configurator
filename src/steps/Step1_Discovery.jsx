@@ -85,7 +85,8 @@ function QuestionControl({ question, compact = false }) {
           value={answer || ''}
           onChange={(e) => setWizardAnswer(question.key, e.target.value)}
           placeholder={question.placeholder}
-          className={`w-full ${compact ? 'h-16' : 'h-20'} rounded-md border border-hs-border p-2.5 text-[13px] font-ui resize-none focus:outline-none focus:border-hs-blue`}
+          rows={2}
+          className="w-full rounded-md border border-hs-border px-2.5 py-1.5 text-[13px] font-ui resize-none focus:outline-none focus:border-hs-blue"
         />
       )}
 
@@ -97,36 +98,50 @@ function QuestionControl({ question, compact = false }) {
 
       {(isSingle || isMulti) && !isText && (
         <div
-          className={
-            isPainMulti || isPainSingle ? 'space-y-1.5' : 'flex flex-wrap gap-1.5'
-          }
+          className={isPainMulti || isPainSingle ? 'space-y-1' : 'flex flex-wrap gap-1.5'}
         >
-          {options.map((opt) => (
-            <button
-              key={opt}
-              onClick={() => toggle(opt)}
-              className={`text-left flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-[13px] font-ui transition-colors ${
-                isPainMulti || isPainSingle ? 'w-full' : ''
-              } ${
-                isSelected(opt)
-                  ? 'border-hs-orange bg-hs-orange/10'
-                  : 'border-hs-border bg-white hover:border-hs-text-light'
-              }`}
-            >
-              <span
-                className={`flex items-center justify-center w-3.5 h-3.5 shrink-0 ${
-                  isSingle ? 'rounded-full' : 'rounded'
-                } border ${
-                  isSelected(opt)
-                    ? 'bg-hs-orange border-hs-orange text-white'
-                    : 'border-hs-border'
+          {options.map((opt) => {
+            const sel = isSelected(opt)
+            // Pains: slim full-width rows with check. Plain options: compact pills.
+            if (isPainMulti || isPainSingle) {
+              return (
+                <button
+                  key={opt}
+                  onClick={() => toggle(opt)}
+                  className={`w-full text-left flex items-center gap-2 rounded-md border px-2.5 py-1 text-[12.5px] font-ui transition-colors ${
+                    sel
+                      ? 'border-hs-orange bg-hs-orange/10'
+                      : 'border-hs-border bg-white hover:border-hs-text-light'
+                  }`}
+                >
+                  <span
+                    className={`flex items-center justify-center w-3.5 h-3.5 shrink-0 ${
+                      isSingle ? 'rounded-full' : 'rounded'
+                    } border ${
+                      sel ? 'bg-hs-orange border-hs-orange text-white' : 'border-hs-border'
+                    }`}
+                  >
+                    {sel && <span className="text-[9px] leading-none">✓</span>}
+                  </span>
+                  <OptionLabel opt={opt} />
+                </button>
+              )
+            }
+            return (
+              <button
+                key={opt}
+                onClick={() => toggle(opt)}
+                className={`rounded-full border px-2.5 py-1 text-[12.5px] font-ui transition-colors ${
+                  sel
+                    ? 'border-hs-orange bg-hs-orange text-white font-medium'
+                    : 'border-hs-border bg-white text-hs-text-dark hover:border-hs-text-light'
                 }`}
               >
-                {isSelected(opt) && <span className="text-[9px] leading-none">✓</span>}
-              </span>
-              <OptionLabel opt={opt} />
-            </button>
-          ))}
+                {sel && <span className="mr-1">✓</span>}
+                {opt}
+              </button>
+            )
+          })}
         </div>
       )}
 
@@ -134,8 +149,8 @@ function QuestionControl({ question, compact = false }) {
         <input
           value={otherValue}
           onChange={(e) => setOther(e.target.value)}
-          placeholder="Other (type your own)…"
-          className="mt-1.5 w-full rounded-md border border-hs-border px-2.5 py-1.5 text-[13px] font-ui focus:outline-none focus:border-hs-blue"
+          placeholder="Other…"
+          className="mt-1.5 w-44 rounded-full border border-hs-border px-2.5 py-1 text-[12.5px] font-ui focus:outline-none focus:border-hs-blue"
         />
       )}
 
@@ -176,7 +191,18 @@ const QUICK_QUESTIONS = [
   DISCOVERY_QUESTIONS.find((q) => q.qid === 'dealStages'),
 ]
 
+// Does this question have an answer? (drives the green section pills)
+function hasAnswer(wizard, q) {
+  const a = wizard[q.key]
+  if (q.type === 'pain-multi') {
+    return Array.isArray(a) && a.some((id) => q.painIds.includes(id))
+  }
+  if (Array.isArray(a)) return a.length > 0
+  return Boolean(a && String(a).trim())
+}
+
 export default function Step1_Discovery({ index }) {
+  const wizard = useStore((s) => s.session.wizard)
   const applyFixPlan = useStore((s) => s.applyFixPlan)
   const goToStep = useStore((s) => s.goToStep)
   const markStepComplete = useStore((s) => s.markStepComplete)
@@ -201,27 +227,27 @@ export default function Step1_Discovery({ index }) {
 
   // Mode toggle shown at the top of both paths.
   const ModeToggle = () => (
-    <div className="mb-4 flex items-center gap-2">
-      <div className="inline-flex rounded-lg border border-hs-border bg-hs-canvas p-0.5">
+    <div className="mb-3 flex items-center gap-2">
+      <div className="inline-flex rounded-full border border-hs-border bg-hs-canvas p-0.5">
         <button
           onClick={() => setQuickMode(false)}
-          className={`text-[12px] font-ui font-medium px-3 py-1.5 rounded-md transition-colors ${
+          className={`text-[11px] font-ui font-medium px-2.5 py-1 rounded-full transition-colors ${
             !quickMode ? 'bg-white text-hs-navy shadow-sm' : 'text-hs-text-light hover:text-hs-navy'
           }`}
         >
-          Full discovery
+          Full
         </button>
         <button
           onClick={() => setQuickMode(true)}
-          className={`text-[12px] font-ui font-medium px-3 py-1.5 rounded-md transition-colors ${
+          className={`text-[11px] font-ui font-medium px-2.5 py-1 rounded-full transition-colors ${
             quickMode ? 'bg-white text-hs-navy shadow-sm' : 'text-hs-text-light hover:text-hs-navy'
           }`}
         >
-          ⚡ Quick (2 questions)
+          ⚡ Quick
         </button>
       </div>
       <span className="text-[11px] font-ui text-hs-text-light">
-        {quickMode ? '~60 seconds — still builds your full fix plan' : '~4 minutes — the most tailored result'}
+        {quickMode ? '2 questions · ~60 sec' : '~4 min · most tailored result'}
       </span>
     </div>
   )
@@ -235,10 +261,10 @@ export default function Step1_Discovery({ index }) {
           intro="Two questions — enough to build your fix plan. You can fill in the rest later."
         />
         <ModeToggle />
-        <div className="space-y-4">
+        <div className="rounded-lg border border-hs-border bg-white px-4 divide-y divide-hs-canvas">
           {QUICK_QUESTIONS.map((q) => (
-            <div key={q.qid} className="rounded-lg border border-hs-border bg-white p-4">
-              <h3 className="font-ui font-semibold text-hs-navy text-[15px] mb-2.5">{q.prompt}</h3>
+            <div key={q.qid} className="py-3">
+              <h3 className="font-ui font-semibold text-hs-navy text-[13px] mb-1.5">{q.prompt}</h3>
               <QuestionControl question={q} compact />
             </div>
           ))}
@@ -272,33 +298,39 @@ export default function Step1_Discovery({ index }) {
 
       <ModeToggle />
 
-      {/* Section tabs */}
-      <div className="flex items-center gap-1.5 mb-4 flex-wrap">
-        {DISCOVERY_SECTIONS.map((s, i) => (
-          <button
-            key={s.key}
-            onClick={() => setSectionIdx(i)}
-            className={`text-[12px] font-ui px-2.5 py-1 rounded-full ${
-              i === sectionIdx
-                ? 'bg-hs-orange text-white font-semibold'
-                : i < sectionIdx
-                  ? 'bg-hs-green/15 text-hs-green'
-                  : 'bg-hs-canvas text-hs-text-light hover:text-hs-navy'
-            }`}
-          >
-            {s.label}
-          </button>
-        ))}
+      {/* Section pills — green when a section actually has answers */}
+      <div className="flex items-center gap-1 mb-3 flex-wrap">
+        {DISCOVERY_SECTIONS.map((s, i) => {
+          const qs = DISCOVERY_QUESTIONS.filter((q) => q.section === s.key)
+          const done = qs.some((q) => hasAnswer(wizard, q))
+          const active = i === sectionIdx
+          return (
+            <button
+              key={s.key}
+              onClick={() => setSectionIdx(i)}
+              className={`text-[11px] font-ui px-2 py-0.5 rounded-full ${
+                active
+                  ? 'bg-hs-orange text-white font-semibold'
+                  : done
+                    ? 'bg-hs-green/15 text-hs-green'
+                    : 'bg-hs-canvas text-hs-text-light hover:text-hs-navy'
+              }`}
+            >
+              {done && !active ? '✓ ' : ''}
+              {s.label}
+            </button>
+          )
+        })}
       </div>
 
-      {/* All questions in this section, stacked */}
-      <div className="space-y-4">
+      {/* One card per section; questions as compact rows */}
+      <div className="rounded-lg border border-hs-border bg-white px-4 divide-y divide-hs-canvas">
         {sectionQuestions.map((q) => (
-          <div key={q.qid} className="rounded-lg border border-hs-border bg-white p-4">
-            <div className="flex items-baseline justify-between gap-3 mb-2.5">
-              <h3 className="font-ui font-semibold text-hs-navy text-[15px]">{q.prompt}</h3>
+          <div key={q.qid} className="py-3">
+            <div className="flex items-baseline justify-between gap-3 mb-1.5">
+              <h3 className="font-ui font-semibold text-hs-navy text-[13px]">{q.prompt}</h3>
               {(q.hint || q.type === 'multi' || q.optional) && (
-                <span className="text-[11px] font-ui text-hs-text-light shrink-0">
+                <span className="text-[10px] font-ui text-hs-text-light shrink-0">
                   {q.optional ? 'Optional' : q.hint || 'Select all that apply'}
                 </span>
               )}
