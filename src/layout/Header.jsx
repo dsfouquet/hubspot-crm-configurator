@@ -8,6 +8,23 @@ export default function Header() {
   const togglePresenter = useStore((s) => s.togglePresenter)
   const toggleAdvisor = useStore((s) => s.toggleAdvisor)
   const name = useStore((s) => s.session.gate.name)
+  const isCustomer = useStore((s) => s.session.mode) !== 'live'
+
+  // Customer mode: clean chrome — no internal tools (presenter / advisor).
+  if (isCustomer) {
+    return (
+      <header className="flex items-center justify-between h-14 px-5 bg-white border-b border-hs-border shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <Logo />
+          <span className="text-hs-border hidden sm:inline">|</span>
+          <span className="font-ui font-semibold text-hs-navy text-[15px] truncate hidden sm:inline">
+            Your CRM, built for you
+          </span>
+        </div>
+        <DownloadPdfButton variant="header" />
+      </header>
+    )
+  }
 
   if (presenterMode) {
     return (

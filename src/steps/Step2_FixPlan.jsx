@@ -10,6 +10,7 @@ export default function Step2_FixPlan({ index }) {
   const focusedProblemId = useStore((s) => s.focusedProblemId)
   const setFocusedProblem = useStore((s) => s.setFocusedProblem)
   const goToStep = useStore((s) => s.goToStep)
+  const isCustomer = useStore((s) => s.session.mode) !== 'live'
 
   if (!fixPlan || fixPlan.problems.length === 0) {
     return (
@@ -41,9 +42,17 @@ export default function Step2_FixPlan({ index }) {
     <StepBody>
       <StepHeader
         index={index}
-        intro={`${fixPlan.problems.length} leak${
-          fixPlan.problems.length === 1 ? '' : 's'
-        } found, fixes pre-built. Click one to see the full fix on the right.`}
+        intro={
+          isCustomer
+            ? `Here's what Crescent Connect will build for you in 7 days — ${
+                fixPlan.problems.length
+              } leak${
+                fixPlan.problems.length === 1 ? '' : 's'
+              } found, fixes pre-built. Click one to see the full fix on the right.`
+            : `${fixPlan.problems.length} leak${
+                fixPlan.problems.length === 1 ? '' : 's'
+              } found, fixes pre-built. Click one to see the full fix on the right.`
+        }
       />
 
       {fixPlan.topGoal && (
@@ -111,7 +120,9 @@ export default function Step2_FixPlan({ index }) {
         If nothing changes in the next 12 months, where does that leave the business?
       </p>
       <p className="mt-1.5 text-[11px] font-ui text-hs-text-light">
-        Everything here is already loaded into the configurator — keep clicking Next to fine-tune.
+        {isCustomer
+          ? 'Everything here is already built into your preview — next, see it as a working HubSpot portal.'
+          : 'Everything here is already loaded into the configurator — keep clicking Next to fine-tune.'}
       </p>
     </StepBody>
   )

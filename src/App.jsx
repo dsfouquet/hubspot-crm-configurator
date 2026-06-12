@@ -10,17 +10,23 @@ import AdvisorPanel from './layout/AdvisorPanel'
 import SplitPane from './layout/SplitPane'
 import EmailGateModal from './modals/EmailGateModal'
 import Step11_Preview from './steps/Step11_Preview'
+import CustomerIntake from './steps/CustomerIntake'
+import StepCTA from './steps/StepCTA'
 import BlueprintDocument from './components/BlueprintDocument'
-import { STEPS } from './constants/steps'
+import { stepsForMode } from './constants/steps'
 
 export default function App() {
   const gatePassed = useStore((s) => s.gatePassed)
   const presenterMode = useStore((s) => s.presenterMode)
   const toggleAdvisor = useStore((s) => s.toggleAdvisor)
   const currentStep = useStore((s) => s.currentStep)
+  const mode = useStore((s) => s.session.mode)
   const saveNow = useStore((s) => s.saveNow)
 
-  const isPreviewStep = STEPS[currentStep].key === 'preview'
+  const isCustomer = mode !== 'live'
+  const steps = stepsForMode(mode)
+  const stepKey = steps[Math.min(currentStep, steps.length - 1)]?.key
+  const isPreviewStep = stepKey === 'preview'
 
   // Welcome splash: fires once when the gate transitions to passed.
   const [showSplash, setShowSplash] = useState(false)
@@ -44,6 +50,37 @@ export default function App() {
   // Landing gate blocks the app until name+email (async) or Start Live Session.
   if (!gatePassed) return <EmailGateModal />
 
+  // ---- Customer funnel: intake → build plan → preview → next steps ----
+  if (isCustomer) {
+    return (
+      <div className="h-screen flex flex-col overflow-hidden">
+        {showSplash && <WelcomeSplash onDone={() => setShowSplash(false)} />}
+        <Header />
+        <div className="flex-1 flex min-h-0 relative">
+          {stepKey === 'wizard' && <CustomerIntake />}
+          {stepKey === 'fixPlan' && (
+            <SplitPane left={<ConfigPanel />} right={<PreviewPane />} />
+          )}
+          {stepKey === 'preview' && (
+            <div className="flex-1 min-w-0">
+              <Step11_Preview />
+            </div>
+          )}
+          {stepKey === 'cta' && <StepCTA />}
+        </div>
+        {stepKey === 'fixPlan' && <Footer />}
+        {/* Off-screen printable doc — target for PDF export */}
+        <div
+          aria-hidden
+          style={{ position: 'absolute', left: -10000, top: 0, pointerEvents: 'none' }}
+        >
+          <BlueprintDocument />
+        </div>
+      </div>
+    )
+  }
+
+  // ---- Presenter / live session: full 13-step configurator ----
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       {showSplash && <WelcomeSplash onDone={() => setShowSplash(false)} />}
@@ -59,10 +96,11 @@ export default function App() {
             {/* Floating advisor button (hidden from screen-share side of the eye) */}
             <button
               onClick={toggleAdvisor}
+              aria-label="Open advisor panel"
               className="fixed bottom-5 right-5 z-20 w-11 h-11 rounded-full bg-hs-navy text-white shadow-lg flex items-center justify-center"
               title="Advisor Panel"
             >
-              🔒
+              <span aria-hidden>🔒</span>
             </button>
           </>
         ) : isPreviewStep ? (

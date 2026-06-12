@@ -1,14 +1,19 @@
 import { useStore } from '../store/useStore'
-import { STEPS } from '../constants/steps'
+import { stepsForMode } from '../constants/steps'
 
 // Bottom bar: progress bar + step counter + Back/Next.
 export default function Footer() {
   const currentStep = useStore((s) => s.currentStep)
   const nextStep = useStore((s) => s.nextStep)
   const prevStep = useStore((s) => s.prevStep)
+  const STEPS = stepsForMode(useStore((s) => s.session.mode))
 
+  const isCustomer = useStore((s) => s.session.mode) !== 'live'
   const pct = Math.round(((currentStep + 1) / STEPS.length) * 100)
   const isLast = currentStep === STEPS.length - 1
+  // Customer mode: name the destination ("Your HubSpot Preview →") instead of "Next".
+  const nextLabel =
+    isCustomer && STEPS[currentStep + 1] ? `${STEPS[currentStep + 1].label} →` : 'Next →'
 
   return (
     <footer className="shrink-0 bg-white border-t border-hs-border">
@@ -32,9 +37,9 @@ export default function Footer() {
         <button
           onClick={nextStep}
           disabled={isLast}
-          className="text-sm font-ui font-semibold text-white bg-hs-orange hover:bg-hs-orange/90 px-5 py-2 rounded-md disabled:opacity-40 disabled:cursor-not-allowed"
+          className="text-sm font-ui font-semibold text-white bg-hs-orange hover:bg-hs-sorbet px-5 py-2 rounded-[3px] disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Next →
+          {nextLabel}
         </button>
       </div>
     </footer>

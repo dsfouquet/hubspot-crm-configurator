@@ -1,5 +1,5 @@
 import { useStore } from '../store/useStore'
-import { STEPS } from '../constants/steps'
+import { stepsForMode } from '../constants/steps'
 import { PREVIEW_COMPONENTS } from '../preview/registry'
 
 // Right preview pane — mimics the HubSpot UI. In presenter mode it goes full width
@@ -7,8 +7,10 @@ import { PREVIEW_COMPONENTS } from '../preview/registry'
 export default function PreviewPane() {
   const currentStep = useStore((s) => s.currentStep)
   const presenterMode = useStore((s) => s.presenterMode)
-  const stepKey = STEPS[currentStep].key
+  const STEPS = stepsForMode(useStore((s) => s.session.mode))
+  const stepKey = STEPS[currentStep]?.key
   const render = PREVIEW_COMPONENTS[stepKey]
+  if (!render) return null
 
   return (
     <section

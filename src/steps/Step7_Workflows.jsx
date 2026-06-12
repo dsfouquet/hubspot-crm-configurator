@@ -8,7 +8,7 @@ import {
   WORKFLOW_CATEGORIES,
   instantiateTemplate,
 } from '../constants/workflowTemplates'
-import { generateWorkflowFromText } from '../utils/workflowGenerator'
+import { fallbackWorkflow } from '../utils/workflowGenerator'
 
 function TemplateRow({ template }) {
   const addWorkflow = useStore((s) => s.addWorkflow)
@@ -87,22 +87,11 @@ export default function Step7_Workflows({ index }) {
   const workflows = useStore((s) => s.session.workflows)
   const addWorkflow = useStore((s) => s.addWorkflow)
   const [desc, setDesc] = useState('')
-  const [generating, setGenerating] = useState(false)
-  const [genNote, setGenNote] = useState('')
 
-  const generate = async () => {
+  const addDraft = () => {
     if (!desc.trim()) return
-    setGenerating(true)
-    setGenNote('')
-    const wf = await generateWorkflowFromText(desc.trim())
-    addWorkflow(wf)
-    if (wf._reason === 'no_api_key') {
-      setGenNote('Added a starter draft. (Connect a Claude API key to auto-generate full flows.)')
-    } else if (wf._reason === 'error') {
-      setGenNote('AI was unavailable, so we added an editable placeholder flow.')
-    }
+    addWorkflow(fallbackWorkflow(desc.trim()))
     setDesc('')
-    setGenerating(false)
   }
 
   return (
@@ -134,26 +123,28 @@ export default function Step7_Workflows({ index }) {
         ))}
       </section>
 
-      {/* Custom builder */}
+      {/* Custom draft builder */}
       <section>
         <h3 className="font-ui font-semibold text-hs-navy text-[15px] mb-2">
-          Describe a custom automation
+          Need something not in the library?
         </h3>
         <textarea
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
           placeholder='e.g. "When a deal is marked Closed Won, send a thank you email and create a 30-day check-in task"'
-          className="w-full h-20 rounded-md border border-hs-border p-2.5 text-[13px] font-ui resize-none focus:outline-none focus:border-hs-blue"
+          className="hs-input w-full h-20 p-2.5 text-[13px] font-ui resize-none"
         />
         <div className="flex items-center gap-2 mt-1">
           <button
-            onClick={generate}
-            disabled={generating || !desc.trim()}
-            className="text-[13px] font-ui font-semibold text-white bg-hs-blue hover:bg-hs-blue/90 px-4 py-1.5 rounded disabled:opacity-40"
+            onClick={addDraft}
+            disabled={!desc.trim()}
+            className="text-[13px] font-ui font-semibold text-white bg-hs-blue hover:bg-hs-blue/90 px-4 py-1.5 rounded-[3px] disabled:opacity-40"
           >
-            {generating ? 'Generating…' : '✨ Generate flowchart'}
+            + Add as a draft
           </button>
-          {genNote && <span className="text-[12px] font-ui text-hs-text-light">{genNote}</span>}
+          <span className="text-[12px] font-ui text-hs-text-light">
+            We scope custom automations together during your build.
+          </span>
         </div>
       </section>
     </StepBody>

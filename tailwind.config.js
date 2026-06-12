@@ -17,6 +17,13 @@ export default {
           green: '#00BDA5',
           red: '#F2545B',
           purple: '#6A78D1',
+          // HubSpot Canvas additions (design fidelity pass, June 2026)
+          navydeep: '#33475B',
+          koala: '#EAF0F6',
+          greatwhite: '#DFE3EB',
+          calypso: '#00A4BD',
+          marigold: '#F5C26B',
+          sorbet: '#FF8F73',
         },
       },
       fontFamily: {

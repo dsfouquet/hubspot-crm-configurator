@@ -4,6 +4,7 @@
 
 import { SOLUTION_MAP, matchTextToLeaks, painLabel } from '../constants/solutionMap'
 import { WORKFLOW_TEMPLATES, instantiateTemplate } from '../constants/workflowTemplates'
+import { AVATAR_OBJECTS } from '../constants/avatars'
 
 // Parse "Lead → Site Visit → Quote Sent → Won" (or commas, dashes, numbered
 // lists) into pipeline stages. Returns null if fewer than 2 stages found.
@@ -131,8 +132,13 @@ const INDUSTRY_OBJECTS = {
   },
 }
 
+// Avatar industries (customer mode) first, then the presenter industry list.
+function industryObjectDef(industry) {
+  return AVATAR_OBJECTS[industry] || INDUSTRY_OBJECTS[industry] || null
+}
+
 export function industryObjectFor(industry) {
-  const def = INDUSTRY_OBJECTS[industry]
+  const def = industryObjectDef(industry)
   if (!def) return null
   return {
     id: `obj_industry_${Date.now()}`,
@@ -194,7 +200,7 @@ export function buildGlobalScope(wizard) {
     )
   }
 
-  const indObj = INDUSTRY_OBJECTS[wizard.industry]
+  const indObj = industryObjectDef(wizard.industry)
   if (indObj) {
     items.push(
       `Custom "${indObj.plural}" object so you can track ${indObj.plural.toLowerCase()} the way HubSpot tracks contacts`

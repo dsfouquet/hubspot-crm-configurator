@@ -1,5 +1,5 @@
 import { useStore } from '../store/useStore'
-import { STEPS } from '../constants/steps'
+import { stepsForMode } from '../constants/steps'
 
 // Vertical step list. Completed = green check, active = orange, future = gray.
 // In presenter mode, collapses to a slim icon-only strip.
@@ -7,6 +7,7 @@ export default function StepNav({ collapsed = false }) {
   const currentStep = useStore((s) => s.currentStep)
   const completedSteps = useStore((s) => s.session.completedSteps)
   const goToStep = useStore((s) => s.goToStep)
+  const STEPS = stepsForMode(useStore((s) => s.session.mode))
 
   return (
     <nav

@@ -1,4 +1,6 @@
 // Step navigation definition (spec Section 3.4). Order is authoritative.
+// STEPS is the full presenter/live-session flow. CUSTOMER_STEPS is the short
+// prospect-facing funnel: intake → build plan → preview → routed CTA.
 export const STEPS = [
   { key: 'wizard', label: 'Discovery', short: 'Discovery' },
   { key: 'fixPlan', label: 'Your Fix Plan', short: 'Fix Plan' },
@@ -14,3 +16,16 @@ export const STEPS = [
   { key: 'journeyMap', label: 'Customer Journey', short: 'Journey' },
   { key: 'preview', label: 'Your HubSpot Preview', short: 'Preview' },
 ]
+
+export const PRESENTER_STEPS = STEPS
+
+export const CUSTOMER_STEPS = [
+  { key: 'wizard', label: 'About Your Business', short: 'Questions' },
+  { key: 'fixPlan', label: 'Your Build Plan', short: 'Build Plan' },
+  { key: 'preview', label: 'Your HubSpot Preview', short: 'Preview' },
+  { key: 'cta', label: 'Next Steps', short: 'Next Steps' },
+]
+
+// Pure helper (no store import — useStore imports this file).
+// mode 'live' = Daniel-driven deep configurator; anything else = customer funnel.
+export const stepsForMode = (mode) => (mode === 'live' ? PRESENTER_STEPS : CUSTOMER_STEPS)

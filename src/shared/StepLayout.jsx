@@ -1,9 +1,11 @@
 import { useStore } from '../store/useStore'
-import { STEPS } from '../constants/steps'
+import { stepsForMode } from '../constants/steps'
 
 // Consistent step header (step number + title + optional intro text).
 export function StepHeader({ index, intro }) {
+  const STEPS = stepsForMode(useStore((s) => s.session.mode))
   const step = STEPS[index]
+  if (!step) return null
   return (
     <div className="mb-5">
       <div className="text-[11px] font-ui font-semibold uppercase tracking-wide text-hs-text-light">

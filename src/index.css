@@ -16,6 +16,13 @@
   --hs-green: #00bda5;
   --hs-red: #f2545b;
   --hs-purple: #6a78d1;
+  /* HubSpot Canvas additions */
+  --hs-navydeep: #33475b; /* product nav bar */
+  --hs-koala: #eaf0f6; /* table header / hover fill */
+  --hs-greatwhite: #dfe3eb; /* row dividers */
+  --hs-calypso: #00a4bd; /* links + input focus */
+  --hs-marigold: #f5c26b; /* warning */
+  --hs-sorbet: #ff8f73; /* primary button hover */
 }
 
 html,
@@ -30,6 +37,117 @@ body {
   color: var(--hs-text-dark);
   background: var(--hs-canvas);
   -webkit-font-smoothing: antialiased;
+}
+
+/* ---- HubSpot Canvas component classes ---- */
+@layer components {
+  /* Primary button: Lorax orange, 3px radius, 500 weight — mirrors the product */
+  .hs-btn-primary {
+    @apply inline-flex items-center justify-center gap-1.5 font-ui font-semibold text-white;
+    background: var(--hs-orange);
+    border: 1px solid var(--hs-orange);
+    border-radius: 3px;
+    padding: 8px 16px;
+    font-size: 14px;
+    line-height: 1.15;
+    transition: background-color 150ms ease;
+  }
+  .hs-btn-primary:hover:not(:disabled) {
+    background: var(--hs-sorbet);
+    border-color: var(--hs-sorbet);
+  }
+  .hs-btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Secondary: white with orange text/border */
+  .hs-btn-secondary {
+    @apply inline-flex items-center justify-center gap-1.5 font-ui font-medium;
+    background: var(--hs-white);
+    color: var(--hs-orange);
+    border: 1px solid var(--hs-orange);
+    border-radius: 3px;
+    padding: 8px 16px;
+    font-size: 14px;
+    line-height: 1.15;
+    transition: background-color 150ms ease;
+  }
+  .hs-btn-secondary:hover:not(:disabled) {
+    background: rgba(255, 122, 89, 0.08);
+  }
+
+  /* Tertiary: quiet bordered button */
+  .hs-btn-tertiary {
+    @apply inline-flex items-center justify-center gap-1.5 font-ui font-medium;
+    background: var(--hs-white);
+    color: var(--hs-text-dark);
+    border: 1px solid var(--hs-border);
+    border-radius: 3px;
+    padding: 8px 16px;
+    font-size: 14px;
+    line-height: 1.15;
+  }
+  .hs-btn-tertiary:hover:not(:disabled) {
+    border-color: var(--hs-text-light);
+  }
+  .hs-btn-tertiary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Form input: Koala-tinted field, Battleship border, Calypso focus */
+  .hs-input {
+    background: var(--hs-canvas);
+    border: 1px solid var(--hs-border);
+    border-radius: 3px;
+    color: var(--hs-text-dark);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .hs-input::placeholder {
+    color: var(--hs-text-light);
+  }
+  .hs-input:focus {
+    outline: none;
+    border-color: var(--hs-calypso);
+    box-shadow: 0 0 4px 1px rgba(0, 208, 228, 0.3);
+    background: var(--hs-white);
+  }
+
+  /* Table: white rows, Koala header, Great White dividers */
+  .hs-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--hs-white);
+  }
+  .hs-table th {
+    background: var(--hs-canvas);
+    color: var(--hs-text-dark);
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 1px solid var(--hs-border);
+  }
+  .hs-table td {
+    border-bottom: 1px solid var(--hs-greatwhite);
+  }
+  .hs-table tbody tr:hover {
+    background: var(--hs-koala);
+  }
+
+  /* Link: Calypso, underline on hover */
+  .hs-link {
+    color: var(--hs-calypso);
+    text-decoration: none;
+  }
+  .hs-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Empty state: bold line + sub-line, centered */
+  .hs-empty-state {
+    @apply flex flex-col items-center justify-center text-center gap-1.5 py-10 px-6;
+    color: var(--hs-text-light);
+  }
 }
 
 /* Thin HubSpot-style scrollbars inside scrolling panels */

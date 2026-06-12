@@ -8,7 +8,7 @@ import {
   readUrlSession,
   syncUrlSession,
 } from '../utils/sessionId'
-import { STEPS } from '../constants/steps'
+import { stepsForMode } from '../constants/steps'
 import {
   defaultContacts,
   defaultCompanies,
@@ -45,6 +45,10 @@ function buildInitialSession(mode = 'async') {
     advisorNotes: '',
     completedSteps: [],
     previewUnlocked: false,
+    // BANT qualification result ({ qualified, checks, evaluatedAt }) — set once
+    // when the customer intake finishes. Internal routing only: never shown to
+    // the prospect and never rendered into the PDF.
+    qualification: null,
   }
 }
 
@@ -111,20 +115,24 @@ export const useStore = create((set, get) => ({
   },
 
   // ---- Navigation ----
+  // The active step list depends on session mode (customer funnel vs presenter).
+  steps() {
+    return stepsForMode(get().session.mode)
+  },
   goToStep(index) {
-    const clamped = Math.max(0, Math.min(STEPS.length - 1, index))
+    const clamped = Math.max(0, Math.min(get().steps().length - 1, index))
     set({ currentStep: clamped })
   },
   nextStep() {
     const { currentStep, markStepComplete } = get()
     markStepComplete(currentStep)
-    set({ currentStep: Math.min(STEPS.length - 1, currentStep + 1) })
+    set({ currentStep: Math.min(get().steps().length - 1, currentStep + 1) })
   },
   prevStep() {
     set((state) => ({ currentStep: Math.max(0, state.currentStep - 1) }))
   },
   markStepComplete(index) {
-    const key = STEPS[index]?.key
+    const key = get().steps()[index]?.key
     if (!key) return
     const completed = get().session.completedSteps
     if (!completed.includes(key)) {
@@ -184,6 +192,11 @@ export const useStore = create((set, get) => ({
   // Unlock the final preview (after email gate in async, or immediately in live).
   unlockPreview() {
     get().patchSession({ previewUnlocked: true })
+  },
+
+  // Persist the BANT qualification verdict (internal — drives the CTA routing).
+  setQualification(q) {
+    get().patchSession({ qualification: q })
   },
 
   // ---- Wizard / Discovery (Step 1) ----

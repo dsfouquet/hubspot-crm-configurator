@@ -75,16 +75,34 @@ function FinalGate({ onUnlock }) {
 }
 
 // ---- Bottom action bar ----
+const BOOKING_URL =
+  import.meta.env.VITE_BOOKING_URL ||
+  'https://meetings-na2.hubspot.com/crescent/crm-demo-call'
+
 function ActionBar() {
-  const calendly = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/'
+  const isCustomer = useStore((s) => s.session.mode) !== 'live'
+  const goToStep = useStore((s) => s.goToStep)
+
+  if (isCustomer) {
+    // Customer funnel: the routed CTA lives on the Next Steps screen.
+    return (
+      <div className="shrink-0 border-t border-hs-border bg-white px-5 py-3 flex items-center justify-between gap-2 flex-wrap">
+        <DownloadPdfButton variant="secondary" label="Download PDF Summary" />
+        <button onClick={() => goToStep(3)} className="hs-btn-primary">
+          See your next steps →
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className="shrink-0 border-t border-hs-border bg-white px-5 py-3 flex items-center gap-2 flex-wrap">
       <DownloadPdfButton variant="primary" label="Download PDF Summary" />
       <a
-        href={calendly}
+        href={BOOKING_URL}
         target="_blank"
         rel="noreferrer"
-        className="text-[13px] font-ui font-medium text-white bg-hs-blue px-4 py-2 rounded-md"
+        className="text-[13px] font-ui font-medium text-white bg-hs-blue px-4 py-2 rounded-[3px]"
       >
         Book a Call with Daniel
       </a>
@@ -99,7 +117,8 @@ export default function Step11_Preview() {
   const [hub, setHub] = useState('journey')
 
   const isLive = session.mode === 'live'
-  const unlocked = isLive || session.previewUnlocked
+  // Email is already captured at the front gate — don't ask twice.
+  const unlocked = isLive || session.previewUnlocked || Boolean(session.gate?.email)
 
   const handleUnlock = ({ name, email }) => {
     beginAsyncSession(name, email)

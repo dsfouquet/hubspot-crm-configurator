@@ -40,11 +40,11 @@ export default function EmailGateModal() {
         <div className="bg-hs-canvas px-7 pt-7 pb-5 border-b border-hs-border">
           <Logo />
           <h1 className="mt-4 font-ui font-bold text-hs-navy text-2xl leading-tight">
-            Design your HubSpot CRM
+            See the exact CRM we'll build for you — free
           </h1>
           <p className="mt-2 text-sm text-hs-text-dark font-ui">
-            See exactly what your CRM will look like before you build it. Takes about 10
-            minutes — your progress saves automatically.
+            Answer 8 quick questions and watch your HubSpot CRM take shape: your
+            pipeline, your automations, your dashboard. Takes about 3 minutes.
           </p>
         </div>
 
@@ -74,9 +74,9 @@ export default function EmailGateModal() {
           {error && <p className="text-sm text-hs-red font-ui">{error}</p>}
           <button
             type="submit"
-            className="w-full bg-hs-orange hover:bg-hs-orange/90 text-white font-ui font-semibold py-2.5 rounded-md"
+            className="w-full bg-hs-orange hover:bg-hs-sorbet text-white font-ui font-semibold py-2.5 rounded-[3px] transition-colors"
           >
-            Start Designing →
+            Show Me My CRM →
           </button>
         </form>
 
@@ -119,12 +119,16 @@ export default function EmailGateModal() {
             </button>
           )}
 
-          <button
-            onClick={startLiveSession}
-            className="w-full text-[13px] font-ui font-medium text-hs-text-light hover:text-hs-navy py-2 border-t border-hs-border pt-4"
-          >
-            🎥 Start Live Session (presenter)
-          </button>
+          {/* Internal: Daniel's live-session entry. Kept quiet — prospects use the form. */}
+          <div className="border-t border-hs-border pt-3 text-center">
+            <button
+              onClick={startLiveSession}
+              aria-label="Start a live presenter session"
+              className="text-[11px] font-ui text-hs-text-light/70 hover:text-hs-navy"
+            >
+              Presenter session
+            </button>
+          </div>
         </div>
       </div>
     </div>
