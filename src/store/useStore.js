@@ -38,6 +38,7 @@ function buildInitialSession(mode = 'async') {
     customObjects: [],
     workflows: [],
     fixPlan: null,
+    journey: { overrides: {} },
     views: { off: [], custom: [] },
     dashboards: { name: 'Sales Command Center', widgets: defaultWidgets() },
     cadence: defaultCadence(),
@@ -319,6 +320,19 @@ export const useStore = create((set, get) => ({
   },
   setFocusedProblem(id) {
     set({ focusedProblemId: id })
+  },
+
+  // ---- Customer journey customization ----
+  setJourneyOverride(id, enabled) {
+    get().patchSession((s) => ({
+      journey: {
+        ...s.journey,
+        overrides: { ...(s.journey?.overrides || {}), [id]: enabled },
+      },
+    }))
+  },
+  resetJourneyOverrides() {
+    get().patchSession({ journey: { overrides: {} } })
   },
   // True if a template (by templateId) is already added.
   hasTemplate(templateId) {

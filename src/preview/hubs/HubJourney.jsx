@@ -5,6 +5,7 @@ import {
   integrationsForStep,
   searchIntegrations,
 } from '../../constants/integrationsCatalog'
+import { journeyEnabled } from '../../constants/journeyMilestones'
 
 // The Customer Journey tab: every milestone from first touch to rising LTV,
 // with HubSpot woven through and an integration node on each step showing what
@@ -287,11 +288,14 @@ export default function HubJourney() {
     },
   ]
 
+  // Only the milestones this business actually uses (config step + discovery defaults).
+  const visibleSteps = STEPS.filter((s) => journeyEnabled(session, s.id))
+
   const results = searchIntegrations(query)
   const pickIntegration = (integ) => {
     setHighlight(integ.journeySteps)
     setQuery(integ.name)
-    const first = STEPS.find((s) => integ.journeySteps.includes(s.id))
+    const first = visibleSteps.find((s) => integ.journeySteps.includes(s.id))
     if (first) {
       setOpen(first.id)
       document.getElementById(`journey-${first.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -363,13 +367,13 @@ export default function HubJourney() {
               is how it runs itself.
             </p>
           </div>
-          {STEPS.map((step, i) => {
+          {visibleSteps.map((step, i) => {
             const color = PHASE_COLORS[step.phase]
             const isOpen = open === step.id
             const isHighlighted = highlight.includes(step.id)
             const showPhase = step.phase !== lastPhase
             lastPhase = step.phase
-            const isLast = i === STEPS.length - 1
+            const isLast = i === visibleSteps.length - 1
             const integs = integrationsForStep(step.id)
 
             return (

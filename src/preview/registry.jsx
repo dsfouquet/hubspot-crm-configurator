@@ -9,6 +9,7 @@ import PreviewViews from './PreviewViews'
 import PreviewDashboard from './PreviewDashboard'
 import PreviewCadence from './PreviewCadence'
 import Step11_Preview from '../steps/Step11_Preview'
+import HubJourney from './hubs/HubJourney'
 
 // Placeholder preview shown until each step's real preview is built.
 function PreviewPlaceholder({ index }) {
@@ -43,5 +44,6 @@ export const PREVIEW_COMPONENTS = {
   views: () => <PreviewViews />,
   dashboards: () => <PreviewDashboard />,
   cadence: () => <PreviewCadence />,
+  journeyMap: () => <HubJourney />,
   preview: () => <Step11_Preview />,
 }

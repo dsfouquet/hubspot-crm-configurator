@@ -7,6 +7,7 @@ import Step7_Workflows from './Step7_Workflows'
 import Step8_Views from './Step8_Views'
 import Step9_Dashboards from './Step9_Dashboards'
 import Step10_Cadence from './Step10_Cadence'
+import StepJourneyConfig from './StepJourneyConfig'
 
 // Placeholder shown until each step's real component is built (build phase 3+).
 function Placeholder({ index }) {
@@ -67,5 +68,6 @@ export const STEP_COMPONENTS = {
   views: (i) => <Step8_Views index={i} />,
   dashboards: (i) => <Step9_Dashboards index={i} />,
   cadence: (i) => <Step10_Cadence index={i} />,
+  journeyMap: (i) => <StepJourneyConfig index={i} />,
   preview: (i) => <Placeholder index={i} />,
 }
