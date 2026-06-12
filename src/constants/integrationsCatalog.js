@@ -27,9 +27,9 @@ export const INTEGRATIONS = [
   { name: 'JustCall', category: 'Calling & SMS', blurb: 'Calls and SMS logged automatically to contacts', hubspotBuilt: false, journeySteps: ['direct', 'feedback'] },
   { name: 'CallRail', category: 'Calling & SMS', blurb: 'Call tracking and attribution synced to records', hubspotBuilt: false, journeySteps: ['direct', 'ads'] },
   { name: 'Twilio', category: 'Calling & SMS', blurb: 'Programmable SMS/voice triggered from workflows', hubspotBuilt: false, journeySteps: ['feedback'] },
-  { name: 'Sakari', category: 'Calling & SMS', blurb: 'Two-way business SMS inside HubSpot workflows', hubspotBuilt: false, journeySteps: ['feedback', 'retain'] },
+  { name: 'Sakari', category: 'Calling & SMS', blurb: 'Two-way business SMS inside HubSpot workflows', hubspotBuilt: false, journeySteps: ['feedback', 'retain', 'warm_outreach'] },
   { name: 'Salesmsg', category: 'Calling & SMS', blurb: 'Two-way texting and calling on contact records', hubspotBuilt: false, journeySteps: ['feedback'] },
-  { name: 'Kixie', category: 'Calling & SMS', blurb: 'Power dialer with auto call/SMS logging', hubspotBuilt: false, journeySteps: ['route'] },
+  { name: 'Kixie', category: 'Calling & SMS', blurb: 'Power dialer with auto call/SMS logging', hubspotBuilt: false, journeySteps: ['route', 'cold_outreach'] },
 
   // Meetings & scheduling
   { name: 'Google Calendar', category: 'Meetings & scheduling', blurb: 'Two-way calendar sync for the meetings tool', hubspotBuilt: true, journeySteps: ['meeting'] },
@@ -58,8 +58,8 @@ export const INTEGRATIONS = [
   { name: 'Lead gen agency', category: 'Marketing & ads', blurb: 'Agency-sourced leads flow straight into the CRM with source tagging', hubspotBuilt: false, journeySteps: ['ads'] },
 
   // Social & video
-  { name: 'LinkedIn Sales Navigator', category: 'Social & video', blurb: 'Sales Navigator insights on CRM records', hubspotBuilt: false, journeySteps: ['social', 'intel', 'sales_nurture'] },
-  { name: 'Vidyard', category: 'Social & video', blurb: 'Embed and track sales videos in emails', hubspotBuilt: false, journeySteps: ['nurture', 'social', 'sales_nurture'] },
+  { name: 'LinkedIn Sales Navigator', category: 'Social & video', blurb: 'Sales Navigator insights on CRM records', hubspotBuilt: false, journeySteps: ['social', 'intel', 'sales_nurture', 'cold_outreach'] },
+  { name: 'Vidyard', category: 'Social & video', blurb: 'Embed and track sales videos in emails', hubspotBuilt: false, journeySteps: ['nurture', 'social', 'sales_nurture', 'cold_outreach', 'warm_outreach'] },
   { name: 'Loom', category: 'Social & video', blurb: 'Record and share videos logged to CRM', hubspotBuilt: false, journeySteps: ['nurture'] },
 
   // Project management & ops

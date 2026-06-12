@@ -93,6 +93,26 @@ export default function HubJourney() {
       tools: ['Social publishing', 'Engagement monitoring', 'Campaign tracking'],
     },
     {
+      id: 'cold_outreach',
+      phase: 'ATTRACT',
+      icon: '🧊',
+      title: "Cold outreach runs while you're selling",
+      summary: 'Targeted sequences of emails, calls, and LinkedIn touches — researched and personalized by AI.',
+      detail:
+        'Build a target list and enroll it in a sequence: emails send on schedule, call tasks queue up, LinkedIn touches get prompted. Breeze Prospecting Agent researches each company so the first line isn\'t generic. Opens, clicks, and replies all log — a reply pauses the sequence and pings the rep instantly.',
+      tools: ['Sales sequences', 'Breeze Prospecting Agent', 'Call queues', 'Reply tracking'],
+    },
+    {
+      id: 'warm_outreach',
+      phase: 'ATTRACT',
+      icon: '🔥',
+      title: 'Warm outreach mines the relationships you already have',
+      summary: 'Past clients, referrals, and dormant contacts — segmented lists that actually get worked.',
+      detail:
+        'Your back book is your cheapest lead source. Segments surface past clients you haven\'t touched in 6 months, referral partners due for a check-in, and dormant leads worth one more try. Personalized sequences and task queues turn "we should call our old customers" into something that actually happens every week.',
+      tools: ['Segments & lists', 'Personalized sequences', 'Referral tracking', 'Task queues'],
+    },
+    {
       id: 'direct',
       phase: 'ATTRACT',
       icon: '📞',
