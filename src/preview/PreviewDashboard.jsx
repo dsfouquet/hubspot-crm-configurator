@@ -6,6 +6,7 @@ import {
   WIDGET_LABELS,
 } from '../constants/defaultWidgets'
 import { BarChart, LineChart, HBarChart, DonutChart, DataTable } from './charts'
+import { IconBolt } from './uiIcons'
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
 
@@ -287,7 +288,7 @@ export default function PreviewDashboard() {
                     key={chip}
                     type="button"
                     onClick={() => setFilter(chip)}
-                    className={`text-[11px] font-preview rounded-full px-2.5 py-1 border transition-colors ${
+                    className={`text-[11px] font-preview rounded-[3px] px-2.5 py-1 border transition-colors ${
                       active
                         ? 'bg-hs-navy text-white border-hs-navy'
                         : 'bg-white text-hs-text-dark border-hs-border hover:border-hs-navy'
@@ -320,8 +321,9 @@ export default function PreviewDashboard() {
 
                 {automationToShow.length > 0 && (
                   <div className="mt-3">
-                    <p className="text-[11px] font-preview font-semibold uppercase tracking-wide text-hs-text-light mb-2">
-                      ⚡ Automation Health
+                    <p className="flex items-center gap-1.5 text-[11px] font-preview font-semibold uppercase tracking-wide text-hs-text-light mb-2">
+                      <IconBolt width={11} height={11} className="text-hs-marigold shrink-0" />
+                      Automation Health
                     </p>
                     <div className="grid grid-cols-2 gap-2">
                       {automationToShow.map((w) => (

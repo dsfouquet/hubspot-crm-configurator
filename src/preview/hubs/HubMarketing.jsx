@@ -10,8 +10,8 @@ import {
   LineChart,
   DonutChart,
   DataTable,
-  Pill,
 } from '../charts'
+import { Tag, IconRefresh, IconDownload } from '../uiIcons'
 import {
   EMAIL_PERFORMANCE,
   FORMS_DEMO,
@@ -94,8 +94,8 @@ function EmailTab({ companyName }) {
 
           <div className="bg-white rounded-lg border border-hs-border p-4">
             <div className="flex items-center gap-2 mb-1">
-              <span className="w-7 h-7 rounded-md bg-hs-orange/10 flex items-center justify-center text-hs-orange text-[13px]">
-                ⟳
+              <span className="w-7 h-7 rounded-md bg-hs-orange/10 flex items-center justify-center text-hs-orange">
+                <IconRefresh width={13} height={13} />
               </span>
               <h4 className="text-[13px] font-semibold text-hs-navy">
                 Nurture sequence
@@ -117,7 +117,7 @@ function EmailTab({ companyName }) {
                   {i < 4 && <span className="w-3 h-px bg-hs-border" />}
                 </span>
               ))}
-              <Pill color="green">Active</Pill>
+              <Tag color="green">Active</Tag>
             </div>
           </div>
         </div>
@@ -311,8 +311,8 @@ function CTAsTab() {
           subtitle="Embeds mid-article to capture interest"
         >
           <div className="rounded-md border border-hs-border bg-white p-5 flex items-center gap-4">
-            <div className="w-14 h-14 rounded bg-hs-orange/10 flex items-center justify-center text-hs-orange text-[22px] shrink-0">
-              ↓
+            <div className="w-14 h-14 rounded bg-hs-orange/10 flex items-center justify-center text-hs-orange shrink-0">
+              <IconDownload width={22} height={22} />
             </div>
             <div className="min-w-0">
               <h3 className="text-hs-navy text-[14px] font-bold leading-snug">
@@ -345,7 +345,7 @@ function CTAsTab() {
 
 function ChipStat({ children }) {
   return (
-    <span className="inline-block text-[10px] font-medium text-hs-text-dark bg-hs-canvas border border-hs-border rounded-full px-2.5 py-1">
+    <span className="inline-block text-[10px] font-medium text-hs-text-dark bg-hs-canvas border border-hs-border rounded-[3px] px-2.5 py-1">
       {children}
     </span>
   )
@@ -360,7 +360,7 @@ function CampaignsTab() {
     {
       key: 'channel',
       label: 'Channel',
-      render: (v) => <Pill color={channelColor(v)}>{v}</Pill>,
+      render: (v) => <Tag color={channelColor(v)}>{v}</Tag>,
     },
     { key: 'leads', label: 'Leads', align: 'right' },
     {

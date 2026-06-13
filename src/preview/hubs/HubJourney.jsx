@@ -6,6 +6,33 @@ import {
   searchIntegrations,
 } from '../../constants/integrationsCatalog'
 import { journeyEnabled } from '../../constants/journeyMilestones'
+import {
+  IconSearch,
+  IconMegaphone,
+  IconChat,
+  IconSnowflake,
+  IconFlame,
+  IconPhone,
+  IconPhoneOut,
+  IconForm,
+  IconBolt,
+  IconSparkle,
+  IconFolder,
+  IconMail,
+  IconTarget,
+  IconCalendar,
+  IconChart,
+  IconReceipt,
+  IconHandshake,
+  IconPackage,
+  IconLifeRing,
+  IconStar,
+  IconRefresh,
+  IconPlug,
+  IconCheck,
+  IconArrowRight,
+  IconChevronRight,
+} from '../hubIcons'
 
 // The Customer Journey tab, rebuilt as a HORIZONTAL PHASE BOARD: one column per
 // phase (Attract → Convert → Close → Deliver → Retain), each holding compact
@@ -25,7 +52,7 @@ const PHASE_COLORS = {
 
 const Chip = ({ children, accent }) => (
   <span
-    className={`inline-block text-[10px] font-preview rounded-full px-2 py-0.5 ${
+    className={`inline-block text-[10px] font-preview rounded-[3px] px-2 py-0.5 ${
       accent
         ? 'bg-hs-orange/10 text-hs-orange border border-hs-orange/30'
         : 'bg-hs-canvas border border-hs-border text-hs-text-dark'
@@ -55,7 +82,7 @@ export default function HubJourney() {
     {
       id: 'search',
       phase: 'ATTRACT',
-      icon: '🔍',
+      icon: IconSearch,
       title: 'They search for what they need',
       summary: `Someone Googles ${copy.searchExample} — your site and content are built to get found.`,
       detail:
@@ -65,7 +92,7 @@ export default function HubJourney() {
     {
       id: 'ads',
       phase: 'ATTRACT',
-      icon: '📢',
+      icon: IconMegaphone,
       title: 'Ads bring in the rest',
       summary: `Google, Facebook, and LinkedIn ads run from inside HubSpot — leads sync straight to the CRM.`,
       detail:
@@ -75,7 +102,7 @@ export default function HubJourney() {
     {
       id: 'social',
       phase: 'ATTRACT',
-      icon: '💬',
+      icon: IconChat,
       title: 'They engage with your content and LinkedIn posts',
       summary: 'Likes, comments, and follows get tied back to real contacts — interest you can act on.',
       detail:
@@ -85,7 +112,7 @@ export default function HubJourney() {
     {
       id: 'cold_outreach',
       phase: 'ATTRACT',
-      icon: '🧊',
+      icon: IconSnowflake,
       title: "Cold outreach runs while you're selling",
       summary: 'Targeted sequences of emails, calls, and LinkedIn touches — researched and personalized by AI.',
       detail:
@@ -95,7 +122,7 @@ export default function HubJourney() {
     {
       id: 'warm_outreach',
       phase: 'ATTRACT',
-      icon: '🔥',
+      icon: IconFlame,
       title: 'Warm outreach mines the relationships you already have',
       summary: 'Past clients, referrals, and dormant contacts — segmented lists that actually get worked.',
       detail:
@@ -105,7 +132,7 @@ export default function HubJourney() {
     {
       id: 'direct',
       phase: 'ATTRACT',
-      icon: '📞',
+      icon: IconPhone,
       title: 'Or they just call or email you directly',
       summary: 'Inbound calls and emails log themselves — every conversation lands on the contact record.',
       detail:
@@ -115,7 +142,7 @@ export default function HubJourney() {
     {
       id: 'form',
       phase: 'ATTRACT',
-      icon: '📝',
+      icon: IconForm,
       title: 'They fill out your form',
       summary: 'The form creates a contact instantly — with their source and page history attached.',
       detail:
@@ -127,7 +154,7 @@ export default function HubJourney() {
     {
       id: 'route',
       phase: 'CONVERT',
-      icon: '⚡',
+      icon: IconBolt,
       title: 'The lead routes to a salesperson in seconds',
       summary: 'Owner assigned automatically, rep notified on their phone, call task created.',
       detail:
@@ -137,7 +164,7 @@ export default function HubJourney() {
     {
       id: 'ai_prep',
       phase: 'CONVERT',
-      icon: '🤖',
+      icon: IconSparkle,
       title: 'AI preps the rep before the call',
       summary: 'Breeze AI enriches the contact and company, then pulls up the right playbook.',
       detail:
@@ -147,7 +174,7 @@ export default function HubJourney() {
     {
       id: 'intel',
       phase: 'CONVERT',
-      icon: '🗂',
+      icon: IconFolder,
       title: 'Every detail gets captured for later',
       summary: 'Call notes, kids\' names, budget timing, competitor mentions — saved on the record, not in someone\'s head.',
       detail:
@@ -157,7 +184,7 @@ export default function HubJourney() {
     {
       id: 'nurture',
       phase: 'CONVERT',
-      icon: '📧',
+      icon: IconMail,
       title: 'Not ready yet? Marketing keeps them warm',
       summary: 'They get useful marketing emails — every open and click quietly raises their lead score.',
       detail:
@@ -167,7 +194,7 @@ export default function HubJourney() {
     {
       id: 'score',
       phase: 'CONVERT',
-      icon: '🎯',
+      icon: IconTarget,
       title: 'Score crosses the line — sales gets pinged',
       summary: 'MQL becomes SQL automatically. The rep gets a hot lead, not a cold list.',
       detail:
@@ -179,7 +206,7 @@ export default function HubJourney() {
     {
       id: 'sales_nurture',
       phase: 'CONVERT',
-      icon: '🤙',
+      icon: IconPhoneOut,
       title: 'Sales nurtures the qualified lead — their way',
       summary: 'Calls, emails, drop-bys, lunches — every touch logs itself, and tasks queue the next one.',
       detail:
@@ -191,7 +218,7 @@ export default function HubJourney() {
     {
       id: 'meeting',
       phase: 'CLOSE',
-      icon: '📅',
+      icon: IconCalendar,
       title: 'Appointments book themselves',
       summary: 'A calendar link kills the back-and-forth; the follow-up email already went out.',
       detail:
@@ -201,7 +228,7 @@ export default function HubJourney() {
     {
       id: 'stages',
       phase: 'CLOSE',
-      icon: '📊',
+      icon: IconChart,
       title: 'The deal moves through your stages',
       summary: stageStr,
       detail:
@@ -211,7 +238,7 @@ export default function HubJourney() {
     {
       id: 'quote',
       phase: 'CLOSE',
-      icon: '🧾',
+      icon: IconReceipt,
       title: 'Quote, signature, deposit — one motion',
       summary: 'The quote generates from the deal; they sign and pay in one link. Follow-up chases itself.',
       detail:
@@ -224,7 +251,7 @@ export default function HubJourney() {
     {
       id: 'handoff',
       phase: 'DELIVER',
-      icon: '🤝',
+      icon: IconHandshake,
       title: 'Closed won — operations takes the baton',
       summary: 'The delivery team is notified with full context. The customer never repeats themselves.',
       detail:
@@ -235,7 +262,7 @@ export default function HubJourney() {
     {
       id: 'fulfill',
       phase: 'DELIVER',
-      icon: '📦',
+      icon: IconPackage,
       title: 'Fulfillment and invoicing run connected',
       summary: `Projects sync to your work tools; invoices sync to ${accounting}. No re-typing anywhere.`,
       detail:
@@ -247,7 +274,7 @@ export default function HubJourney() {
     {
       id: 'support',
       phase: 'RETAIN',
-      icon: '🛟',
+      icon: IconLifeRing,
       title: 'When something breaks, service sees it instantly',
       summary: 'Tickets with owners and SLAs — and the full sales history right there.',
       detail:
@@ -258,7 +285,7 @@ export default function HubJourney() {
     {
       id: 'feedback',
       phase: 'RETAIN',
-      icon: '⭐',
+      icon: IconStar,
       title: 'SMS + email ask how it went',
       summary: 'Happy customers get pointed to Google reviews. Unhappy ones alert you before they churn.',
       detail:
@@ -268,7 +295,7 @@ export default function HubJourney() {
     {
       id: 'retain',
       phase: 'RETAIN',
-      icon: '🔁',
+      icon: IconRefresh,
       title: 'Retention and re-engagement run on autopilot',
       summary: 'Renewals trigger early, lapsed customers get win-back sequences — LTV climbs.',
       detail:
@@ -308,18 +335,23 @@ export default function HubJourney() {
               Your customer journey, run as one revenue operation
             </h2>
             <p className="text-[12px] text-hs-text-light">
-              First touch to rising LTV — click any step for detail. 🔌 shows what plugs in.
+              First touch to rising LTV — click any step for detail. The plug icon shows what connects.
             </p>
           </div>
           <div className="relative">
+            <IconSearch
+              width={14}
+              height={14}
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-hs-text-light pointer-events-none"
+            />
             <input
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value)
                 setHighlight([])
               }}
-              placeholder="🔌 Already use other tools? Search them…"
-              className="w-72 rounded-md border border-hs-border px-3 py-1.5 text-[12px] focus:outline-none focus:border-hs-blue"
+              placeholder="Already use other tools? Search them…"
+              className="hs-input w-72 pl-8 pr-3 py-1.5 text-[12px]"
             />
             {results.length > 0 && highlight.length === 0 && (
               <div className="absolute right-0 mt-1 w-72 bg-white border border-hs-border rounded-md shadow-lg z-30 overflow-hidden">
@@ -336,8 +368,9 @@ export default function HubJourney() {
               </div>
             )}
             {highlight.length > 0 && (
-              <p className="absolute right-0 mt-1 text-[10px] text-hs-green whitespace-nowrap">
-                ✓ Plugs in at {highlight.length} step{highlight.length === 1 ? '' : 's'} — highlighted below
+              <p className="absolute right-0 mt-1 text-[10px] text-hs-green whitespace-nowrap flex items-center gap-1">
+                <IconCheck width={11} height={11} className="shrink-0" />
+                Plugs in at {highlight.length} step{highlight.length === 1 ? '' : 's'} — highlighted below
               </p>
             )}
           </div>
@@ -347,7 +380,7 @@ export default function HubJourney() {
       {/* 2) RevOps banner — single compact strip */}
       <div className="shrink-0 bg-white border-b border-hs-border px-5 py-2">
         <p className="text-[11px] text-hs-text-dark leading-snug">
-          <span className="font-bold uppercase tracking-wide text-hs-orange">This is RevOps:</span>{' '}
+          <span className="text-[10px] font-bold uppercase tracking-wide text-hs-orange">This is RevOps:</span>{' '}
           Marketing, sales, billing, and service as one continuous process — every handoff automatic,
           nothing re-typed. Companies pay a $250K/yr VP to run this; HubSpot runs it itself.
         </p>
@@ -362,12 +395,12 @@ export default function HubJourney() {
                 {/* Phase header chip + underline */}
                 <div className="mb-2.5">
                   <span
-                    className="inline-block text-[10px] font-bold uppercase tracking-[0.15em] text-white rounded px-2 py-0.5"
+                    className="inline-block text-[10px] font-bold uppercase tracking-wide text-white rounded-[3px] px-2 py-0.5"
                     style={{ backgroundColor: p.color }}
                   >
                     {p.phase}
                   </span>
-                  <span className="block mt-1.5 h-px w-full" style={{ backgroundColor: `${p.color}55` }} />
+                  <span className="block mt-1.5 h-[2px] w-full rounded-full" style={{ backgroundColor: p.color }} />
                 </div>
 
                 {/* Stacked compact milestone cards */}
@@ -380,28 +413,36 @@ export default function HubJourney() {
                       <div key={step.id}>
                         {step.handoff && (
                           <div className="mb-1">
-                            <span className="inline-block text-[9px] font-preview bg-white border border-hs-border rounded-full px-2 py-0.5 text-hs-text-dark">
-                              {step.handoff.from} <span className="text-hs-orange">→</span> {step.handoff.to}
+                            <span className="inline-flex items-center gap-1 text-[9px] font-preview bg-white border border-hs-border rounded-[3px] px-2 py-0.5 text-hs-text-dark">
+                              {step.handoff.from}
+                              <IconArrowRight width={9} height={9} className="text-hs-orange shrink-0" />
+                              {step.handoff.to}
                             </span>
                           </div>
                         )}
                         <button
                           onClick={() => setOpen(isOpen ? null : step.id)}
-                          className={`w-full text-left flex items-center gap-2 bg-white rounded-md border px-2.5 py-2 transition-all hover:shadow-md ${
+                          className={`w-full text-left flex items-center gap-2 bg-white rounded-[4px] border px-2.5 py-2 shadow-sm transition-all hover:shadow-md ${
                             isHighlighted ? 'ring-2 ring-hs-green' : ''
                           }`}
                           style={{ borderColor: isOpen ? p.color : '#CBD6E2' }}
                         >
-                          <span className="text-[15px] leading-none shrink-0">{step.icon}</span>
+                          <span
+                            className="shrink-0 w-6 h-6 rounded-[4px] flex items-center justify-center"
+                            style={{ backgroundColor: `${p.color}1A`, color: p.color }}
+                          >
+                            <step.icon width={14} height={14} />
+                          </span>
                           <span className="flex-1 text-[12px] font-semibold text-hs-navy leading-snug">
                             {step.title}
                           </span>
                           {integs.length > 0 && (
                             <span
-                              className="shrink-0 text-[9px] text-hs-text-light bg-hs-canvas border border-hs-border rounded-full px-1.5 py-0.5"
+                              className="shrink-0 inline-flex items-center gap-0.5 text-[9px] text-hs-text-light bg-hs-koala rounded-[3px] px-1.5 py-0.5"
                               title={`${integs.length} integrations plug in here`}
                             >
-                              🔌 {integs.length}
+                              <IconPlug width={10} height={10} />
+                              {integs.length}
                             </span>
                           )}
                         </button>
@@ -413,8 +454,8 @@ export default function HubJourney() {
 
               {/* Flow connector between phases */}
               {pi < phases.length - 1 && (
-                <div className="flex items-center px-1.5 self-stretch">
-                  <span className="text-hs-text-light text-[18px]">→</span>
+                <div className="flex items-center px-1.5 self-stretch text-hs-border">
+                  <IconChevronRight width={16} height={16} />
                 </div>
               )}
             </div>
@@ -435,7 +476,7 @@ export default function HubJourney() {
             <div className="flex-1 overflow-y-auto hs-scroll px-5 py-4">
               <div className="flex items-start justify-between gap-3">
                 <span
-                  className="inline-block text-[10px] font-bold uppercase tracking-[0.15em] text-white rounded px-2 py-0.5"
+                  className="inline-block text-[10px] font-bold uppercase tracking-wide text-white rounded-[3px] px-2 py-0.5"
                   style={{ backgroundColor: PHASE_COLORS[openStep.phase] }}
                 >
                   {openStep.phase}
@@ -450,7 +491,15 @@ export default function HubJourney() {
               </div>
 
               <div className="flex items-center gap-2.5 mt-3">
-                <span className="text-[22px] leading-none">{openStep.icon}</span>
+                <span
+                  className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
+                  style={{
+                    backgroundColor: `${PHASE_COLORS[openStep.phase]}1A`,
+                    color: PHASE_COLORS[openStep.phase],
+                  }}
+                >
+                  <openStep.icon width={18} height={18} />
+                </span>
                 <h3 className="text-[15px] font-semibold text-hs-navy leading-snug">{openStep.title}</h3>
               </div>
 
@@ -470,8 +519,9 @@ export default function HubJourney() {
 
               {openIntegs.length > 0 && (
                 <div className="mt-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
-                    🔌 Plug in what you already use
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1.5 flex items-center gap-1">
+                    <IconPlug width={11} height={11} className="shrink-0" />
+                    Plug in what you already use
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {openIntegs.map((g) => (
@@ -489,9 +539,9 @@ export default function HubJourney() {
 
       {/* 5) Footer — navy LTV closer band */}
       <div className="shrink-0 bg-hs-navy px-5 py-2.5 text-center">
-        <p className="text-[12px] text-white font-medium">
+        <p className="text-[12px] text-white/90 font-medium tracking-[0.01em]">
           Same customers. Same team. Every step connected —
-          <span className="text-hs-orange"> and lifetime value climbing on its own.</span>
+          <span className="text-hs-sorbet font-semibold"> and lifetime value climbing on its own.</span>
         </p>
       </div>
     </div>

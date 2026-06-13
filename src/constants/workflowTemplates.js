@@ -27,13 +27,13 @@ export const WORKFLOW_TEMPLATES = [
     nodes: [
       N('t', 'trigger', 'Deal Stage = Proposal Sent', 'When a deal moves to Proposal Sent', 'd1'),
       N('d1', 'delay', 'Wait 2 days', '', 'a1'),
-      N('a1', 'action', '📧 Send Email: Quote Follow-Up #1', 'Friendly check-in', 'c1'),
+      N('a1', 'action', 'Send Email: Quote Follow-Up #1', 'Friendly check-in', 'c1'),
       N('c1', 'condition', 'If no reply', 'Branch on prospect response', 'd2', 'end_replied'),
       N('d2', 'delay', 'Wait 3 days', '', 'a2'),
-      N('a2', 'action', '📧 Send Email: Quote Follow-Up #2', 'Second nudge', 'a3'),
-      N('a3', 'action', '✅ Create task for rep', 'Personal follow-up needed', 'end_done'),
-      N('end_replied', 'end', '✓ Workflow Complete', 'Prospect replied'),
-      N('end_done', 'end', '✓ Workflow Complete', 'Rep takes over'),
+      N('a2', 'action', 'Send Email: Quote Follow-Up #2', 'Second nudge', 'a3'),
+      N('a3', 'action', 'Create task for rep', 'Personal follow-up needed', 'end_done'),
+      N('end_replied', 'end', 'Workflow Complete', 'Prospect replied'),
+      N('end_done', 'end', 'Workflow Complete', 'Rep takes over'),
     ],
   },
   {
@@ -46,10 +46,10 @@ export const WORKFLOW_TEMPLATES = [
     trigger: { type: 'form_submission', label: 'Contact form submitted' },
     nodes: [
       N('t', 'trigger', 'Contact form submitted', 'New form submission', 'a1'),
-      N('a1', 'action', '👤 Assign owner', 'By territory / round robin', 'a2'),
-      N('a2', 'action', '📧 Send welcome email', '', 'a3'),
-      N('a3', 'action', '✅ Create follow-up task', '', 'end'),
-      N('end', 'end', '✓ Workflow Complete', ''),
+      N('a1', 'action', 'Assign owner', 'By territory / round robin', 'a2'),
+      N('a2', 'action', 'Send welcome email', '', 'a3'),
+      N('a3', 'action', 'Create follow-up task', '', 'end'),
+      N('end', 'end', 'Workflow Complete', ''),
     ],
   },
   {
@@ -62,9 +62,9 @@ export const WORKFLOW_TEMPLATES = [
     trigger: { type: 'deal_inactivity', label: 'No deal activity for 14 days' },
     nodes: [
       N('t', 'trigger', 'No deal activity for 14 days', 'Deal has gone quiet', 'a1'),
-      N('a1', 'action', '🔔 Notify deal owner', '', 'a2'),
-      N('a2', 'action', '✅ Create task: "Re-engage this deal"', '', 'end'),
-      N('end', 'end', '✓ Workflow Complete', ''),
+      N('a1', 'action', 'Notify deal owner', '', 'a2'),
+      N('a2', 'action', 'Create task: "Re-engage this deal"', '', 'end'),
+      N('end', 'end', 'Workflow Complete', ''),
     ],
   },
   {
@@ -77,11 +77,11 @@ export const WORKFLOW_TEMPLATES = [
     trigger: { type: 'deal_stage', label: 'Deal Stage = Closed Won' },
     nodes: [
       N('t', 'trigger', 'Deal Stage = Closed Won', '', 'a1'),
-      N('a1', 'action', '🔔 Notify CS team', '', 'a2'),
-      N('a2', 'action', '✅ Create onboarding tasks', '', 'a3'),
-      N('a3', 'action', '🔄 Update lifecycle stage', 'Set to Customer', 'a4'),
-      N('a4', 'action', '📧 Send intro email', '', 'end'),
-      N('end', 'end', '✓ Workflow Complete', ''),
+      N('a1', 'action', 'Notify CS team', '', 'a2'),
+      N('a2', 'action', 'Create onboarding tasks', '', 'a3'),
+      N('a3', 'action', 'Update lifecycle stage', 'Set to Customer', 'a4'),
+      N('a4', 'action', 'Send intro email', '', 'end'),
+      N('end', 'end', 'Workflow Complete', ''),
     ],
   },
   {
@@ -95,9 +95,9 @@ export const WORKFLOW_TEMPLATES = [
     nodes: [
       N('t', 'trigger', 'Deal Stage = Closed Lost', '', 'd1'),
       N('d1', 'delay', 'Wait 90 days', '', 'a1'),
-      N('a1', 'action', '🔁 Enroll in re-engagement sequence', '', 'a2'),
-      N('a2', 'action', '🔔 Notify rep', '', 'end'),
-      N('end', 'end', '✓ Enrolled in Sequence: Re-engagement', ''),
+      N('a1', 'action', 'Enroll in re-engagement sequence', '', 'a2'),
+      N('a2', 'action', 'Notify rep', '', 'end'),
+      N('end', 'end', 'Enrolled in Sequence: Re-engagement', ''),
     ],
   },
   {
@@ -110,8 +110,8 @@ export const WORKFLOW_TEMPLATES = [
     trigger: { type: 'meeting_booked', label: 'Meeting booked via HubSpot' },
     nodes: [
       N('t', 'trigger', 'Meeting booked', 'Via HubSpot scheduler', 'a1'),
-      N('a1', 'action', '➡️ Move deal to "Qualified"', '', 'end'),
-      N('end', 'end', '✓ Workflow Complete', ''),
+      N('a1', 'action', 'Move deal to "Qualified"', '', 'end'),
+      N('end', 'end', 'Workflow Complete', ''),
     ],
   },
 
@@ -126,11 +126,11 @@ export const WORKFLOW_TEMPLATES = [
     trigger: { type: 'contact_created', label: 'Contact created' },
     nodes: [
       N('t', 'trigger', 'Contact created', '', 'a1'),
-      N('a1', 'action', '📧 Send welcome email', '', 'd1'),
+      N('a1', 'action', 'Send welcome email', '', 'd1'),
       N('d1', 'delay', 'Wait 3 days', '', 'a2'),
-      N('a2', 'action', '📧 Send value email', '', 'a3'),
-      N('a3', 'action', '🔁 Enroll in sequence', '', 'end'),
-      N('end', 'end', '✓ Enrolled in Sequence: Nurture', ''),
+      N('a2', 'action', 'Send value email', '', 'a3'),
+      N('a3', 'action', 'Enroll in sequence', '', 'end'),
+      N('end', 'end', 'Enrolled in Sequence: Nurture', ''),
     ],
   },
   {
@@ -143,10 +143,10 @@ export const WORKFLOW_TEMPLATES = [
     trigger: { type: 'lead_score', label: 'HubSpot score reaches 50' },
     nodes: [
       N('t', 'trigger', 'HubSpot score ≥ 50', '', 'a1'),
-      N('a1', 'action', '🔔 Notify sales rep', '', 'a2'),
-      N('a2', 'action', '🔄 Change lifecycle to MQL', '', 'a3'),
-      N('a3', 'action', '✅ Create outreach task', '', 'end'),
-      N('end', 'end', '✓ Workflow Complete', ''),
+      N('a1', 'action', 'Notify sales rep', '', 'a2'),
+      N('a2', 'action', 'Change lifecycle to MQL', '', 'a3'),
+      N('a3', 'action', 'Create outreach task', '', 'end'),
+      N('end', 'end', 'Workflow Complete', ''),
     ],
   },
   {
@@ -159,11 +159,11 @@ export const WORKFLOW_TEMPLATES = [
     trigger: { type: 'email_inactivity', label: 'No email open in 60 days' },
     nodes: [
       N('t', 'trigger', 'No email open in 60 days', '', 'a1'),
-      N('a1', 'action', '📧 Send re-engagement email', '', 'c1'),
+      N('a1', 'action', 'Send re-engagement email', '', 'c1'),
       N('c1', 'condition', 'If no click in 7 days', '', 'a2', 'end_clicked'),
-      N('a2', 'action', '🏷️ Mark as unengaged', '', 'end_done'),
-      N('end_clicked', 'end', '✓ Workflow Complete', 'Contact re-engaged'),
-      N('end_done', 'end', '✓ Workflow Complete', 'Marked unengaged'),
+      N('a2', 'action', 'Mark as unengaged', '', 'end_done'),
+      N('end_clicked', 'end', 'Workflow Complete', 'Contact re-engaged'),
+      N('end_done', 'end', 'Workflow Complete', 'Marked unengaged'),
     ],
   },
 
@@ -178,9 +178,9 @@ export const WORKFLOW_TEMPLATES = [
     trigger: { type: 'date_property', label: 'Close date 90 days out' },
     nodes: [
       N('t', 'trigger', 'Close date 90 days out', '', 'a1'),
-      N('a1', 'action', '✅ Create QBR task', '', 'a2'),
-      N('a2', 'action', '📧 Send prep email to contact', '', 'end'),
-      N('end', 'end', '✓ Workflow Complete', ''),
+      N('a1', 'action', 'Create QBR task', '', 'a2'),
+      N('a2', 'action', 'Send prep email to contact', '', 'end'),
+      N('end', 'end', 'Workflow Complete', ''),
     ],
   },
   {
@@ -193,10 +193,10 @@ export const WORKFLOW_TEMPLATES = [
     trigger: { type: 'date_property', label: 'Renewal Date 60 days out' },
     nodes: [
       N('t', 'trigger', 'Renewal Date 60 days out', 'Custom property', 'a1'),
-      N('a1', 'action', '🔔 Notify account owner', '', 'a2'),
-      N('a2', 'action', '💰 Create renewal deal', '', 'a3'),
-      N('a3', 'action', '📧 Send renewal email', '', 'end'),
-      N('end', 'end', '✓ Workflow Complete', ''),
+      N('a1', 'action', 'Notify account owner', '', 'a2'),
+      N('a2', 'action', 'Create renewal deal', '', 'a3'),
+      N('a3', 'action', 'Send renewal email', '', 'end'),
+      N('end', 'end', 'Workflow Complete', ''),
     ],
   },
   {
@@ -209,10 +209,10 @@ export const WORKFLOW_TEMPLATES = [
     trigger: { type: 'ticket_inactivity', label: 'Ticket open > 48h, no update' },
     nodes: [
       N('t', 'trigger', 'Ticket open > 48h, no update', '', 'a1'),
-      N('a1', 'action', '⬆️ Reassign to manager', '', 'a2'),
-      N('a2', 'action', '📧 Send apology email', '', 'a3'),
-      N('a3', 'action', '✅ Create urgent task', '', 'end'),
-      N('end', 'end', '✓ Workflow Complete', ''),
+      N('a1', 'action', 'Reassign to manager', '', 'a2'),
+      N('a2', 'action', 'Send apology email', '', 'a3'),
+      N('a3', 'action', 'Create urgent task', '', 'end'),
+      N('end', 'end', 'Workflow Complete', ''),
     ],
   },
 ]

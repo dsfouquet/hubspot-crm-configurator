@@ -151,8 +151,18 @@ function ActionBar() {
   if (isCustomer) {
     // Customer funnel: the routed CTA lives on the Next Steps screen.
     return (
-      <div className="shrink-0 border-t border-hs-border bg-white px-5 py-3 flex items-center justify-between gap-2 flex-wrap">
-        <DownloadPdfButton variant="secondary" label="Download PDF Summary" />
+      <div className="shrink-0 border-t border-hs-border bg-white px-5 py-3 flex items-center gap-3 flex-wrap">
+        <button
+          onClick={() => goToStep(1)}
+          className="text-[13px] font-ui font-medium text-hs-text-light hover:text-hs-navy"
+        >
+          ← Back to your build plan
+        </button>
+        <span className="text-[11px] font-ui font-semibold uppercase tracking-wide text-hs-text-light">
+          Step 3 of 4
+        </span>
+        <span className="flex-1" />
+        <DownloadPdfButton variant="secondary" label="Download PDF" />
         <button onClick={() => goToStep(3)} className="hs-btn-primary">
           See your next steps →
         </button>

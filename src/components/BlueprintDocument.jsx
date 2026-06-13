@@ -121,7 +121,7 @@ function MiniWorkflow({ workflow }) {
   return (
     <Card title={`${workflow.name}  ·  ${workflow.tier?.toUpperCase?.() || ''}`}>
       <div style={{ fontSize: 12, color: '#7C98B6', marginBottom: 8 }}>
-        ⚡ {workflow.triggerSummary} · {actionCount(workflow)} actions
+        Trigger: {workflow.triggerSummary} · {actionCount(workflow)} actions
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {ordered.map((n) => (
@@ -269,7 +269,7 @@ export default function BlueprintDocument() {
             </div>
           )}
           {session.fixPlan.problems.map((p) => (
-            <Card key={p.id} title={`${p.isTop ? '🔥 ' : ''}${p.title}${p.hub ? `  ·  ${p.hub}` : ''}`}>
+            <Card key={p.id} title={`${p.isTop ? 'TOP LEAK — ' : ''}${p.title}${p.hub ? `  ·  ${p.hub}` : ''}`}>
               <div style={{ fontSize: 11, color: '#7C98B6', marginBottom: 4 }}>
                 You said: “{p.saidLabel}”
               </div>
@@ -498,7 +498,7 @@ export default function BlueprintDocument() {
           {session.workflows.length > 0 && (
             <>
               <div style={{ fontSize: 11, color: '#7C98B6', margin: '10px 0 2px' }}>
-                ⚡ Automation Health
+                Automation Health
               </div>
               <Chips
                 items={AUTOMATION_HEALTH_WIDGETS.filter((x) => widgets.includes(x.id)).map(

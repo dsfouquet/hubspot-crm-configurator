@@ -3,8 +3,8 @@ import { useStore } from '../../store/useStore'
 import {
   StatCard,
   DonutChart,
-  Pill,
 } from '../charts'
+import { Tag, IconWarning, IconSearch, IconBook, IconCheck } from '../uiIcons'
 import { TICKETS, KB_ARTICLES, NPS_DATA } from '../demoData'
 
 const SUB_TABS = ['Help Desk', 'Knowledge Base', 'Surveys']
@@ -144,12 +144,13 @@ function HelpDesk() {
                         {ticket.company}
                       </p>
                       <div className="mt-1.5 flex items-center justify-between">
-                        <Pill color={PRIORITY_PILL[ticket.priority] || 'gray'}>
+                        <Tag color={PRIORITY_PILL[ticket.priority] || 'gray'}>
                           {ticket.priority}
-                        </Pill>
+                        </Tag>
                         {isSla && (
-                          <span className="text-[10px] font-preview font-medium text-hs-red bg-hs-red/10 rounded px-1.5 py-0.5">
-                            ⚠ SLA: 1h left
+                          <span className="inline-flex items-center gap-1 text-[10px] font-preview font-semibold text-hs-red bg-hs-red/10 rounded-[3px] px-1.5 py-0.5">
+                            <IconWarning width={10} height={10} className="shrink-0" />
+                            SLA: 1h left
                           </span>
                         )}
                       </div>
@@ -195,7 +196,7 @@ function KnowledgeBase() {
           Search our knowledge base for answers
         </p>
         <div className="mt-4 max-w-md mx-auto flex items-center bg-white rounded-md overflow-hidden shadow-sm">
-          <span className="pl-3 text-hs-text-light text-[14px]">🔍</span>
+          <span className="pl-3 text-hs-text-light"><IconSearch width={14} height={14} /></span>
           <input
             type="text"
             readOnly
@@ -225,7 +226,7 @@ function KnowledgeBase() {
               key={a.title}
               className="bg-white rounded-lg border border-hs-border p-4 flex gap-3 hover:border-hs-blue transition-colors"
             >
-              <span className="text-[20px] leading-none">📘</span>
+              <span className="text-hs-blue mt-0.5"><IconBook width={18} height={18} /></span>
               <div className="min-w-0">
                 <p className="text-[13px] font-preview font-semibold text-hs-navy">
                   {a.title}
@@ -233,7 +234,7 @@ function KnowledgeBase() {
                 <div className="mt-1.5 flex items-center gap-3 text-[11px] font-preview text-hs-text-light">
                   <span>{a.views} views</span>
                   <span className="flex items-center gap-1 text-hs-green">
-                    <span>✓</span>
+                    <IconCheck width={11} height={11} className="shrink-0" />
                     {a.helpful} found helpful
                   </span>
                 </div>

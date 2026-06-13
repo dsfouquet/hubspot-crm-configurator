@@ -26,7 +26,6 @@ export default function StepCTA() {
   const workflowCount = (session.workflows || []).length
   const widgetCount = (session.dashboards?.widgets || []).length
   const customObj = (session.customObjects || [])[0]
-  const topProblems = (session.fixPlan?.problems || []).slice(0, 3)
 
   const recap = [
     `${stages.length}-stage sales pipeline in your language`,
@@ -38,7 +37,12 @@ export default function StepCTA() {
   return (
     <div className="h-full overflow-y-auto hs-scroll bg-hs-canvas">
       <div className="max-w-2xl mx-auto px-5 py-8 sm:py-12">
-        <Logo />
+        <div className="flex items-center justify-between gap-3">
+          <Logo />
+          <span className="text-[11px] font-ui font-semibold uppercase tracking-wide text-hs-text-light">
+            Step 4 of 4 · Next steps
+          </span>
+        </div>
 
         <h1 className="mt-6 font-ui font-bold text-hs-navy text-2xl sm:text-3xl leading-tight">
           {name ? `${name}, your` : 'Your'} CRM build plan is ready.
@@ -59,30 +63,6 @@ export default function StepCTA() {
             </span>
           ))}
         </div>
-
-        {/* Top problems we fix */}
-        {topProblems.length > 0 && (
-          <div className="mt-6 space-y-2">
-            <h2 className="text-[12px] font-ui font-semibold uppercase tracking-wide text-hs-text-light">
-              The leaks this build plugs first
-            </h2>
-            {topProblems.map((p) => (
-              <div
-                key={p.id}
-                className="bg-white border border-hs-border rounded-md px-4 py-3"
-              >
-                <div className="font-ui font-semibold text-hs-navy text-[14px]">
-                  {p.title}
-                </div>
-                {p.ccBuild?.[0] && (
-                  <div className="mt-0.5 text-[13px] font-ui text-hs-text-dark">
-                    We build: {p.ccBuild[0]}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
 
         {/* Value stack */}
         <div className="mt-8 bg-white border border-hs-border rounded-lg overflow-hidden">

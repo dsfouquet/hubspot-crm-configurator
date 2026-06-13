@@ -19,8 +19,8 @@ export function fallbackWorkflow(description) {
     isFallback: true,
     nodes: [
       { id: 't', type: 'trigger', label: 'When this happens', detail: description.slice(0, 60), next: 'a1', nextElse: null },
-      { id: 'a1', type: 'action', label: '⚙ Do this', detail: 'Edit to customize', next: 'end', nextElse: null },
-      { id: 'end', type: 'end', label: '✓ Workflow Complete', detail: '', next: null, nextElse: null },
+      { id: 'a1', type: 'action', label: 'Do this', detail: 'Edit to customize', next: 'end', nextElse: null },
+      { id: 'end', type: 'end', label: 'Workflow Complete', detail: '', next: null, nextElse: null },
     ],
   }
 }

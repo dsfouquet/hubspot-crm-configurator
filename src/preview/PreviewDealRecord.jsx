@@ -58,7 +58,7 @@ export default function PreviewDealRecord() {
                             : 'border-hs-border bg-hs-canvas'
                         }`}
                       >
-                        <p className="text-[11px] font-preview font-medium text-hs-navy leading-tight truncate">
+                        <p className="hs-link text-[11px] font-preview font-medium leading-tight truncate">
                           {d.name.split(' — ')[1] || d.name}
                         </p>
                         <p className="text-[10px] font-preview text-hs-text-light truncate">

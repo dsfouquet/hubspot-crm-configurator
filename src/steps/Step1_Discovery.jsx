@@ -76,7 +76,7 @@ export default function Step1_Discovery({ index }) {
             quickMode ? 'bg-white text-hs-navy shadow-sm' : 'text-hs-text-light hover:text-hs-navy'
           }`}
         >
-          ⚡ Quick
+          Quick
         </button>
       </div>
       <span className="text-[11px] font-ui text-hs-text-light">
@@ -114,7 +114,7 @@ export default function Step1_Discovery({ index }) {
             disabled={building}
             className="text-[13px] font-ui font-semibold text-white bg-hs-orange px-4 py-2 rounded-[3px] disabled:opacity-50"
           >
-            ⚡ Build My Fix Plan →
+            Build My Fix Plan →
           </button>
         </div>
       </StepBody>
@@ -137,7 +137,7 @@ export default function Step1_Discovery({ index }) {
           disabled={building}
           className="text-[12px] font-ui font-semibold text-white bg-hs-orange px-3.5 py-1 rounded-[3px] disabled:opacity-50"
         >
-          {building ? 'Building…' : '⚡ Build My Fix Plan →'}
+          {building ? 'Building…' : 'Build My Fix Plan →'}
         </button>
       ) : (
         <button

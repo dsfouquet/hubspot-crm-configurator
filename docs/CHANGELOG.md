@@ -1,5 +1,39 @@
 # Changelog
 
+## Build 21 — Daniel's UX review + full design sweep (June 12, 2026)
+
+Driven by Daniel's review of the customer flow and presenter view.
+
+**Customer flow**
+- Q7 ("Which one hurts the most?"): the prospect's own selected pains now
+  lead the screen; the research-stat "classics" are collapsed behind a
+  "Not sure? See where most companies bleed →" link.
+- Q8 quick picks reworded as "I want…" phrases (more leads, close more
+  deals, faster follow-up, my time back, more repeat business, scale fast).
+- Step 2 rebuilt (`src/steps/CustomerBuildPlan.jsx`): full-width guided page
+  instead of the cramped split pane — goal quote, build summary chips, one
+  expandable card per leak (cost → story → what we build), single CTA
+  "See it live in your HubSpot →". The offer matrix and diagrams stay in
+  presenter mode only.
+- Navigation: "Step 3 of 4" + back button on the preview bar, "Step 4 of 4"
+  on the next-steps screen, "↺ Start over" in the header on every screen
+  past the questions. Next-steps screen decluttered (duplicate leak cards
+  removed — straight to value stack → CTA).
+
+**Design sweep (the "looks like generic HTML" fix)**
+- Customer Journey board rebuilt: 25+ new SVG icons replace every emoji,
+  milestone cards get tinted icon tiles in phase colors, SVG connectors,
+  proper search input, redesigned detail drawer.
+- All six hub views + every presenter preview (records, deals, views,
+  dashboards, cadence, custom objects, automations) swept: .hs-table
+  styling, calypso record links, HubSpot 3px-radius tags instead of pills,
+  initials avatars, .hs-empty-state empty states, .hs-btn buttons.
+- Workflow diagrams: node-type emojis replaced with per-kind SVG icons;
+  emoji prefixes stripped from all template node labels.
+- Zero emojis remain anywhere in the rendered UI (internal advisor/presenter
+  chrome included); PDF export emojis replaced with text labels.
+
+
 ## Build 19 — Customer funnel mode (June 12, 2026)
 
 The big one: the configurator went from a "design your own CRM" toy to a sales

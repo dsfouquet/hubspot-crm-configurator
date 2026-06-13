@@ -11,6 +11,7 @@ import SplitPane from './layout/SplitPane'
 import EmailGateModal from './modals/EmailGateModal'
 import Step11_Preview from './steps/Step11_Preview'
 import CustomerIntake from './steps/CustomerIntake'
+import CustomerBuildPlan from './steps/CustomerBuildPlan'
 import StepCTA from './steps/StepCTA'
 import BlueprintDocument from './components/BlueprintDocument'
 import { stepsForMode } from './constants/steps'
@@ -58,22 +59,7 @@ export default function App() {
         <Header />
         <div className="flex-1 flex min-h-0 relative">
           {stepKey === 'wizard' && <CustomerIntake />}
-          {stepKey === 'fixPlan' && (
-            <>
-              {/* Desktop: side-by-side split. Mobile: stacked, scrollable. */}
-              <div className="hidden md:flex flex-1 min-w-0">
-                <SplitPane left={<ConfigPanel />} right={<PreviewPane />} />
-              </div>
-              <div className="flex md:hidden flex-1 min-w-0 flex-col overflow-y-auto hs-scroll">
-                <div className="shrink-0 bg-white border-b border-hs-border">
-                  <ConfigPanel />
-                </div>
-                <div className="shrink-0 h-[70vh]">
-                  <PreviewPane />
-                </div>
-              </div>
-            </>
-          )}
+          {stepKey === 'fixPlan' && <CustomerBuildPlan />}
           {stepKey === 'preview' && (
             <div className="flex-1 min-w-0">
               <Step11_Preview />
@@ -81,7 +67,6 @@ export default function App() {
           )}
           {stepKey === 'cta' && <StepCTA />}
         </div>
-        {stepKey === 'fixPlan' && <Footer />}
         {/* Off-screen printable doc — target for PDF export */}
         <div
           aria-hidden
@@ -113,7 +98,10 @@ export default function App() {
               className="fixed bottom-5 right-5 z-20 w-11 h-11 rounded-full bg-hs-navy text-white shadow-lg flex items-center justify-center"
               title="Advisor Panel"
             >
-              <span aria-hidden>🔒</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
             </button>
           </>
         ) : isPreviewStep ? (

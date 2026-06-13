@@ -12,6 +12,15 @@ import {
   LEAD_SOURCES,
   AR_AGING,
 } from './demoData'
+import {
+  IconBolt,
+  IconStar,
+  IconChart,
+  IconWrench,
+  IconCheck,
+  IconChevronDown,
+  IconStethoscope,
+} from './hubIcons'
 
 // Pick a realistic chart for a widget id (used when a fix has no workflow diagram).
 function WidgetChart({ id }) {
@@ -95,16 +104,12 @@ function ScopeStrip({ session }) {
             items.length > 0 ? (
               <span
                 key={offer.key}
-                className={`text-[10px] font-preview rounded-full px-2 py-0.5 ${
-                  rec ? 'text-white font-semibold' : ''
+                className={`text-[10px] font-preview rounded-[3px] px-2 py-0.5 ${
+                  rec ? 'font-semibold' : ''
                 }`}
-                style={{
-                  backgroundColor: rec ? offer.color : `${offer.color}18`,
-                  color: rec ? '#fff' : offer.color,
-                }}
+                style={{ backgroundColor: `${offer.color}18`, color: offer.color }}
               >
                 {offer.name} · {items.length}
-                {rec ? ' ★' : ''}
               </span>
             ) : null
           )}
@@ -114,58 +119,73 @@ function ScopeStrip({ session }) {
             </span>
           )}
         </span>
-        <span
-          className={`text-hs-text-light text-[12px] shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
-        >
-          ▾
-        </span>
+        <IconChevronDown
+          width={14}
+          height={14}
+          className={`text-hs-text-light shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+        />
       </button>
 
       {open && (
-        <div className="px-4 pb-3 grid grid-cols-1 gap-2 max-h-72 overflow-y-auto hs-scroll">
+        <div className="px-4 pb-3 grid grid-cols-1 md:grid-cols-3 gap-2 max-h-72 overflow-y-auto hs-scroll">
           {blocks.map(
             ({ offer, items, rec }) =>
               items.length > 0 && (
                 <div
                   key={offer.key}
-                  className="rounded-md border overflow-hidden"
-                  style={{ borderColor: rec ? offer.color : '#CBD6E2' }}
+                  className="bg-white rounded-[4px] border border-hs-border shadow-sm overflow-hidden"
+                  style={{ borderTop: `3px solid ${offer.color}` }}
                 >
-                  <div className="px-3 py-1.5" style={{ backgroundColor: `${offer.color}12` }}>
-                    <span className="text-[12px] font-preview font-bold" style={{ color: offer.color }}>
+                  <div className="px-3 pt-2 pb-1 flex items-center gap-2 flex-wrap">
+                    <span className="text-[12px] font-preview font-semibold text-hs-navy">
                       {offer.name}
                     </span>
                     {rec && (
-                      <span className="ml-2 text-[9px] font-preview font-bold uppercase text-white bg-hs-orange rounded px-1.5 py-0.5">
+                      <span className="text-[9px] font-preview font-bold uppercase tracking-wide text-white bg-hs-orange rounded-[3px] px-1.5 py-0.5">
                         Your starting point
                       </span>
                     )}
                   </div>
-                  <ul className="px-3 py-1.5 space-y-0.5">
-                    {items.map((item, i) => (
-                      <li key={i} className="text-[11px] font-preview text-hs-text-dark flex gap-1.5">
-                        <span style={{ color: offer.color }} className="shrink-0">✓</span>
+                  <ul className="px-3 pb-2 space-y-1">
+                    {items.slice(0, 6).map((item, i) => (
+                      <li key={i} className="text-[11px] font-preview text-hs-text-dark flex items-start gap-1.5">
+                        <IconCheck
+                          width={11}
+                          height={11}
+                          className="shrink-0 mt-0.5"
+                          style={{ color: offer.color }}
+                        />
                         {item}
                       </li>
                     ))}
+                    {items.length > 6 && (
+                      <li className="text-[11px] font-preview text-hs-text-light pl-[17px]">
+                        +{items.length - 6} more
+                      </li>
+                    )}
                   </ul>
                 </div>
               )
           )}
           {globalBuild.length > 0 && (
-            <div className="rounded-md border border-hs-border overflow-hidden">
-              <div className="px-3 py-1.5 bg-hs-canvas">
-                <span className="text-[12px] font-preview font-bold text-hs-navy">
+            <div className="md:col-span-3 bg-white rounded-[4px] border border-hs-border shadow-sm overflow-hidden border-t-[3px] border-t-hs-navy">
+              <div className="px-3 pt-2 pb-1">
+                <span className="text-[12px] font-preview font-semibold text-hs-navy">
                   Plus, across your whole setup
                 </span>
               </div>
-              <ul className="px-3 py-1.5 space-y-0.5">
-                {globalBuild.map((item, i) => (
-                  <li key={i} className="text-[11px] font-preview text-hs-text-dark flex gap-1.5">
-                    <span className="text-hs-green shrink-0">✓</span>
+              <ul className="px-3 pb-2 space-y-1">
+                {globalBuild.slice(0, 6).map((item, i) => (
+                  <li key={i} className="text-[11px] font-preview text-hs-text-dark flex items-start gap-1.5">
+                    <IconCheck width={11} height={11} className="shrink-0 mt-0.5 text-hs-green" />
                     {item}
                   </li>
                 ))}
+                {globalBuild.length > 6 && (
+                  <li className="text-[11px] font-preview text-hs-text-light pl-[17px]">
+                    +{globalBuild.length - 6} more
+                  </li>
+                )}
               </ul>
             </div>
           )}
@@ -184,14 +204,14 @@ export default function PreviewFixPlan() {
   if (!fixPlan || fixPlan.problems.length === 0) {
     return (
       <div className="h-full flex items-center justify-center p-8">
-        <div className="text-center max-w-sm">
-          <div className="mx-auto w-12 h-12 rounded-lg bg-white border border-hs-border flex items-center justify-center text-xl shadow-sm">
-            🩺
+        <div className="hs-empty-state max-w-sm">
+          <div className="w-12 h-12 rounded-[4px] bg-white border border-hs-border flex items-center justify-center shadow-sm text-hs-text-light">
+            <IconStethoscope width={20} height={20} />
           </div>
-          <h3 className="mt-4 font-preview font-semibold text-hs-navy">
+          <h3 className="mt-2 font-preview font-semibold text-hs-navy">
             Your fix plan renders here
           </h3>
-          <p className="mt-2 text-sm text-hs-text-light font-preview">
+          <p className="text-sm text-hs-text-light font-preview">
             Complete discovery and each problem you name becomes a built solution you can see.
           </p>
         </div>
@@ -220,7 +240,7 @@ export default function PreviewFixPlan() {
               You said: "{problem.saidLabel}"
             </div>
             {problem.hub && (
-              <span className="text-[10px] font-preview font-medium text-hs-blue border border-hs-blue/30 rounded px-1.5 py-0.5 shrink-0">
+              <span className="text-[10px] font-preview font-medium text-hs-blue bg-hs-blue/10 rounded-[3px] px-1.5 py-0.5 shrink-0">
                 {problem.hub}
               </span>
             )}
@@ -228,7 +248,7 @@ export default function PreviewFixPlan() {
           <h2 className="font-preview font-semibold text-hs-navy text-xl leading-tight mt-0.5">
             {problem.title}
             {problem.isTop && (
-              <span className="ml-2 align-middle text-[9px] font-bold uppercase tracking-wide text-white bg-hs-red rounded px-1.5 py-0.5">
+              <span className="ml-2 align-middle text-[9px] font-bold uppercase tracking-wide text-white bg-hs-red rounded-[3px] px-1.5 py-0.5">
                 Costing you the most
               </span>
             )}
@@ -243,26 +263,30 @@ export default function PreviewFixPlan() {
           {/* What gets installed */}
           <div className="flex flex-wrap gap-1.5 mt-3">
             {installedWorkflows.map((w) => (
-              <span key={w.id} className="text-[11px] font-preview bg-hs-orange/10 text-hs-orange rounded px-2 py-0.5">
-                ⚡ {w.name}
+              <span key={w.id} className="inline-flex items-center gap-1 text-[11px] font-preview bg-hs-orange/10 text-hs-orange rounded-[3px] px-2 py-0.5">
+                <IconBolt width={11} height={11} className="shrink-0" />
+                {w.name}
               </span>
             ))}
             {views.map((v) => (
-              <span key={v.id} className="text-[11px] font-preview bg-hs-blue/10 text-hs-blue rounded px-2 py-0.5">
-                ★ {v.name}
+              <span key={v.id} className="inline-flex items-center gap-1 text-[11px] font-preview bg-hs-blue/10 text-hs-blue rounded-[3px] px-2 py-0.5">
+                <IconStar width={11} height={11} className="shrink-0" />
+                {v.name}
               </span>
             ))}
             {widgets.map((w) => (
-              <span key={w} className="text-[11px] font-preview bg-hs-green/10 text-hs-green rounded px-2 py-0.5">
-                📊 {w}
+              <span key={w} className="inline-flex items-center gap-1 text-[11px] font-preview bg-hs-green/10 text-hs-green rounded-[3px] px-2 py-0.5">
+                <IconChart width={11} height={11} className="shrink-0" />
+                {w}
               </span>
             ))}
           </div>
 
           {/* Crescent Connect builds */}
           <div className="mt-3 rounded-md bg-hs-navy px-3 py-2.5">
-            <div className="text-[10px] font-preview font-semibold uppercase tracking-wide text-white/60 mb-1">
-              🔧 What Crescent Connect builds for you
+            <div className="text-[10px] font-preview font-semibold uppercase tracking-wide text-white/60 mb-1 flex items-center gap-1.5">
+              <IconWrench width={11} height={11} className="shrink-0" />
+              What Crescent Connect builds for you
             </div>
             <ul className="space-y-0.5">
               {problem.ccBuild.map((item, i) => (

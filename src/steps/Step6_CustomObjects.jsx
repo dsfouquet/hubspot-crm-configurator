@@ -40,7 +40,12 @@ function CustomObjectCard({ obj, index }) {
         <button onClick={() => setOpen((o) => !o)} className="text-hs-text-light text-xs">
           {open ? '▼' : '▶'}
         </button>
-        <span className="text-[13px]">🧩</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-hs-purple shrink-0" aria-hidden>
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
+        </svg>
         <span className="flex-1 font-ui font-semibold text-hs-navy text-[14px]">
           {obj.plural || obj.singular || `Custom Object ${index + 1}`}
         </span>
@@ -185,7 +190,7 @@ export default function Step6_CustomObjects({ index }) {
       />
 
       <div className="mb-3 rounded-md bg-hs-orange/10 border border-hs-orange/30 px-3 py-2 text-[13px] font-ui text-hs-text-dark">
-        ⚡ Custom objects require HubSpot <strong>Professional</strong>. Adding one updates your
+        Custom objects require HubSpot <strong>Professional</strong>. Adding one updates your
         tier indicator automatically.
       </div>
 

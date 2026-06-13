@@ -17,8 +17,10 @@ function PreviewPlaceholder({ index }) {
   return (
     <div className="h-full flex items-center justify-center p-8">
       <div className="text-center max-w-sm">
-        <div className="mx-auto w-12 h-12 rounded-lg bg-white border border-hs-border flex items-center justify-center text-xl shadow-sm">
-          🪄
+        <div className="mx-auto w-12 h-12 rounded-lg bg-white border border-hs-border flex items-center justify-center text-hs-orange shadow-sm">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+            <path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M17.8 6.2L19 5M12.2 6.2L11 5M3 21l9-9" />
+          </svg>
         </div>
         <h3 className="mt-4 font-preview font-semibold text-hs-navy">
           Live Preview — {step.label}

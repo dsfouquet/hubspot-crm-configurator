@@ -87,7 +87,11 @@ export default function StepJourneyConfig({ index }) {
                         }`}
                       />
                     </button>
-                    <span className="text-[15px] shrink-0">{m.icon}</span>
+                    <span
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ backgroundColor: color }}
+                      aria-hidden
+                    />
                     <span
                       className={`flex-1 text-[13px] font-ui ${
                         on ? 'text-hs-text-dark' : 'text-hs-text-light'

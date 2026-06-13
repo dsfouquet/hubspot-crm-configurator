@@ -1,4 +1,5 @@
 import { useStore } from '../store/useStore'
+import { IconPuzzle } from './uiIcons'
 
 // Preview for Step 6: a HubSpot-style nav showing custom objects as record types.
 export default function PreviewCustomObjects() {
@@ -7,12 +8,12 @@ export default function PreviewCustomObjects() {
   if (customObjects.length === 0) {
     return (
       <div className="h-full flex items-center justify-center p-8">
-        <div className="text-center max-w-xs">
-          <div className="mx-auto w-12 h-12 rounded-lg bg-white border border-hs-border flex items-center justify-center text-xl shadow-sm">
-            🧩
+        <div className="hs-empty-state font-preview max-w-xs">
+          <div className="w-12 h-12 rounded-lg bg-white border border-hs-border flex items-center justify-center text-hs-text-light shadow-sm mb-1">
+            <IconPuzzle width={22} height={22} />
           </div>
-          <h3 className="mt-4 font-preview font-semibold text-hs-navy">No custom objects yet</h3>
-          <p className="mt-2 text-sm text-hs-text-light font-preview">
+          <h3 className="font-semibold text-hs-navy text-[15px]">No custom objects yet</h3>
+          <p className="text-sm text-hs-text-light">
             Add one on the left to see how it appears in your HubSpot navigation.
           </p>
         </div>
@@ -39,9 +40,10 @@ export default function PreviewCustomObjects() {
           {customObjects.map((o) => (
             <span
               key={o.id}
-              className="text-[13px] font-preview text-hs-navy font-medium border border-hs-orange bg-hs-orange/10 rounded px-2.5 py-1"
+              className="inline-flex items-center gap-1.5 text-[13px] font-preview text-hs-navy font-medium border border-hs-orange bg-hs-orange/10 rounded-[3px] px-2.5 py-1"
             >
-              🧩 {o.plural || o.singular || 'Untitled'}
+              <IconPuzzle width={12} height={12} className="text-hs-orange shrink-0" />
+              {o.plural || o.singular || 'Untitled'}
             </span>
           ))}
         </div>
@@ -87,7 +89,7 @@ export default function PreviewCustomObjects() {
                   {o.associations.map((a) => (
                     <span
                       key={a}
-                      className="text-[12px] font-preview bg-hs-blue/10 text-hs-blue rounded px-2 py-0.5"
+                      className="text-[12px] font-preview font-semibold bg-hs-blue/10 text-hs-blue rounded-[3px] px-2 py-0.5"
                     >
                       {a}
                     </span>

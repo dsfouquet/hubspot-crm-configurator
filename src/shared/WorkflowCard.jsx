@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import TierBadge from './TierBadge'
 import { actionCount } from '../constants/workflowTemplates'
+import { IconBolt, IconClose } from '../preview/uiIcons'
 
 // A configured workflow in the config panel: editable name, trigger, actions, tier,
 // plus View Flowchart / Edit / Remove (spec 7.4).
@@ -43,15 +44,16 @@ export default function WorkflowCard({ workflow }) {
           <TierBadge tier={workflow.tier} />
           <button
             onClick={() => removeWorkflow(workflow.id)}
-            className="text-hs-text-light hover:text-hs-red text-sm leading-none"
+            className="text-hs-text-light hover:text-hs-red leading-none mt-0.5"
             title="Remove workflow"
           >
-            ×
+            <IconClose width={12} height={12} />
           </button>
         </div>
 
-        <p className="mt-1 text-[12px] font-ui text-hs-text-light">
-          ⚡ {workflow.triggerSummary} · {actionCount(workflow)} action
+        <p className="mt-1 text-[12px] font-ui text-hs-text-light flex items-center gap-1">
+          <IconBolt width={11} height={11} className="shrink-0 text-hs-marigold" />
+          {workflow.triggerSummary} · {actionCount(workflow)} action
           {actionCount(workflow) === 1 ? '' : 's'}
           {workflow.isFallback && (
             <span className="ml-1 text-hs-orange">· draft (edit me)</span>
@@ -61,17 +63,18 @@ export default function WorkflowCard({ workflow }) {
         <div className="mt-2 flex items-center gap-2">
           <button
             onClick={() => setFocusedWorkflow(workflow.id)}
-            className={`text-[12px] font-ui font-medium px-2.5 py-1 rounded border ${
+            className={`inline-flex items-center gap-1.5 text-[12px] font-ui font-medium px-2.5 py-1 rounded-[3px] border ${
               isFocused
                 ? 'border-hs-orange text-hs-orange bg-hs-orange/5'
                 : 'border-hs-border text-hs-blue hover:border-hs-blue'
             }`}
           >
-            {isFocused ? '● Showing' : 'View Flowchart'}
+            {isFocused && <span className="w-1.5 h-1.5 rounded-full bg-hs-orange shrink-0" />}
+            {isFocused ? 'Showing' : 'View Flowchart'}
           </button>
           <button
             onClick={() => setEditing(true)}
-            className="text-[12px] font-ui font-medium text-hs-text-dark px-2.5 py-1 rounded border border-hs-border hover:border-hs-text-light"
+            className="text-[12px] font-ui font-medium text-hs-text-dark px-2.5 py-1 rounded-[3px] border border-hs-border hover:border-hs-text-light"
           >
             Rename
           </button>

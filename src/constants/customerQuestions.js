@@ -105,11 +105,12 @@ export const CUSTOMER_QUESTIONS = [
     optional: true,
     placeholder: 'In your own words — this becomes the headline of your build plan.',
     quickPicks: [
-      'More leads',
-      'Close more deals',
-      'Faster follow-up',
-      'Less admin time',
-      'More repeat business',
+      'I want more leads',
+      'I want to close more deals',
+      'I want faster follow-up',
+      'I want my time back',
+      'I want more repeat business',
+      'I want to scale fast',
     ],
   },
 ]

@@ -1,6 +1,7 @@
 import { useStore } from '../store/useStore'
 import WorkflowDiagram from './LazyWorkflowDiagram'
 import TierBadge from '../shared/TierBadge'
+import { IconBolt } from './uiIcons'
 
 // Step 7 preview: a chip selector + the focused workflow's live ReactFlow diagram.
 export default function PreviewAutomations() {
@@ -11,12 +12,12 @@ export default function PreviewAutomations() {
   if (workflows.length === 0) {
     return (
       <div className="h-full flex items-center justify-center p-8">
-        <div className="text-center max-w-sm">
-          <div className="mx-auto w-12 h-12 rounded-lg bg-white border border-hs-border flex items-center justify-center text-xl shadow-sm">
-            ⚡
+        <div className="hs-empty-state font-preview max-w-sm">
+          <div className="w-12 h-12 rounded-lg bg-white border border-hs-border flex items-center justify-center text-hs-marigold shadow-sm mb-1">
+            <IconBolt width={22} height={22} />
           </div>
-          <h3 className="mt-4 font-preview font-semibold text-hs-navy">No automations yet</h3>
-          <p className="mt-2 text-sm text-hs-text-light font-preview">
+          <h3 className="font-semibold text-hs-navy text-[15px]">No automations yet</h3>
+          <p className="text-sm text-hs-text-light">
             Add a template or describe one in plain English. Its flowchart renders here in real
             time.
           </p>
@@ -38,7 +39,7 @@ export default function PreviewAutomations() {
               <button
                 key={w.id}
                 onClick={() => setFocusedWorkflow(w.id)}
-                className={`text-[12px] font-preview px-2.5 py-1 rounded-full border ${
+                className={`text-[12px] font-preview px-2.5 py-1 rounded-[3px] border ${
                   active
                     ? 'border-hs-orange bg-hs-orange/10 text-hs-navy font-medium'
                     : 'border-hs-border text-hs-text-light hover:border-hs-text-light'
@@ -55,8 +56,9 @@ export default function PreviewAutomations() {
       <div className="shrink-0 px-4 py-2.5 bg-hs-canvas border-b border-hs-border flex items-center justify-between">
         <div>
           <h3 className="font-preview font-semibold text-hs-navy text-[15px]">{focused.name}</h3>
-          <p className="text-[12px] font-preview text-hs-text-light">
-            ⚡ {focused.triggerSummary}
+          <p className="text-[12px] font-preview text-hs-text-light flex items-center gap-1">
+            <IconBolt width={11} height={11} className="text-hs-marigold shrink-0" />
+            {focused.triggerSummary}
           </p>
         </div>
         <TierBadge tier={focused.tier} size="md" />

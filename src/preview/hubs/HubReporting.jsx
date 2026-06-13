@@ -13,7 +13,6 @@ import {
   LineChart,
   DonutChart,
   DataTable,
-  Pill,
 } from '../charts'
 import {
   REVENUE_TREND,
@@ -49,7 +48,7 @@ function FiltersBar({ title }) {
       <FilterChip>Date range: Last 6 months ▾</FilterChip>
       <FilterChip>Owner: All ▾</FilterChip>
       <FilterChip>Pipeline: Sales ▾</FilterChip>
-      <button className="ml-auto text-[11px] font-medium text-white bg-hs-orange rounded px-3 py-1 hover:opacity-90">
+      <button className="hs-btn-primary ml-auto" style={{ padding: '4px 12px', fontSize: 11 }}>
         Share
       </button>
     </div>

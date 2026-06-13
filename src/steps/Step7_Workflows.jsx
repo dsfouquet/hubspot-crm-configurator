@@ -39,7 +39,7 @@ function TemplateRow({ template }) {
         </button>
       </div>
       <p className="mt-1 text-[11px] font-ui text-hs-text-light">
-        <span className="text-hs-orange">⚡</span> {template.triggerSummary}
+        <span className="text-hs-orange font-semibold">Trigger:</span> {template.triggerSummary}
       </p>
     </div>
   )

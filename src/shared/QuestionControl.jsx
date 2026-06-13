@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import { CLASSIC_LEAKS, painParts } from '../constants/discoveryQuestions'
 
@@ -11,6 +12,7 @@ export default function QuestionControl({ question, size = 'compact' }) {
   const setWizardAnswer = useStore((s) => s.setWizardAnswer)
   const answer = wizard[question.key]
   const large = size === 'large'
+  const [showClassics, setShowClassics] = useState(false)
 
   const isPainMulti = question.type === 'pain-multi'
   const isPainSingle = question.type === 'single-from-pains'
@@ -168,46 +170,6 @@ export default function QuestionControl({ question, size = 'compact' }) {
         </p>
       )}
 
-      {/* Classic research-backed leaks — picking one also checks the pain */}
-      {isPainSingle && !question.hideClassics && (
-        <div className="mt-2.5">
-          <p className="text-[10px] font-ui font-semibold uppercase tracking-wide text-hs-text-light mb-1">
-            Or one of the classics — where most companies bleed
-          </p>
-          <div className="space-y-1">
-            {CLASSIC_LEAKS.map((c) => {
-              const { pain } = painParts(c.painId)
-              const sel = answer === c.painId
-              return (
-                <button
-                  key={c.painId + c.stat}
-                  type="button"
-                  onClick={() => {
-                    const live = useStore.getState().session.wizard
-                    const pains = Array.isArray(live.pains) ? live.pains : []
-                    if (!pains.includes(c.painId)) setWizardAnswer('pains', [...pains, c.painId])
-                    setWizardAnswer(question.key, sel ? undefined : c.painId)
-                  }}
-                  className={`w-full text-left rounded-md border px-2.5 py-1.5 ${
-                    sel
-                      ? 'border-hs-orange bg-hs-orange/10'
-                      : 'border-hs-border bg-white hover:border-hs-text-light'
-                  }`}
-                >
-                  <span className="text-[12px] font-ui">
-                    <span className="font-semibold text-hs-navy">{pain}:</span>{' '}
-                    <span className="text-hs-text-dark">{c.stat}</span>
-                  </span>
-                  <span className="block text-[9.5px] font-ui text-hs-text-light">
-                    — {c.source}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
       {(isSingle || isMulti) && !isText && (
         <div
           className={
@@ -262,6 +224,55 @@ export default function QuestionControl({ question, size = 'compact' }) {
               </button>
             )
           })}
+        </div>
+      )}
+
+      {/* Classic research-backed leaks — secondary, collapsed by default so the
+          prospect's own selections stay the star. Picking one also checks the pain. */}
+      {isPainSingle && !question.hideClassics && (
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={() => setShowClassics((v) => !v)}
+            className="text-[12px] font-ui font-medium text-hs-calypso hover:underline"
+          >
+            {showClassics
+              ? 'Hide the classics'
+              : 'Not sure? See where most companies bleed →'}
+          </button>
+          {showClassics && (
+            <div className="space-y-1 mt-2">
+              {CLASSIC_LEAKS.map((c) => {
+                const { pain } = painParts(c.painId)
+                const sel = answer === c.painId
+                return (
+                  <button
+                    key={c.painId + c.stat}
+                    type="button"
+                    onClick={() => {
+                      const live = useStore.getState().session.wizard
+                      const pains = Array.isArray(live.pains) ? live.pains : []
+                      if (!pains.includes(c.painId)) setWizardAnswer('pains', [...pains, c.painId])
+                      setWizardAnswer(question.key, sel ? undefined : c.painId)
+                    }}
+                    className={`w-full text-left rounded-md border px-2.5 py-1.5 ${
+                      sel
+                        ? 'border-hs-orange bg-hs-orange/10'
+                        : 'border-hs-border bg-white hover:border-hs-text-light'
+                    }`}
+                  >
+                    <span className="text-[12px] font-ui">
+                      <span className="font-semibold text-hs-navy">{pain}:</span>{' '}
+                      <span className="text-hs-text-dark">{c.stat}</span>
+                    </span>
+                    <span className="block text-[9.5px] font-ui text-hs-text-light">
+                      — {c.source}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
         </div>
       )}
 

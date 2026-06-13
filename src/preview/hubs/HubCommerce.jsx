@@ -9,8 +9,8 @@ import {
   HBarChart,
   LineChart,
   DataTable,
-  Pill,
 } from '../charts'
+import { Tag, IconCheck } from '../uiIcons'
 import { INVOICES, AR_AGING, DEALS, REVENUE_TREND, MONTHS } from '../demoData'
 import { industryCopy } from '../industryCopy'
 
@@ -195,10 +195,10 @@ function QuotesTab() {
           {/* Signature + CTA */}
           <div className="px-5 py-3 border-t border-hs-border bg-hs-canvas/40 flex items-center justify-between">
             <span
-              className="inline-flex items-center gap-1 text-[11px] font-medium rounded-full px-2.5 py-1"
-              style={{ background: '#E5F8F6', color: '#00BDA5' }}
+              className="inline-flex items-center gap-1 text-[11px] font-semibold rounded-[3px] px-2.5 py-1"
+              style={{ background: '#E5F8F6', color: '#00A38D' }}
             >
-              <span>✓</span> Signed electronically
+              <IconCheck width={11} height={11} className="shrink-0" /> Signed electronically
             </span>
             <button
               className="text-[12px] font-semibold text-white rounded-md px-4 py-1.5 shadow-sm"
@@ -233,7 +233,7 @@ function QuotesTab() {
               {
                 key: 'status',
                 label: 'Status',
-                render: (v) => <Pill color={v.color}>{v.label}</Pill>,
+                render: (v) => <Tag color={v.color}>{v.label}</Tag>,
               },
               { key: 'sent', label: 'Sent' },
             ]}
@@ -287,7 +287,7 @@ function InvoicesTab() {
             {
               key: 'status',
               label: 'Status',
-              render: (v) => <Pill color={INVOICE_PILL[v]}>{v}</Pill>,
+              render: (v) => <Tag color={INVOICE_PILL[v]}>{v}</Tag>,
             },
             { key: 'due', label: 'Due' },
           ]}

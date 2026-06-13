@@ -1,4 +1,5 @@
 import { useStore } from '../store/useStore'
+import { IconCheck, IconBell, IconEye, IconWarning, IconTarget, IconCheckCircle } from './uiIcons'
 
 // Mock accountability dashboard: cadence schedule, active rules, sample notification.
 export default function PreviewCadence() {
@@ -60,7 +61,7 @@ export default function PreviewCadence() {
           <ul className="space-y-1">
             {activeRules.map((r) => (
               <li key={r} className="text-[13px] font-preview text-hs-text-dark flex items-center gap-2">
-                <span className="text-hs-green">✓</span> {r}
+                <IconCheck width={12} height={12} className="text-hs-green shrink-0" /> {r}
               </li>
             ))}
           </ul>
@@ -75,31 +76,36 @@ export default function PreviewCadence() {
         <div className="space-y-2">
           {[
             {
-              icon: '🔔',
+              icon: IconBell,
+              iconColor: 'text-hs-orange',
               text: <><strong>Gulf Coast — Vacuum Pump Package</strong> has had no activity in 15 days.</>,
               action: 'Re-engage this deal →',
               style: 'border-hs-orange/30 bg-hs-orange/5',
             },
             {
-              icon: '👀',
+              icon: IconEye,
+              iconColor: 'text-hs-green',
               text: <><strong>Maria Chen</strong> just viewed your quote — 3rd time today.</>,
               action: 'Strike while it\'s hot: call now →',
               style: 'border-hs-green/30 bg-hs-green/5',
             },
             {
-              icon: '⚠️',
+              icon: IconWarning,
+              iconColor: 'text-hs-red',
               text: <><strong>Crescent City Logistics</strong> rated their last service a 4/10.</>,
               action: 'Account owner alerted — save the relationship →',
               style: 'border-hs-red/30 bg-hs-red/5',
             },
             {
-              icon: '🎯',
+              icon: IconTarget,
+              iconColor: 'text-hs-blue',
               text: <><strong>Gloria Washington</strong> crossed the lead-score threshold — now a sales-qualified lead.</>,
               action: 'Assigned to Catherine with full history →',
               style: 'border-hs-blue/30 bg-hs-blue/5',
             },
             {
-              icon: '✅',
+              icon: IconCheckCircle,
+              iconColor: 'text-hs-text-light',
               text: <>3 tasks overdue for <strong>Marcus Hebert</strong> — auto-reminder sent.</>,
               action: 'View his task queue →',
               style: 'border-hs-border bg-white',
@@ -109,7 +115,9 @@ export default function PreviewCadence() {
               key={i}
               className={`rounded-md border px-3 py-2 flex items-start gap-2 ${n.style}`}
             >
-              <span>{n.icon}</span>
+              <span className={`${n.iconColor} shrink-0 mt-0.5`}>
+                <n.icon width={14} height={14} />
+              </span>
               <div>
                 <p className="text-[13px] font-preview text-hs-text-dark leading-snug">{n.text}</p>
                 <p className="text-[11px] font-preview text-hs-text-light">{n.action}</p>
@@ -121,7 +129,7 @@ export default function PreviewCadence() {
           {cadence.notifications.channels.map((ch) => (
             <span
               key={ch}
-              className="text-[11px] font-preview bg-hs-blue/10 text-hs-blue rounded px-2 py-0.5"
+              className="text-[11px] font-preview font-semibold bg-hs-blue/10 text-hs-blue rounded-[3px] px-2 py-0.5"
             >
               {ch}
             </span>

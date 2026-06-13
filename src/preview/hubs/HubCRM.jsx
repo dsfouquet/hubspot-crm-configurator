@@ -8,8 +8,8 @@ import { activeViews } from '../../utils/recommendations'
 import {
   StatCard,
   DataTable,
-  Pill,
 } from '../charts'
+import { Tag, IconStar } from '../uiIcons'
 import { CONTACTS, COMPANIES, DEALS, TICKETS, REPS } from '../demoData'
 import PreviewRecord from '../PreviewRecord'
 import PreviewDealRecord from '../PreviewDealRecord'
@@ -107,7 +107,8 @@ function IndexHeader({ count, noun, createLabel }) {
       </span>
       <button
         type="button"
-        className="ml-auto text-[12px] font-medium text-white bg-hs-orange rounded-md px-3 py-1.5 whitespace-nowrap cursor-default"
+        className="hs-btn-primary ml-auto whitespace-nowrap cursor-default"
+        style={{ padding: '6px 12px', fontSize: 12 }}
       >
         {createLabel}
       </button>
@@ -145,10 +146,11 @@ function SavedViews({ views, active, onPick, extraViews = [] }) {
       {extraViews.map((v) => (
         <span
           key={v.id}
-          className="text-[12px] text-hs-text-light px-3 pb-2 whitespace-nowrap cursor-default"
+          className="inline-flex items-center gap-1 text-[12px] text-hs-text-light px-3 pb-2 whitespace-nowrap cursor-default"
           title="Built for you from your fix plan"
         >
-          ★ {v.name}
+          <IconStar width={10} height={10} className="text-hs-marigold shrink-0" />
+          {v.name}
         </span>
       ))}
       <span className="text-[12px] text-hs-text-light px-2 pb-2 whitespace-nowrap cursor-default">
@@ -204,7 +206,7 @@ function ContactsTab({ session, onOpen }) {
         <div className="flex items-center gap-2.5">
           <Avatar name={row.name} />
           <div className="min-w-0">
-            <div className="font-semibold text-hs-navy leading-tight truncate">
+            <div className="hs-link font-semibold leading-tight truncate">
               {row.name}
             </div>
             <div className="text-[10px] text-hs-text-light truncate">{row.title}</div>
@@ -216,12 +218,12 @@ function ContactsTab({ session, onOpen }) {
     {
       key: 'lifecycle',
       label: 'Lifecycle',
-      render: (v) => <Pill color={LIFECYCLE_COLOR[v] || 'gray'}>{v}</Pill>,
+      render: (v) => <Tag color={LIFECYCLE_COLOR[v] || 'gray'}>{v}</Tag>,
     },
     {
       key: 'email',
       label: 'Email',
-      render: (v) => <span className="text-hs-blue">{v}</span>,
+      render: (v) => <span className="hs-link">{v}</span>,
     },
     { key: 'phone', label: 'Phone' },
     { key: 'owner', label: 'Contact Owner' },
@@ -266,7 +268,7 @@ function CompaniesTab({ session, onOpen }) {
       render: (_v, row) => (
         <div className="flex items-center gap-2.5">
           <Avatar name={row.name} square />
-          <span className="font-semibold text-hs-navy">{row.name}</span>
+          <span className="hs-link font-semibold">{row.name}</span>
         </div>
       ),
     },
@@ -275,7 +277,7 @@ function CompaniesTab({ session, onOpen }) {
     {
       key: 'tier',
       label: 'Tier',
-      render: (v) => <Pill color={TIER_COLOR[v] || 'gray'}>{v}</Pill>,
+      render: (v) => <Tag color={TIER_COLOR[v] || 'gray'}>{v}</Tag>,
     },
     { key: 'owner', label: 'Owner' },
   ]
@@ -300,7 +302,7 @@ function DealCard({ deal, onClick }) {
       onClick={onClick}
       className="bg-white rounded-md border border-hs-border px-3 py-2.5 shadow-sm cursor-pointer hover:border-hs-orange"
     >
-      <div className="text-[12px] font-semibold text-hs-navy leading-tight truncate">
+      <div className="hs-link text-[12px] font-semibold leading-tight truncate">
         {deal.name}
       </div>
       <div className="text-[10px] text-hs-text-light truncate">{deal.company}</div>
@@ -361,12 +363,12 @@ function DealsTable({ cols, onOpen }) {
       label: 'Deal',
       render: (v, row) => (
         <div className="min-w-0">
-          <div className="font-semibold text-hs-navy leading-tight truncate">{v}</div>
+          <div className="hs-link font-semibold leading-tight truncate">{v}</div>
           <div className="text-[10px] text-hs-text-light truncate">{row.company}</div>
         </div>
       ),
     },
-    { key: 'stageLabel', label: 'Stage', render: (v) => <Pill color="blue">{v}</Pill> },
+    { key: 'stageLabel', label: 'Stage', render: (v) => <Tag color="blue">{v}</Tag> },
     {
       key: 'amount',
       label: 'Amount',
@@ -498,7 +500,7 @@ function DealsTab({ session, onOpen }) {
         </div>
         <button
           type="button"
-          className="ml-auto text-[12px] font-medium text-white bg-hs-orange rounded-md px-3 py-1.5 cursor-default"
+          className="hs-btn-primary ml-auto cursor-default" style={{ padding: '6px 12px', fontSize: 12 }}
         >
           Create deal
         </button>
@@ -552,7 +554,7 @@ function TicketsTab({ session, onOpen }) {
         <span className="text-[12px] text-hs-text-light">{TICKETS.length} tickets</span>
         <button
           type="button"
-          className="ml-auto text-[12px] font-medium text-white bg-hs-orange rounded-md px-3 py-1.5 cursor-default"
+          className="hs-btn-primary ml-auto cursor-default" style={{ padding: '6px 12px', fontSize: 12 }}
         >
           Create ticket
         </button>
@@ -580,17 +582,17 @@ function TicketsTab({ session, onOpen }) {
                     onClick={() => onOpen('tickets')}
                     className="bg-white rounded-md border border-hs-border px-3 py-2.5 shadow-sm cursor-pointer hover:border-hs-orange"
                   >
-                    <div className="text-[12px] font-semibold text-hs-navy leading-tight">
+                    <div className="hs-link text-[12px] font-semibold leading-tight">
                       {t.name}
                     </div>
                     <div className="text-[10px] text-hs-text-light truncate">
                       {t.company}
                     </div>
                     <div className="flex items-center gap-1.5 mt-2">
-                      <Pill color={PRIORITY_COLOR[t.priority] || 'gray'}>
+                      <Tag color={PRIORITY_COLOR[t.priority] || 'gray'}>
                         {t.priority}
-                      </Pill>
-                      <Pill color={STATUS_COLOR[t.status] || 'gray'}>{t.status}</Pill>
+                      </Tag>
+                      <Tag color={STATUS_COLOR[t.status] || 'gray'}>{t.status}</Tag>
                     </div>
                     <div className="flex items-center gap-1.5 mt-2 text-[10px] text-hs-text-light">
                       <Avatar name={t.owner} />

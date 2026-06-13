@@ -61,7 +61,7 @@ export default function PreviewDiscovery() {
                               {a.map((item) => (
                                 <span
                                   key={item}
-                                  className="text-[11px] font-preview bg-hs-blue/10 text-hs-blue rounded px-1.5 py-0.5"
+                                  className="text-[11px] font-preview font-semibold bg-hs-blue/10 text-hs-blue rounded-[3px] px-1.5 py-0.5"
                                 >
                                   {item}
                                 </span>

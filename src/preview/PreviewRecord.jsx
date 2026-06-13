@@ -1,7 +1,23 @@
 import { useState, useEffect } from 'react'
 import { useStore } from '../store/useStore'
 import { SAMPLE, SAMPLE_ACTIVITY } from './sampleData'
-import { DataTable, Pill } from './charts'
+import { DataTable } from './charts'
+import {
+  Tag,
+  IconDollar,
+  IconBuilding,
+  IconUsers,
+  IconUser,
+  IconMail,
+  IconPhone,
+  IconCheck,
+  IconSquare,
+  IconNote,
+  IconInfo,
+  IconCalendar,
+  IconDoc,
+  IconTicket,
+} from './uiIcons'
 import { CONTACTS, COMPANIES, TICKETS } from './demoData'
 
 // Compact example index table per record type (shown under the record preview
@@ -12,12 +28,12 @@ const INDEX_TABLES = {
     columns: [
       { key: 'name', label: 'Name', render: (v, r) => (
         <span>
-          <span className="font-semibold text-hs-navy">{v}</span>
+          <span className="hs-link font-semibold">{v}</span>
           <span className="block text-[10px] text-hs-text-light">{r.title}</span>
         </span>
       ) },
       { key: 'company', label: 'Company' },
-      { key: 'lifecycle', label: 'Lifecycle', render: (v) => <Pill color={{ Lead: 'blue', MQL: 'purple', Customer: 'green', Evangelist: 'orange' }[v] || 'gray'}>{v}</Pill> },
+      { key: 'lifecycle', label: 'Lifecycle', render: (v) => <Tag color={{ Lead: 'blue', MQL: 'purple', Customer: 'green', Evangelist: 'orange' }[v] || 'gray'}>{v}</Tag> },
       { key: 'owner', label: 'Owner' },
       { key: 'lastActivity', label: 'Last Activity', render: (v) => <span className="text-hs-text-light">{v}</span> },
     ],
@@ -26,21 +42,21 @@ const INDEX_TABLES = {
   companies: {
     title: 'Example list view — Companies',
     columns: [
-      { key: 'name', label: 'Company', render: (v) => <span className="font-semibold text-hs-navy">{v}</span> },
+      { key: 'name', label: 'Company', render: (v) => <span className="hs-link font-semibold">{v}</span> },
       { key: 'city', label: 'City' },
       { key: 'industry', label: 'Industry' },
-      { key: 'tier', label: 'Tier', render: (v) => <Pill color={{ 'Tier 1': 'green', 'Tier 2': 'blue' }[v] || 'gray'}>{v}</Pill> },
-      { key: 'lifecycle', label: 'Lifecycle', render: (v) => <Pill color={{ Customer: 'green', Target: 'blue' }[v] || 'gray'}>{v}</Pill> },
+      { key: 'tier', label: 'Tier', render: (v) => <Tag color={{ 'Tier 1': 'green', 'Tier 2': 'blue' }[v] || 'gray'}>{v}</Tag> },
+      { key: 'lifecycle', label: 'Lifecycle', render: (v) => <Tag color={{ Customer: 'green', Target: 'blue' }[v] || 'gray'}>{v}</Tag> },
     ],
     rows: () => COMPANIES.slice(0, 6),
   },
   tickets: {
     title: 'Example list view — Tickets',
     columns: [
-      { key: 'name', label: 'Ticket', render: (v) => <span className="font-semibold text-hs-navy">{v}</span> },
+      { key: 'name', label: 'Ticket', render: (v) => <span className="hs-link font-semibold">{v}</span> },
       { key: 'company', label: 'Company' },
-      { key: 'priority', label: 'Priority', render: (v) => <Pill color={{ High: 'red', Medium: 'orange' }[v] || 'gray'}>{v}</Pill> },
-      { key: 'status', label: 'Status', render: (v) => <Pill color={{ New: 'blue', 'In Progress': 'orange', Resolved: 'green' }[v] || 'purple'}>{v}</Pill> },
+      { key: 'priority', label: 'Priority', render: (v) => <Tag color={{ High: 'red', Medium: 'orange' }[v] || 'gray'}>{v}</Tag> },
+      { key: 'status', label: 'Status', render: (v) => <Tag color={{ New: 'blue', 'In Progress': 'orange', Resolved: 'green' }[v] || 'purple'}>{v}</Tag> },
       { key: 'owner', label: 'Owner' },
     ],
     rows: () => TICKETS.slice(0, 6),
@@ -54,11 +70,15 @@ const ACCENT = {
   tickets: '#F2545B',
 }
 
-// Small reusable row card for section content.
-function Row({ icon, title, sub, right }) {
+// Small reusable row card for section content. `icon` is an icon component.
+function Row({ icon: Icon, title, sub, right }) {
   return (
     <div className="bg-white rounded-md border border-hs-border px-3 py-2 flex items-start gap-2.5">
-      {icon && <span className="text-[14px] leading-none mt-0.5">{icon}</span>}
+      {Icon && (
+        <span className="w-6 h-6 rounded-full bg-hs-koala text-hs-navydeep flex items-center justify-center shrink-0 mt-0.5">
+          <Icon width={12} height={12} />
+        </span>
+      )}
       <div className="min-w-0 flex-1">
         <p className="text-[13px] font-preview text-hs-text-dark leading-snug">{title}</p>
         {sub && <p className="text-[11px] font-preview text-hs-text-light">{sub}</p>}
@@ -66,6 +86,19 @@ function Row({ icon, title, sub, right }) {
       {right && <span className="text-[12px] font-preview text-hs-green shrink-0">{right}</span>}
     </div>
   )
+}
+
+// Activity-type icons for the configured activity timeline (replaces the emoji
+// glyphs stored in sampleData so the feed reads like product UI).
+const ACTIVITY_ICON = {
+  calls: IconPhone,
+  emails: IconMail,
+  meetings: IconCalendar,
+  notes: IconNote,
+  tasks: IconCheck,
+  form_submissions: IconDoc,
+  deals_created: IconDollar,
+  ticket_updates: IconTicket,
 }
 
 const Empty = ({ children }) => (
@@ -80,57 +113,57 @@ function SectionContent({ label, record }) {
   if (l.includes('deal')) {
     return (
       <div className="space-y-2">
-        <Row icon="💰" title="Gulf Coast — SIHI Vacuum Pump Package" sub="Proposal Sent" right="$84,500" />
-        <Row icon="💰" title="Gulf Coast — Seal Replacement Parts" sub="Qualified" right="$12,300" />
+        <Row icon={IconDollar} title="Gulf Coast — SIHI Vacuum Pump Package" sub="Proposal Sent" right="$84,500" />
+        <Row icon={IconDollar} title="Gulf Coast — Seal Replacement Parts" sub="Qualified" right="$12,300" />
       </div>
     )
   }
   if (l.includes('company') || l.includes('account')) {
     return (
       <div className="space-y-2">
-        <Row icon="🏢" title="Gulf Coast Chemical" sub="Chemical Manufacturing · Baton Rouge, LA" />
-        <Row icon="👥" title="320 employees · $48M revenue" sub="Customer · Tier 1" />
+        <Row icon={IconBuilding} title="Gulf Coast Chemical" sub="Chemical Manufacturing · Baton Rouge, LA" />
+        <Row icon={IconUsers} title="320 employees · $48M revenue" sub="Customer · Tier 1" />
       </div>
     )
   }
   if (l.includes('contact')) {
     return (
       <div className="space-y-2">
-        <Row icon="👤" title="Maria Chen" sub="VP of Operations" />
-        <Row icon="👤" title="James Boudreaux" sub="Maintenance Manager" />
-        <Row icon="👤" title="Priya Nair" sub="Procurement Lead" />
+        <Row icon={IconUser} title="Maria Chen" sub="VP of Operations" />
+        <Row icon={IconUser} title="James Boudreaux" sub="Maintenance Manager" />
+        <Row icon={IconUser} title="Priya Nair" sub="Procurement Lead" />
       </div>
     )
   }
   if (l.includes('communication') || l.includes('email')) {
     return (
       <div className="space-y-2">
-        <Row icon="📧" title="Quote follow-up #1" sub="Sent 3 days ago · Opened" />
-        <Row icon="📞" title="Call — discussed seal options" sub="2 days ago · 12 min" />
-        <Row icon="📧" title="Intro + capability overview" sub="2 weeks ago · Replied" />
+        <Row icon={IconMail} title="Quote follow-up #1" sub="Sent 3 days ago · Opened" />
+        <Row icon={IconPhone} title="Call — discussed seal options" sub="2 days ago · 12 min" />
+        <Row icon={IconMail} title="Intro + capability overview" sub="2 weeks ago · Replied" />
       </div>
     )
   }
   if (l.includes('task') || l.includes('reminder')) {
     return (
       <div className="space-y-2">
-        <Row icon="✓" title="Send updated pricing" sub="Due Jun 12 · You" />
-        <Row icon="◻️" title="Confirm install window" sub="Due Jun 18 · You" />
+        <Row icon={IconCheck} title="Send updated pricing" sub="Due Jun 12 · You" />
+        <Row icon={IconSquare} title="Confirm install window" sub="Due Jun 18 · You" />
       </div>
     )
   }
   if (l.includes('note')) {
     return (
       <div className="space-y-2">
-        <Row icon="📝" title="Prefers Tier 1 response time" sub="1 week ago" />
-        <Row icon="📝" title="Budget approved for Q3 capital" sub="2 weeks ago" />
+        <Row icon={IconNote} title="Prefers Tier 1 response time" sub="1 week ago" />
+        <Row icon={IconNote} title="Budget approved for Q3 capital" sub="2 weeks ago" />
       </div>
     )
   }
   if (l.includes('about') || l.includes('overview')) {
     return (
       <Row
-        icon="ℹ️"
+        icon={IconInfo}
         title="Key account — primary contact for all rotating equipment at Gulf Coast."
         sub="Owned by Daniel Fouquet · Last activity 2 days ago"
       />
@@ -145,7 +178,7 @@ function SectionContent({ label, record }) {
       {enabledActivities.map((a) => {
         const entry = SAMPLE_ACTIVITY[a.key]
         if (!entry) return null
-        return <Row key={a.key} icon={entry.icon} title={entry.text} sub={entry.when} />
+        return <Row key={a.key} icon={ACTIVITY_ICON[a.key]} title={entry.text} sub={entry.when} />
       })}
     </div>
   )

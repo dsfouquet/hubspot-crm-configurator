@@ -11,8 +11,8 @@ import {
   HBarChart,
   LineChart,
   DataTable,
-  Pill,
 } from '../charts'
+import { Tag, IconCalendar, IconMail, IconCheck, IconDoc, IconBell, IconEye } from '../uiIcons'
 import {
   DEALS,
   MEETINGS_DEMO,
@@ -28,14 +28,14 @@ import {
 const TABS = ['Workspace', 'Sequences', 'Documents', 'Meetings', 'Analytics']
 
 // Count "email steps" in a configured workflow's node list. Email actions are
-// action nodes whose label references sending an email (📧 / "Send Email").
+// action nodes whose label references sending an email (mail glyph / "Send Email").
 function emailStepCount(wf) {
   const nodes = Array.isArray(wf?.nodes) ? wf.nodes : []
   return nodes.filter(
     (n) =>
       n &&
       (n.type === 'action' || n.kind === 'action') &&
-      /email|📧/i.test(String(n.label || n.title || ''))
+      /email|\u{1F4E7}/iu.test(String(n.label || n.title || ''))
   ).length
 }
 
@@ -137,7 +137,7 @@ function Workspace({ session }) {
                 <span className="text-[12px] text-hs-text-dark flex-1 leading-snug">
                   {t.label}
                 </span>
-                <Pill color={t.overdue ? 'red' : 'gray'}>{t.due}</Pill>
+                <Tag color={t.overdue ? 'red' : 'gray'}>{t.due}</Tag>
               </div>
             ))}
           </div>
@@ -155,8 +155,8 @@ function Workspace({ session }) {
                   key={m.with + m.time}
                   className="flex items-start gap-3 px-2 py-2 rounded-md hover:bg-hs-canvas/70"
                 >
-                  <div className="w-9 h-9 rounded-md bg-hs-blue/10 flex items-center justify-center text-hs-blue text-[14px] shrink-0">
-                    📅
+                  <div className="w-9 h-9 rounded-md bg-hs-blue/10 flex items-center justify-center text-hs-blue shrink-0">
+                    <IconCalendar width={15} height={15} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-[12px] font-medium text-hs-navy truncate">
@@ -206,8 +206,8 @@ function Sequences({ session }) {
             Automated, personalized email cadences that run while you&apos;re in the field.
           </p>
         </div>
-        <span className="text-[11px] text-white bg-hs-orange rounded-md px-2.5 py-1.5 font-medium">
-          + Enroll contacts
+        <span className="hs-btn-primary cursor-default" style={{ padding: '6px 12px', fontSize: 12 }}>
+          Enroll contacts
         </span>
       </div>
 
@@ -216,7 +216,7 @@ function Sequences({ session }) {
         <div className="px-4 pt-3 pb-3 border-b border-hs-border flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h4 className="text-[13px] font-semibold text-hs-navy">{seq.name}</h4>
-            <Pill color="green">Active</Pill>
+            <Tag color="green">Active</Tag>
           </div>
           <div className="flex items-center gap-6 pr-1">
             <SeqStat label="Enrolled" value={seq.enrolled} />
@@ -238,11 +238,11 @@ function Sequences({ session }) {
                     {step.day}
                   </span>
                   <span
-                    className={`relative z-10 w-7 h-7 rounded-full flex items-center justify-center text-[12px] shrink-0 ${
+                    className={`relative z-10 w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
                       isEmail ? 'bg-hs-orange/10 text-hs-orange' : 'bg-hs-blue/10 text-hs-blue'
                     }`}
                   >
-                    {isEmail ? '✉' : '✓'}
+                    {isEmail ? <IconMail width={12} height={12} /> : <IconCheck width={12} height={12} />}
                   </span>
                   <div className="min-w-0">
                     <p className="text-[12px] text-hs-text-dark leading-snug">{step.label}</p>
@@ -267,8 +267,8 @@ function Sequences({ session }) {
               className="bg-white rounded-lg border border-hs-border px-4 py-3 flex items-center justify-between"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <span className="w-7 h-7 rounded-full bg-hs-orange/10 text-hs-orange flex items-center justify-center text-[12px] shrink-0">
-                  ✉
+                <span className="w-7 h-7 rounded-full bg-hs-orange/10 text-hs-orange flex items-center justify-center shrink-0">
+                  <IconMail width={12} height={12} />
                 </span>
                 <div className="min-w-0">
                   <p className="text-[12px] font-medium text-hs-navy truncate">{wf.name}</p>
@@ -282,7 +282,7 @@ function Sequences({ session }) {
                 <span className="text-[11px] text-hs-text-light">
                   {9 + ((i * 7) % 22)} enrolled
                 </span>
-                <Pill color="green">Active</Pill>
+                <Tag color="green">Active</Tag>
               </div>
             </div>
           ))}
@@ -303,8 +303,8 @@ function Documents() {
       label: 'Name',
       render: (val) => (
         <span className="flex items-center gap-2">
-          <span className="text-[13px]">📄</span>
-          <span className="font-medium text-hs-navy">{val}</span>
+          <IconDoc width={13} height={13} className="text-hs-text-light shrink-0" />
+          <span className="hs-link font-medium">{val}</span>
         </span>
       ),
     },
@@ -325,8 +325,8 @@ function Documents() {
       {/* Notification callout */}
       <div className="bg-white rounded-lg border border-hs-border p-4">
         <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-md bg-hs-green/10 flex items-center justify-center text-hs-green text-[15px] shrink-0">
-            🔔
+          <div className="w-9 h-9 rounded-md bg-hs-green/10 flex items-center justify-center text-hs-green shrink-0">
+            <IconBell width={15} height={15} />
           </div>
           <div className="min-w-0">
             <h4 className="text-[13px] font-semibold text-hs-navy">
@@ -340,8 +340,8 @@ function Documents() {
 
         {/* Mock notification toast */}
         <div className="mt-3 ml-12 flex items-center gap-3 bg-hs-navy text-white rounded-lg px-3 py-2.5 shadow-sm max-w-md">
-          <span className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-[12px] shrink-0">
-            👁
+          <span className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center shrink-0">
+            <IconEye width={13} height={13} />
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-[12px] leading-snug">
@@ -447,7 +447,7 @@ function Meetings() {
                 className="flex items-start gap-3 px-1 py-2.5 border-b border-hs-canvas last:border-0"
               >
                 <div className="w-10 h-10 rounded-md bg-hs-blue/10 flex flex-col items-center justify-center text-hs-blue shrink-0">
-                  <span className="text-[13px] leading-none">📅</span>
+                  <IconCalendar width={15} height={15} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] font-medium text-hs-navy truncate">{m.with}</p>

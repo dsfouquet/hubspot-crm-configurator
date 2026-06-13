@@ -7,8 +7,8 @@ export default function TierBadge({ tier, size = 'sm' }) {
   const pad = size === 'sm' ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-1 text-[12px]'
   return (
     <span
-      className={`inline-block rounded font-ui font-semibold text-white ${pad}`}
-      style={{ backgroundColor: t.color }}
+      className={`inline-block rounded-[3px] font-ui font-semibold whitespace-nowrap ${pad}`}
+      style={{ backgroundColor: `${t.color}1F`, color: t.color }}
     >
       {t.label}
     </span>
