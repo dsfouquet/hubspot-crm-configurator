@@ -49,14 +49,56 @@ export const PAINS_BY_SECTION = {
   ops: ['tools_dont_talk', 'reporting_excel_pain', 'unknown_close_rate', 'ai_manual_drafting'],
 }
 
-// Marketing answered as habit statements (Always / Sometimes / Never pilot).
-// "Never" and "Sometimes" both fire the mapped pain; "Always" clears it.
-export const MARKETING_HABITS = [
-  { id: 'marketing_email_gap', statement: 'We email our list regularly (newsletter, nurture)' },
-  { id: 'landing_pages_gap', statement: 'Our website captures leads for us' },
-  { id: 'content_seo_gap', statement: 'We publish content / stay visible online' },
-  { id: 'marketing_attribution', statement: 'We can tie marketing spend to closed revenue' },
-]
+// Every diagnostic section is answered as POSITIVE habit statements on an
+// Always / Sometimes / Never scale. "Never" and "Sometimes" both fire the
+// mapped pain id into wizard.pains; "Always" clears it. (setHabit in
+// shared/QuestionControl.jsx does the syncing.) Each statement's `id` is the
+// SOLUTION_MAP pain id, so the fix plan, topLeak picker, and preview all keep
+// working unchanged. Order matches PAINS_BY_SECTION.
+export const HABITS_BY_SECTION = {
+  crm: [
+    { id: 'pipeline_in_head', statement: 'Everyone can see every deal, its stage, and who owns it in one shared place' },
+    { id: 'contact_context', statement: "Anyone can see what a contact is working on and their history without asking around" },
+    { id: 'company_picture', statement: 'We can see a company, who works there, and what is happening in one view' },
+    { id: 'focus_scatter', statement: 'We always know who to follow up with and who has gone quiet' },
+    { id: 'vip_segmentation', statement: 'We can tell our best customers and VIPs apart from cold leads at a glance' },
+    { id: 'no_reengagement', statement: 'Past clients hear from us regularly, not never' },
+    { id: 'tasks_slip', statement: 'Follow-up tasks live in one system and nothing slips' },
+  ],
+  sales: [
+    { id: 'quotes_no_followup', statement: 'Every quote we send gets followed up until we get an answer' },
+    { id: 'leads_fall_through', statement: 'New leads get a fast response — nothing falls through the cracks' },
+    { id: 'relationship_gap', statement: 'We have built deep relationships with the right decision-makers' },
+    { id: 'playbook_gap', statement: 'We have a written sales process every rep follows' },
+    { id: 'rep_workload_unproven', statement: "We can see each rep's activity and what is working" },
+    { id: 'admin_overload', statement: 'Our reps spend their time selling, not on data entry and manual emails' },
+  ],
+  marketing: [
+    { id: 'marketing_email_gap', statement: 'We email our list regularly (newsletter, nurture)' },
+    { id: 'landing_pages_gap', statement: 'Our website captures leads for us' },
+    { id: 'content_seo_gap', statement: 'We publish content / stay visible online' },
+    { id: 'marketing_attribution', statement: 'We can tie marketing spend to closed revenue' },
+  ],
+  service: [
+    { id: 'ticket_blindness', statement: 'We can see every open service issue without calling someone' },
+    { id: 'kb_faq_repeat', statement: 'Common questions are answered by a knowledge base, not us repeating ourselves' },
+    { id: 'surveys_nps_blind', statement: 'We know how happy our customers are before they leave' },
+    { id: 'inconsistent_onboarding', statement: 'Every new customer gets the same smooth onboarding' },
+  ],
+  commerce: [
+    { id: 'quotes_invoices_split', statement: 'Quoting and invoicing work together, not in disconnected tools' },
+    { id: 'ar_visibility', statement: 'We can see what is owed and overdue without running a special report' },
+  ],
+  ops: [
+    { id: 'tools_dont_talk', statement: 'Our tools share data automatically — we do not re-type the same info' },
+    { id: 'reporting_excel_pain', statement: 'Reports are live dashboards, not hours of exports and Excel' },
+    { id: 'unknown_close_rate', statement: 'We know our close rate by rep, source, and deal size anytime' },
+    { id: 'ai_manual_drafting', statement: 'We let AI draft the follow-ups and summaries our team would hand-write' },
+  ],
+}
+
+// Back-compat alias (marketing was the original habit pilot).
+export const MARKETING_HABITS = HABITS_BY_SECTION.marketing
 
 // "Classic leaks" — research-backed places companies lose the most money.
 // Picking one ALSO checks the mapped pain. Stats sourced June 2026 (HBR/MIT
@@ -74,14 +116,17 @@ export const CLASSIC_LEAKS = [
 
 export const ALL_PAIN_IDS = Object.values(PAINS_BY_SECTION).flat()
 
-const painQuestion = (section, prompt) => ({
-  key: 'pains', // all checklists share one answer array of ids
-  qid: `pains_${section}`,
+// Each section's diagnostic is a positive-statement habit matrix. Per-section
+// answer key (e.g. crmHabits) holds {painId: 'always'|'sometimes'|'never'};
+// the shared wizard.pains array is kept in sync by setHabit.
+const habitQuestion = (section, prompt) => ({
+  key: `${section}Habits`,
+  qid: `habits_${section}`,
   section,
   prompt,
-  type: 'pain-multi',
-  hint: 'Select all that apply',
-  painIds: PAINS_BY_SECTION[section],
+  type: 'habit-matrix',
+  hint: 'Be honest — Always, Sometimes, or Never',
+  statements: HABITS_BY_SECTION[section],
 })
 
 export const DISCOVERY_QUESTIONS = [
@@ -200,7 +245,7 @@ export const DISCOVERY_QUESTIONS = [
       'No existing list',
     ],
   },
-  painQuestion('crm', 'Any of these CRM problems sound familiar?'),
+  habitQuestion('crm', 'How is your CRM and contact data holding up? Be honest.'),
 
   // ---------- Sales ----------
   {
@@ -245,20 +290,13 @@ export const DISCOVERY_QUESTIONS = [
     type: 'single',
     options: ['Days', 'A few weeks', '1–3 months', '3–12 months', 'Over a year'],
   },
-  painQuestion('sales', 'Where is your sales process leaking?'),
+  habitQuestion('sales', 'How is your sales process actually running? Be honest.'),
 
-  // ---------- Marketing (Always / Sometimes / Never pilot) ----------
-  {
-    key: 'marketingHabits',
-    qid: 'marketingHabits',
-    section: 'marketing',
-    prompt: 'How is marketing actually going? Be honest.',
-    type: 'habit-matrix',
-    statements: MARKETING_HABITS,
-  },
+  // ---------- Marketing ----------
+  habitQuestion('marketing', 'How is marketing actually going? Be honest.'),
 
   // ---------- Service ----------
-  painQuestion('service', 'What happens after the sale?'),
+  habitQuestion('service', 'How is everything after the sale? Be honest.'),
 
   // ---------- Commerce ----------
   {
@@ -281,7 +319,7 @@ export const DISCOVERY_QUESTIONS = [
       'None',
     ],
   },
-  painQuestion('commerce', 'Any friction between selling and getting paid?'),
+  habitQuestion('commerce', 'How is the money side — quoting to getting paid? Be honest.'),
 
   // ---------- Ops & Reporting ----------
   {
@@ -353,7 +391,7 @@ export const DISCOVERY_QUESTIONS = [
       'Facebook / Instagram ads',
     ],
   },
-  painQuestion('ops', 'How do systems and numbers feel day to day?'),
+  habitQuestion('ops', 'How do your systems and numbers feel day to day? Be honest.'),
 
   // ---------- Priorities ----------
   {

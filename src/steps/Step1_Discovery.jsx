@@ -191,14 +191,15 @@ export default function Step1_Discovery({ index }) {
       <div className="rounded-lg border border-hs-border bg-white px-4 divide-y divide-hs-canvas">
         {sectionQuestions.map((q) => (
           <div key={q.qid} className="py-3">
-            <div className="flex items-baseline justify-between gap-3 mb-1.5">
-              <h3 className="font-ui font-semibold text-hs-navy text-[13px]">{q.prompt}</h3>
-              {(q.hint || q.type === 'multi' || q.optional) && (
-                <span className="text-[10px] font-ui text-hs-text-light shrink-0">
-                  {q.optional ? 'Optional' : q.hint || 'Select all that apply'}
-                </span>
-              )}
-            </div>
+            <h3 className="font-ui font-semibold text-hs-navy text-[13px] leading-snug">
+              {q.prompt}
+            </h3>
+            {(q.hint || q.type === 'multi' || q.optional) && (
+              <p className="text-[10px] font-ui text-hs-text-light mt-0.5 mb-1.5">
+                {q.optional ? 'Optional' : q.hint || 'Select all that apply'}
+              </p>
+            )}
+            {!(q.hint || q.type === 'multi' || q.optional) && <div className="mb-1.5" />}
             <QuestionControl question={q} />
           </div>
         ))}

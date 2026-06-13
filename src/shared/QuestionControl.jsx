@@ -89,9 +89,8 @@ export default function QuestionControl({ question, size = 'compact' }) {
     return <span>{opt}</span>
   }
 
-  // Size-dependent classes.
+  // Size-dependent row padding/text.
   const rowText = large ? 'text-[14px] px-3.5 py-2.5' : 'text-[12.5px] px-2.5 py-1'
-  const pillText = large ? 'text-[14px] px-4 py-2' : 'text-[12.5px] px-2.5 py-1'
 
   return (
     <div>
@@ -171,56 +170,32 @@ export default function QuestionControl({ question, size = 'compact' }) {
       )}
 
       {(isSingle || isMulti) && !isText && (
-        <div
-          className={
-            isPainMulti || isPainSingle || (large && isSingle)
-              ? large
-                ? 'space-y-2'
-                : 'space-y-1'
-              : 'flex flex-wrap gap-1.5'
-          }
-        >
+        <div className={large ? 'space-y-2' : 'space-y-1'}>
           {options.map((opt) => {
             const sel = isSelected(opt)
-            // Pains (and all large single-selects): full-width rows with check.
-            if (isPainMulti || isPainSingle || (large && isSingle)) {
-              return (
-                <button
-                  key={opt}
-                  type="button"
-                  onClick={() => toggle(opt)}
-                  className={`w-full text-left flex items-center gap-2.5 rounded-md border font-ui transition-colors ${rowText} ${
-                    sel
-                      ? 'border-hs-orange bg-hs-orange/10'
-                      : 'border-hs-border bg-white hover:border-hs-text-light'
-                  }`}
-                >
-                  <span
-                    className={`flex items-center justify-center ${large ? 'w-4.5 h-4.5 w-[18px] h-[18px]' : 'w-3.5 h-3.5'} shrink-0 ${
-                      isSingle ? 'rounded-full' : 'rounded'
-                    } border ${
-                      sel ? 'bg-hs-orange border-hs-orange text-white' : 'border-hs-border'
-                    }`}
-                  >
-                    {sel && <span className={`${large ? 'text-[11px]' : 'text-[9px]'} leading-none`}>✓</span>}
-                  </span>
-                  <OptionLabel opt={opt} />
-                </button>
-              )
-            }
+            // Every selection answer is a full-width vertical row: round check for
+            // single-select, square for multi-select.
             return (
               <button
                 key={opt}
                 type="button"
                 onClick={() => toggle(opt)}
-                className={`rounded-full border font-ui transition-colors ${pillText} ${
+                className={`w-full text-left flex items-center gap-2.5 rounded-md border font-ui transition-colors ${rowText} ${
                   sel
-                    ? 'border-hs-orange bg-hs-orange text-white font-medium'
-                    : 'border-hs-border bg-white text-hs-text-dark hover:border-hs-text-light'
+                    ? 'border-hs-orange bg-hs-orange/10'
+                    : 'border-hs-border bg-white hover:border-hs-text-light'
                 }`}
               >
-                {sel && <span className="mr-1">✓</span>}
-                {opt}
+                <span
+                  className={`flex items-center justify-center ${large ? 'w-[18px] h-[18px]' : 'w-3.5 h-3.5'} shrink-0 ${
+                    isSingle ? 'rounded-full' : 'rounded'
+                  } border ${
+                    sel ? 'bg-hs-orange border-hs-orange text-white' : 'border-hs-border'
+                  }`}
+                >
+                  {sel && <span className={`${large ? 'text-[11px]' : 'text-[9px]'} leading-none`}>✓</span>}
+                </span>
+                <OptionLabel opt={opt} />
               </button>
             )
           })}
@@ -281,7 +256,7 @@ export default function QuestionControl({ question, size = 'compact' }) {
           value={otherValue}
           onChange={(e) => setOther(e.target.value)}
           placeholder="Other…"
-          className={`hs-input mt-2 rounded-full font-ui ${large ? 'w-full text-[14px] px-3.5 py-2' : 'w-44 text-[12.5px] px-2.5 py-1'}`}
+          className={`hs-input mt-2 w-full font-ui ${large ? 'text-[14px] px-3.5 py-2' : 'text-[12.5px] px-2.5 py-1.5'}`}
         />
       )}
 

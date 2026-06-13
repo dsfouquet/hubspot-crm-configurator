@@ -18,6 +18,14 @@ export default function PreviewDiscovery() {
       return ids.length ? ids.map((id) => painParts(id).pain) : null
     }
     if (q.type === 'single-from-pains') return a ? [painParts(a).pain] : null
+    if (q.type === 'habit-matrix') {
+      if (!a || typeof a !== 'object') return null
+      // Surface the statements flagged as a problem (Never / Sometimes).
+      const flagged = (q.statements || []).filter(
+        (st) => a[st.id] && a[st.id] !== 'always'
+      )
+      return flagged.length ? flagged.map((st) => painParts(st.id).pain) : null
+    }
     if (Array.isArray(a)) return a.length ? a : null
     return a && String(a).trim() ? a : null
   }

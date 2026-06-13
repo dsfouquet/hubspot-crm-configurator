@@ -1,5 +1,32 @@
 # Changelog
 
+## Build 22 — Discovery UX: vertical options, A/S/N everywhere (June 13, 2026)
+
+Driven by Daniel's review of the presenter discovery flow.
+
+- **All selection answers render vertically.** QuestionControl no longer
+  renders any options as horizontal pills — every single/multi choice is a
+  full-width stacked row (round check for single, square for multi),
+  matching the pain rows. Affects both presenter and customer modes.
+- **Fixed the squished prompt header.** In the discovery section cards, a long
+  hint (e.g. "One per line or commas — we build your pipeline from this") was
+  crushing the question title into a narrow column. The hint now sits on its
+  own line beneath the full-width prompt.
+- **Fixed the marketing Always/Sometimes/Never buttons.** Root cause: the live
+  preview's `PreviewDiscovery.answerFor()` had no `habit-matrix` case, so it
+  returned the raw habit object, which React can't render as a text node —
+  clicking any A/S/N button threw and made the buttons look dead. Added a
+  habit-matrix case that surfaces the flagged pains.
+- **Extended Always/Sometimes/Never to every diagnostic section.** The CRM,
+  Sales, Service, Commerce, and Ops pain checklists are now positive-statement
+  habit matrices (Always = no problem, Never/Sometimes = flag the pain),
+  consistent with Marketing. Each statement maps to its SOLUTION_MAP pain id,
+  so the fix plan, topLeak picker, and preview keep working unchanged. The
+  Ops inference for `tools_dont_talk` / `reporting_excel_pain` now defers to
+  the explicit habit answer instead of contradicting it. (`HABITS_BY_SECTION`
+  in discoveryQuestions.js is the single source.)
+
+
 ## Build 21 — Daniel's UX review + full design sweep (June 12, 2026)
 
 Driven by Daniel's review of the customer flow and presenter view.

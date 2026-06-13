@@ -163,17 +163,21 @@ export function collectLeakIds(wizard) {
   )
   const fromVent = matchTextToLeaks(wizard.ventBox)
 
-  // Answers that ARE pain signals, even without checking a box:
+  // Answers that ARE pain signals, even without flagging the habit. These only
+  // fire as a fallback — if the Ops habit matrix has an explicit answer for the
+  // pain, the prospect's own answer wins (don't contradict an "Always").
+  const opsHabits = wizard.opsHabits || {}
   const inferred = []
   // Tracking leads in 2+ places = scattered systems.
   const tracking = Array.isArray(wizard.currentTracking) ? wizard.currentTracking : []
-  if (tracking.length >= 2) inferred.push('tools_dont_talk')
+  if (tracking.length >= 2 && !opsHabits.tools_dont_talk) inferred.push('tools_dont_talk')
   // Manual/Excel reporting or hours of meeting prep = reporting pain.
   if (
-    ['Someone builds them manually each time', 'Exports + Excel every time'].includes(
+    !opsHabits.reporting_excel_pain &&
+    (['Someone builds them manually each time', 'Exports + Excel every time'].includes(
       wizard.reportsToday
     ) ||
-    wizard.meetingPrep === 'Someone spends hours prepping numbers'
+      wizard.meetingPrep === 'Someone spends hours prepping numbers')
   ) {
     inferred.push('reporting_excel_pain')
   }
