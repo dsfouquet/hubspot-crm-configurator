@@ -13,6 +13,10 @@ export default function QuestionControl({ question, size = 'compact' }) {
   const answer = wizard[question.key]
   const large = size === 'large'
   const [showClassics, setShowClassics] = useState(false)
+  // Which journey-stage dropdowns are expanded (grouped pain-multi). All
+  // collapsed by default so the long list isn't a wall of scroll.
+  const [openGroups, setOpenGroups] = useState({})
+  const toggleGroup = (key) => setOpenGroups((g) => ({ ...g, [key]: !g[key] }))
 
   const isPainMulti = question.type === 'pain-multi'
   const isPainSingle = question.type === 'single-from-pains'
@@ -200,22 +204,69 @@ export default function QuestionControl({ question, size = 'compact' }) {
         // otherwise a flat vertical list. Each option is a full-width row: round
         // check for single-select, square for multi-select.
         isPainMulti && question.groups?.length ? (
-          <div className={large ? 'space-y-5' : 'space-y-4'}>
-            {question.groups.map((group) => (
-              <div key={group.key}>
-                <div className="mb-1.5">
-                  <span className="text-[11px] font-ui font-bold uppercase tracking-wide text-hs-orange">
-                    {group.label}
-                  </span>
-                  {group.caption && (
-                    <span className="text-[11px] font-ui text-hs-text-light"> · {group.caption}</span>
-                  )}
+          <div className={large ? 'space-y-3' : 'space-y-2'}>
+            {question.groups.map((group) => {
+              const isOpen = !!openGroups[group.key]
+              const selCount = group.painIds.filter(
+                (id) => Array.isArray(answer) && answer.includes(id)
+              ).length
+              return (
+                <div
+                  key={group.key}
+                  className={`bg-white border rounded-lg overflow-hidden ${
+                    selCount > 0 ? 'border-hs-orange/60' : 'border-hs-border'
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleGroup(group.key)}
+                    aria-expanded={isOpen}
+                    className="w-full flex items-center gap-2.5 text-left px-3.5 py-3 hover:bg-hs-canvas/60"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[12px] font-ui font-bold uppercase tracking-wide text-hs-orange">
+                          {group.label}
+                        </span>
+                        {selCount > 0 && (
+                          <span className="text-[10px] font-ui font-semibold text-white bg-hs-orange rounded-full px-1.5 py-0.5">
+                            {selCount} selected
+                          </span>
+                        )}
+                      </div>
+                      {group.caption && (
+                        <span className="block text-[11px] font-ui text-hs-text-light mt-0.5 leading-tight">
+                          {group.caption}
+                        </span>
+                      )}
+                    </div>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className={`text-hs-text-light shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                      aria-hidden
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                  <div
+                    className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+                      isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <div className={`px-3.5 pb-3.5 pt-0.5 ${large ? 'space-y-2' : 'space-y-1'}`}>
+                        {group.painIds.map((opt) => renderRow(opt))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className={large ? 'space-y-2' : 'space-y-1'}>
-                  {group.painIds.map((opt) => renderRow(opt))}
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         ) : (
           <div className={large ? 'space-y-2' : 'space-y-1'}>

@@ -40,11 +40,16 @@ export const JOURNEY_PAIN_SET = [
   'admin_overload', // data entry eats selling time
   'ar_visibility', // don't know what's owed
   'quotes_invoices_split', // quoting and invoicing don't talk
-  'ai_manual_drafting', // haven't started on AND processes
   // RevOps — tie it all together
   'handoff_void', // lose jobs to slow handoffs
   'unknown_close_rate', // don't know why we win or lose
   'tools_dont_talk', // apps don't talk, data re-typed
+  // AI — put AI to work
+  'ai_manual_drafting', // general "haven't started with AI"
+  'ai_followups', // AI drafts follow-ups
+  'ai_summaries', // AI call/meeting notes
+  'ai_research', // AI prospect research
+  'ai_chatbot', // AI answers visitors
 ]
 
 // Back-compat alias (was the universal core before the journey set).
@@ -70,6 +75,7 @@ export const JOURNEY_STAGES = [
   { key: 'service', label: 'Service & Retention', caption: 'Keeping & growing customers' },
   { key: 'ops', label: 'Operations & Reporting', caption: 'The back office behind it all' },
   { key: 'revops', label: 'RevOps — tie it all together', caption: 'Make every team run off one connected system' },
+  { key: 'ai', label: 'AI', caption: 'Put AI to work across your business' },
 ]
 
 // Every pain id → its journey stage (Daniel's guidance: leads = Marketing;
@@ -103,13 +109,18 @@ export const PAIN_STAGE = {
   // Operations & Reporting — back office
   admin_overload: 'ops',
   reporting_excel_pain: 'ops',
-  ai_manual_drafting: 'ops',
   quotes_invoices_split: 'ops',
   ar_visibility: 'ops',
   // RevOps — connect it all together
   tools_dont_talk: 'revops',
   handoff_void: 'revops',
   unknown_close_rate: 'revops',
+  // AI — put AI to work
+  ai_manual_drafting: 'ai',
+  ai_followups: 'ai',
+  ai_summaries: 'ai',
+  ai_research: 'ai',
+  ai_chatbot: 'ai',
 }
 
 // Build the journey-ordered groups for Q6 from the same avatar-weighted pain set

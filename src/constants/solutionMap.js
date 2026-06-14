@@ -479,6 +479,68 @@ export const SOLUTION_MAP = {
     ],
     keywords: ['not enough leads', 'more leads', 'lead generation', 'lead gen', 'qualified leads', 'need leads', 'empty pipeline', 'slow month'],
   },
+
+  // ---- AI — where AI can take work off the team's plate ----
+  ai_followups: {
+    title: 'AI writes the first draft of every follow-up',
+    narrative:
+      'Breeze AI drafts follow-up emails and replies in your voice, ready to review and send — so chasing a quote or answering a prospect takes seconds, not a blank page.',
+    workflows: [],
+    viewIds: [],
+    widgets: [],
+    cadenceRules: {},
+    ccBuild: [
+      'AI email drafting set up in your inbox and on deals',
+      'Reply suggestions tuned to how your team actually writes',
+      'One-click send after a quick human review',
+    ],
+    keywords: ['draft emails', 'write emails', 'follow-up by hand', 'ai email', 'reply suggestions', 'compose'],
+  },
+  ai_summaries: {
+    title: 'Every call and meeting summarizes itself',
+    narrative:
+      'AI records, transcribes, and summarizes calls and meetings, then writes the next steps straight onto the contact — nobody types notes from memory again.',
+    workflows: [],
+    viewIds: [],
+    widgets: [],
+    cadenceRules: {},
+    ccBuild: [
+      'AI call and meeting summaries logged to the record automatically',
+      'Next steps and tasks pulled out of the conversation',
+      'Searchable transcripts on every contact and deal',
+    ],
+    keywords: ['meeting notes', 'call notes', 'summary', 'transcribe', 'ai notes', 'recap', 'minutes'],
+  },
+  ai_research: {
+    title: 'AI researches the prospect before you call',
+    narrative:
+      'Breeze enriches each contact and company and briefs the rep before outreach — size, role, recent news — so the first touch is personalized without an hour of digging.',
+    workflows: [],
+    viewIds: [],
+    widgets: [],
+    cadenceRules: {},
+    ccBuild: [
+      'AI prospect and company enrichment on new leads',
+      'Pre-call briefs generated automatically',
+      'Personalized opening lines drafted for outreach',
+    ],
+    keywords: ['research prospects', 'enrich', 'background', 'ai research', 'company info', 'lookup'],
+  },
+  ai_chatbot: {
+    title: 'AI answers visitors the moment they land',
+    narrative:
+      'An AI chat agent answers website questions, qualifies the visitor, and books a meeting or routes a hot lead to a rep — instantly, day or night.',
+    workflows: ['new_lead_assignment'],
+    viewIds: [],
+    widgets: [],
+    cadenceRules: {},
+    ccBuild: [
+      'AI website chat trained on your business and FAQs',
+      'Instant qualification and meeting booking',
+      'Hot-lead routing to the right rep in real time',
+    ],
+    keywords: ['chatbot', 'chat', 'website visitors', 'after hours', 'instant answers', 'ai chat', 'live chat'],
+  },
 }
 
 // SPIN layer (sales/discovery-questions/Discovery-Questions-By-Hub.md):
@@ -606,6 +668,22 @@ const SPIN_EXTRAS = {
     hub: 'Marketing Hub',
     implication: 'If marketing produced 10 more qualified leads a month at your close rate, what would that add to revenue this year?',
   },
+  ai_followups: {
+    hub: 'AI',
+    implication: 'If every rep got two selling hours a week back from drafting emails, what is that across the team in a year?',
+  },
+  ai_summaries: {
+    hub: 'AI',
+    implication: 'How many details get lost between a call and the CRM because someone had to remember to write them down?',
+  },
+  ai_research: {
+    hub: 'AI',
+    implication: 'An hour of manual research per deal, across every deal — what is that costing in reps not selling?',
+  },
+  ai_chatbot: {
+    hub: 'AI',
+    implication: 'How many after-hours visitors leave without an answer because nobody was online to reply?',
+  },
 }
 
 Object.entries(SPIN_EXTRAS).forEach(([id, extra]) => {
@@ -634,7 +712,11 @@ const PAIN_LABELS = {
   kb_faq_repeat: { pain: 'FAQs', painDesc: 'we answer the same customer questions over and over' },
   surveys_nps_blind: { pain: 'Feedback', painDesc: "we don't know customers are unhappy until they're gone" },
   reporting_excel_pain: { pain: 'Reports', painDesc: 'every report or dashboard wastes time on exports and spreadsheets — nothing’s automated' },
-  ai_manual_drafting: { pain: 'AI', painDesc: "we know there are processes AI could handle, we just haven't started yet" },
+  ai_manual_drafting: { pain: 'AI opportunity', painDesc: "we know there are processes AI could handle, we just haven't started yet" },
+  ai_followups: { pain: 'AI follow-ups', painDesc: 'we write every follow-up and reply by hand' },
+  ai_summaries: { pain: 'AI notes', painDesc: 'calls and meetings have no automatic summary or next steps' },
+  ai_research: { pain: 'AI research', painDesc: 'we research every prospect and account by hand' },
+  ai_chatbot: { pain: 'AI chat', painDesc: 'website visitors get no instant answers, day or night' },
   tools_dont_talk: { pain: 'Sync', painDesc: "our apps and programs don't talk, so the same data gets re-typed into multiple systems" },
   tasks_slip: { pain: 'Tasks', painDesc: 'engaging the right customer at the right time slips — we can’t prioritize the best activities' },
   contact_context: { pain: 'Context', painDesc: "what each person's working on, their pain points — it lives in reps' heads" },
