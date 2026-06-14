@@ -135,7 +135,6 @@ export default function StepCTA() {
   const goToStep = useStore((s) => s.goToStep)
 
   const offers = scopeOffers(session)
-  const qualified = session.qualification?.qualified !== false
   const name = session.gate?.name?.split(' ')[0]
   const isMachine = offers.recommended === 'machine'
 
@@ -221,46 +220,26 @@ export default function StepCTA() {
           />
         </div>
 
-        {/* Routed primary CTA */}
+        {/* Primary CTA is always to book time. DIY is the small fallback below. */}
         <div className="mt-6 bg-white border border-hs-border rounded-lg px-5 py-6 text-center">
-          {qualified ? (
-            <>
-              <h2 className="font-ui font-bold text-hs-navy text-xl">
-                {isMachine ? 'Book your build call' : "Claim one of this month's free setups"}
-              </h2>
-              <p className="mt-1.5 text-[14px] font-ui text-hs-text-dark">
-                15 minutes. We confirm scope, show you the plan, and map the fastest path to live.
-              </p>
-              <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="hs-btn-primary mt-4 !px-8 !py-3 !text-[15px]">
-                Book Your Free CRM Setup Call →
-              </a>
-              <div className="mt-3">
-                <DownloadPdfButton variant="secondary" label="Download your build plan (PDF)" />
-              </div>
-            </>
-          ) : (
-            <>
-              <h2 className="font-ui font-bold text-hs-navy text-xl">
-                Your build plan is ready. Here's the fastest way to get it done.
-              </h2>
-              <p className="mt-1.5 text-[14px] font-ui text-hs-text-dark">
-                The DIY CRM Build Guide walks you through this exact setup: videos, templates,
-                and the same workflows you just previewed.
-              </p>
-              <a href={DIY_GUIDE_URL} target="_blank" rel="noreferrer" className="hs-btn-primary mt-4 !px-8 !py-3 !text-[15px]">
-                Get the DIY CRM Build Guide →
-              </a>
-              <div className="mt-3">
-                <DownloadPdfButton variant="secondary" label="Download your build plan (PDF)" />
-              </div>
-              <p className="mt-4 text-[12px] font-ui text-hs-text-light">
-                Prefer it done for you?{' '}
-                <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="hs-link">
-                  Book time with Daniel
-                </a>
-              </p>
-            </>
-          )}
+          <h2 className="font-ui font-bold text-hs-navy text-xl">
+            {isMachine ? 'Book your build call' : "Claim one of this month's free setups"}
+          </h2>
+          <p className="mt-1.5 text-[14px] font-ui text-hs-text-dark">
+            15 minutes. We confirm scope, show you the plan, and map the fastest path to live.
+          </p>
+          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="hs-btn-primary mt-4 !px-8 !py-3 !text-[15px]">
+            Book Your Free CRM Setup Call →
+          </a>
+          <div className="mt-3">
+            <DownloadPdfButton variant="secondary" label="Download your build plan (PDF)" />
+          </div>
+          <p className="mt-4 text-[12px] font-ui text-hs-text-light">
+            Prefer to do it yourself?{' '}
+            <a href={DIY_GUIDE_URL} target="_blank" rel="noreferrer" className="hs-link">
+              Get the DIY CRM Build Guide
+            </a>
+          </p>
         </div>
 
         {/* The rest of the ladder */}
