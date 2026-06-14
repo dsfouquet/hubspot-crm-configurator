@@ -238,6 +238,10 @@ export default function HubJourney() {
 
   // Only the steps this business actually uses (config step + discovery defaults).
   const visibleSteps = STEPS.filter((s) => journeyEnabled(session, s.id))
+  // Presenter-added custom steps: always shown, grouped into their chosen stage,
+  // so the process can match anything the template did not capture.
+  const customSteps = (session.journey?.customSteps || []).map((c) => ({ ...c, isCustom: true }))
+  const allSteps = [...visibleSteps, ...customSteps]
 
   const results = searchIntegrations(query)
   const pickIntegration = (integ) => {
@@ -249,10 +253,10 @@ export default function HubJourney() {
   const phases = PHASE_ORDER.map((phase) => ({
     phase,
     color: PHASE_COLORS[phase],
-    steps: visibleSteps.filter((s) => s.phase === phase),
+    steps: allSteps.filter((s) => s.phase === phase),
   })).filter((p) => p.steps.length > 0)
 
-  const openStep = visibleSteps.find((s) => s.id === open?.id) || null
+  const openStep = allSteps.find((s) => s.id === open?.id) || null
   const openIntegs = openStep ? integrationsForStep(openStep.id) : []
 
   return (
@@ -391,19 +395,26 @@ export default function HubJourney() {
                           }`}
                           style={{
                             borderColor: isOpen ? ACCENT : isHighlighted ? '#00BDA5' : '#CBD6E2',
+                            borderStyle: step.isCustom ? 'dashed' : 'solid',
                           }}
                         >
                           <span className="flex-1 text-[12.5px] font-semibold text-hs-navy leading-snug">
                             {step.title}
                           </span>
-                          {integs.length > 0 && (
-                            <span
-                              className="shrink-0 mt-0.5 inline-flex items-center gap-0.5 text-[9px] text-hs-text-light bg-hs-koala rounded-[3px] px-1.5 py-0.5"
-                              title={`${integs.length} integrations plug in here`}
-                            >
-                              <IconPlug width={10} height={10} />
-                              {integs.length}
+                          {step.isCustom ? (
+                            <span className="shrink-0 mt-0.5 text-[9px] font-semibold uppercase tracking-wide text-hs-text-light bg-hs-canvas border border-hs-border rounded-[3px] px-1.5 py-0.5">
+                              Custom
                             </span>
+                          ) : (
+                            integs.length > 0 && (
+                              <span
+                                className="shrink-0 mt-0.5 inline-flex items-center gap-0.5 text-[9px] text-hs-text-light bg-hs-koala rounded-[3px] px-1.5 py-0.5"
+                                title={`${integs.length} integrations plug in here`}
+                              >
+                                <IconPlug width={10} height={10} />
+                                {integs.length}
+                              </span>
+                            )
                           )}
                         </button>
                       </div>
@@ -431,21 +442,30 @@ export default function HubJourney() {
               {openStep.title}
             </h3>
 
-            <p className="text-[13.5px] text-hs-text-dark mt-2.5 font-medium">{openStep.summary}</p>
-            <p className="text-[13px] text-hs-text-dark leading-relaxed mt-2.5">{openStep.detail}</p>
-
-            <div className="mt-4">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
-                HubSpot tools at this step
+            {openStep.isCustom ? (
+              <p className="text-[13px] text-hs-text-dark leading-relaxed mt-2.5">
+                This is a custom step you added for this business, so the process matches how they
+                really sell.
               </p>
-              <div className="flex flex-wrap gap-1.5">
-                {openStep.tools.map((t) => (
-                  <Chip key={t}>{t}</Chip>
-                ))}
-              </div>
-            </div>
+            ) : (
+              <>
+                <p className="text-[13.5px] text-hs-text-dark mt-2.5 font-medium">{openStep.summary}</p>
+                <p className="text-[13px] text-hs-text-dark leading-relaxed mt-2.5">{openStep.detail}</p>
 
-            {openIntegs.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
+                    HubSpot tools at this step
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {openStep.tools.map((t) => (
+                      <Chip key={t}>{t}</Chip>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {!openStep.isCustom && openIntegs.length > 0 && (
               <div className="mt-4">
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1.5 flex items-center gap-1">
                   <IconPlug width={11} height={11} className="shrink-0" />

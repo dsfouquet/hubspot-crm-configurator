@@ -38,7 +38,7 @@ function buildInitialSession(mode = 'async') {
     customObjects: [],
     workflows: [],
     fixPlan: null,
-    journey: { overrides: {} },
+    journey: { overrides: {}, customSteps: [] },
     views: { off: [], custom: [] },
     dashboards: { name: 'Sales Command Center', widgets: defaultWidgets() },
     cadence: defaultCadence(),
@@ -397,7 +397,31 @@ export const useStore = create((set, get) => ({
     }))
   },
   resetJourneyOverrides() {
-    get().patchSession({ journey: { overrides: {} } })
+    get().patchSession((s) => ({
+      journey: { ...s.journey, overrides: {} },
+    }))
+  },
+  // Custom sales-process steps the presenter adds to fit a specific business.
+  addJourneyCustomStep(phase, title) {
+    const clean = String(title || '').trim().slice(0, 80)
+    if (!clean) return
+    get().patchSession((s) => ({
+      journey: {
+        ...s.journey,
+        customSteps: [
+          ...(s.journey?.customSteps || []),
+          { id: `custom_${Date.now()}`, phase, title: clean },
+        ],
+      },
+    }))
+  },
+  removeJourneyCustomStep(id) {
+    get().patchSession((s) => ({
+      journey: {
+        ...s.journey,
+        customSteps: (s.journey?.customSteps || []).filter((c) => c.id !== id),
+      },
+    }))
   },
   // True if a template (by templateId) is already added.
   hasTemplate(templateId) {
