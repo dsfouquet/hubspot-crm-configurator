@@ -16,14 +16,15 @@ import { IconSearch, IconPlug, IconCheck, IconArrowRight } from '../hubIcons'
 
 const PHASE_ORDER = ['GENERATE', 'QUALIFY', 'WIN', 'DELIVER', 'KEEP']
 
-// One calm palette: navy stage labels + a single orange accent for active states.
+// One brand color across the board: HubSpot orange on the stage labels and
+// active states. One color, not a rainbow, so it reads clean.
 const ACCENT = '#FF7A59'
 const PHASE_COLORS = {
-  GENERATE: '#2D3E50',
-  QUALIFY: '#2D3E50',
-  WIN: '#2D3E50',
-  DELIVER: '#2D3E50',
-  KEEP: '#2D3E50',
+  GENERATE: '#FF7A59',
+  QUALIFY: '#FF7A59',
+  WIN: '#FF7A59',
+  DELIVER: '#FF7A59',
+  KEEP: '#FF7A59',
 }
 
 const PHASE_SUBLABELS = {
@@ -334,9 +335,17 @@ export default function HubJourney() {
             const incoming = pi > 0 ? BOUNDARY_HANDOFFS[phases[pi - 1].phase] || [] : []
             return (
               <div key={p.phase} className="flex flex-col min-w-0">
-                {/* Stage header: chip + inline incoming handoff(s), sublabel, rule */}
+                {/* Stage header: flow arrow + chip + inline handoff(s), sublabel, rule */}
                 <div className="mb-2.5">
                   <div className="flex items-center gap-1.5 flex-wrap">
+                    {pi > 0 && (
+                      <IconArrowRight
+                        width={16}
+                        height={16}
+                        className="text-hs-orange/50 shrink-0 -ml-2.5"
+                        aria-hidden
+                      />
+                    )}
                     <span
                       className="inline-block text-[10px] font-bold uppercase tracking-wide text-white rounded-[3px] px-2 py-0.5"
                       style={{ backgroundColor: p.color }}
