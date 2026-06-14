@@ -17,19 +17,34 @@ export const JOURNEY_PAIN_SET = [
   'leads_fall_through', // slow to engage inbound leads
   'lead_gen_gap', // not enough qualified leads from marketing
   'landing_pages_gap', // not capturing leads to follow up
+  'marketing_email_gap', // we never email the list
+  'content_seo_gap', // nobody finds us online
   // Sales — work the deal to the close
   'quotes_no_followup', // quote follow-up isn't consistent
   'pipeline_in_head', // can't see open deals / status
   'tasks_slip', // right activity at the right time slips
   'rep_workload_unproven', // can't tie rep activity to revenue
   'key_person_risk', // it all lives in one rep's head
+  'company_picture', // no complete view of a company
+  'focus_scatter', // don't know who to spend time on
+  'vip_segmentation', // can't tell VIPs from cold leads
+  'relationship_gap', // building relationships is slow/hard
   // Service & Retention — keep & grow customers
   'no_reengagement', // past clients don't hear from us
+  'inconsistent_onboarding', // every client gets a different experience
+  'ticket_blindness', // can't see service issues
+  'kb_faq_repeat', // answer the same questions over and over
+  'surveys_nps_blind', // don't know unhappy until they're gone
   // Operations — the back office
   'reporting_excel_pain', // reporting is manual exports
+  'admin_overload', // data entry eats selling time
+  'ar_visibility', // don't know what's owed
+  'quotes_invoices_split', // quoting and invoicing don't talk
+  'ai_manual_drafting', // haven't started on AND processes
   // RevOps — tie it all together
   'handoff_void', // lose jobs to slow handoffs
   'unknown_close_rate', // don't know why we win or lose
+  'tools_dont_talk', // apps don't talk, data re-typed
 ]
 
 // Back-compat alias (was the universal core before the journey set).
