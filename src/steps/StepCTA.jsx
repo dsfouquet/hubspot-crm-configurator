@@ -9,81 +9,127 @@ const BOOKING_URL =
 const DIY_GUIDE_URL =
   import.meta.env.VITE_DIY_GUIDE_URL || 'https://www.crescentconnectla.com/free-crm'
 
+// Bucket the flat scope items into a few scannable categories (Option A:
+// outcome-first, grouped scope) so the best-fit card reads in seconds instead
+// of as one long list. Order matters; first match wins, leftovers go last.
+const SCOPE_GROUPS = [
+  { label: 'Foundation', match: /pipeline|propert|import|de-?dup|object|connected|form|workspace|chatbot/i },
+  { label: 'Automation & follow-up', match: /automation|workflow|branch|sequence|follow-?up|routing|scoring|handoff|nurture|cadence|playbook/i },
+  { label: 'Reporting', match: /dashboard|report|attribution|widget|survey|nps|csat/i },
+  { label: 'Integrations', match: /integration|sync|slack|teams|zapier|accounting|\bad\b|proposal|e-sign|calling|sms|database|payment|bridge/i },
+  { label: 'Enablement', match: /template|snippet|scheduler|training|\bai\b|knowledge base|newsletter|outreach email|cold outreach/i },
+]
+function categorize(items) {
+  const groups = SCOPE_GROUPS.map((g) => ({ label: g.label, items: [] }))
+  const other = []
+  items.forEach((it) => {
+    const idx = SCOPE_GROUPS.findIndex((g) => g.match.test(it))
+    if (idx >= 0) groups[idx].items.push(it)
+    else other.push(it)
+  })
+  if (other.length) groups.push({ label: 'Also included', items: other })
+  return groups.filter((g) => g.items.length)
+}
+
 function Check({ color = '#00BDA5' }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0" aria-hidden>
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0" aria-hidden>
       <polyline points="20 6 9 17 4 12" />
     </svg>
   )
 }
 
-// One offer card. `fit` = this is the prospect's best-fit offer (highlighted).
-function OfferCard({ offer, items, fit, badge, reasonsTitle, reasons, footer }) {
-  const shown = items.slice(0, 6)
-  const extra = items.length - shown.length
+function Shield() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0" aria-hidden>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <polyline points="9 12 11 14 15 10" />
+    </svg>
+  )
+}
+
+// The highlighted best-fit offer: outcome + grouped scope + guarantee.
+function BestFitCard({ offer, groups, guarantee, blockers }) {
   return (
     <div
-      className={`bg-white rounded-lg overflow-hidden border ${
-        fit ? 'shadow-sm' : 'border-hs-border'
-      }`}
-      style={fit ? { borderColor: offer.color, borderWidth: 2 } : undefined}
+      className="bg-white rounded-lg overflow-hidden border shadow-sm"
+      style={{ borderColor: offer.color, borderWidth: 2 }}
     >
-      <div className="px-5 py-3.5 flex items-start justify-between gap-3" style={{ background: `${offer.color}0F` }}>
+      <div className="px-5 py-4 flex items-start justify-between gap-3" style={{ background: `${offer.color}0F` }}>
         <div className="min-w-0">
-          <h3 className="font-ui font-bold text-[15px]" style={{ color: offer.color }}>
+          <h3 className="font-ui font-bold text-[16px]" style={{ color: offer.color }}>
             {offer.name}
           </h3>
-          <p className="text-[12px] font-ui text-hs-text-dark mt-0.5">{offer.tagline}</p>
+          <p className="text-[12.5px] font-ui text-hs-text-dark mt-0.5">{offer.tagline}</p>
         </div>
-        {badge && (
-          <span
-            className="shrink-0 text-[9px] font-ui font-bold uppercase tracking-wide text-white rounded px-2 py-1"
-            style={{ background: offer.color }}
-          >
-            {badge}
-          </span>
+        <span
+          className="shrink-0 text-[10px] font-ui font-bold uppercase tracking-wide text-white rounded px-2 py-1"
+          style={{ background: offer.color }}
+        >
+          Your best fit
+        </span>
+      </div>
+
+      <div className="px-5 py-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+          {groups.map((g) => (
+            <div key={g.label}>
+              <p className="text-[10px] font-ui font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
+                {g.label}
+              </p>
+              <ul className="space-y-1">
+                {g.items.map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-[12.5px] font-ui text-hs-text-dark">
+                    <Check color={offer.color} />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {blockers?.length > 0 && (
+          <div className="mt-4 rounded-md bg-hs-canvas border border-hs-border px-3 py-2.5">
+            <p className="text-[10px] font-ui font-semibold uppercase tracking-wide text-hs-text-light mb-1">
+              Why the Free Setup can't cover all of this
+            </p>
+            <ul className="space-y-0.5">
+              {blockers.map((b) => (
+                <li key={b} className="text-[12px] font-ui text-hs-text-light flex gap-1.5">
+                  <span className="text-hs-orange shrink-0">›</span>
+                  {b}
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
 
-      {reasons?.length > 0 && (
-        <div className="px-5 pt-3.5">
-          <p className="text-[10px] font-ui font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
-            {reasonsTitle}
-          </p>
-          <ul className="space-y-1">
-            {reasons.map((r) => (
-              <li key={r} className="text-[12.5px] font-ui text-hs-text-dark flex gap-2">
-                <span className="text-hs-orange shrink-0">›</span>
-                {r}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {shown.length > 0 && (
-        <ul className="px-5 py-3.5 space-y-1.5">
-          {shown.map((item) => (
-            <li key={item} className="flex items-start gap-2 text-[13px] font-ui text-hs-text-dark">
-              <Check color={offer.color} />
-              <span>{item}</span>
-            </li>
-          ))}
-          {extra > 0 && (
-            <li className="text-[12px] font-ui text-hs-text-light pl-6">+ {extra} more in your plan</li>
-          )}
-        </ul>
-      )}
-
-      {footer && <div className="px-5 py-3 border-t border-hs-greatwhite">{footer}</div>}
+      <div className="px-5 py-3 border-t border-hs-greatwhite flex items-center gap-2 text-hs-green">
+        <Shield />
+        <span className="text-[12.5px] font-ui text-hs-text-dark">{guarantee}</span>
+      </div>
     </div>
   )
 }
 
-// Customer-mode final step. Overview of what they picked, then ALL THREE offers
-// with the best fit highlighted and the reasons spelled out — including why the
-// Free Setup can't cover everything when the scope is bigger. Primary CTA still
-// routes by qualification.
+// Compact secondary offer (the rest of the ladder).
+function MiniOffer({ offer, summary }) {
+  return (
+    <div className="bg-white rounded-lg border border-hs-border px-4 py-3">
+      <div className="flex items-center gap-2">
+        <span className="w-2 h-2 rounded-full shrink-0" style={{ background: offer.color }} />
+        <h4 className="font-ui font-semibold text-[13.5px] text-hs-navy">{offer.name}</h4>
+      </div>
+      <p className="text-[12px] font-ui text-hs-text-light mt-1 leading-snug">{summary}</p>
+    </div>
+  )
+}
+
+// Customer-mode final step (Option A): one highlighted best-fit offer with its
+// scope grouped and a guarantee, the rest of the ladder as compact cards, and a
+// single routed CTA (book the call if qualified, DIY guide if not).
 export default function StepCTA() {
   const session = useStore((s) => s.session)
   const goToStep = useStore((s) => s.goToStep)
@@ -108,6 +154,26 @@ export default function StepCTA() {
     ...(customObj ? [`"${customObj.plural || customObj.singular}" tracker`] : []),
   ].filter(Boolean)
 
+  // Best-fit card: the Machine shows the WHOLE build (free foundation + extras);
+  // the Free shows its 7-day scope. Grouped for scannability.
+  const bestOffer = isMachine ? OFFERS.machine : OFFERS.free
+  const bestItems = isMachine ? [...offers.free, ...offers.machine] : offers.free
+  const groups = categorize(bestItems)
+  const guarantee = isMachine
+    ? 'Every deliverable shipped by day 30, or we work free until it is.'
+    : 'Done for you in 7 days, free for qualified Louisiana businesses.'
+
+  // The other two rungs of the ladder, shown compact.
+  const secondary = isMachine
+    ? [
+        { offer: OFFERS.free, summary: 'The 7-day starter: one pipeline, one automation, one dashboard. Free for qualified businesses.' },
+        { offer: OFFERS.retainer, summary: 'After launch we run the outreach and keep the pipeline moving. Optional, monthly.' },
+      ]
+    : [
+        { offer: OFFERS.machine, summary: 'When you outgrow the starter: every hub automated, integrated, and dashboarded in 30 days.' },
+        { offer: OFFERS.retainer, summary: 'After launch we run the outreach and keep the pipeline moving. Optional, monthly.' },
+      ]
+
   return (
     <div className="flex-1 w-full h-full overflow-y-auto hs-scroll bg-hs-canvas">
       <div className="max-w-2xl mx-auto px-5 py-8 sm:py-12">
@@ -122,7 +188,7 @@ export default function StepCTA() {
           {name ? `${name}, here's` : "Here's"} how we get this built for you.
         </h1>
         <p className="mt-2 text-[15px] font-ui text-hs-text-dark">
-          Everything you previewed is real. Here's which Crescent Connect build fits the
+          Everything you previewed is real. Here's the Crescent Connect build that fits the
           plan you just designed.
         </p>
 
@@ -145,57 +211,18 @@ export default function StepCTA() {
           )}
         </div>
 
-        {/* Three offers, best fit highlighted */}
-        <div className="mt-7 space-y-3">
-          <OfferCard
-            offer={OFFERS.free}
-            items={offers.free}
-            fit={!isMachine}
-            badge={!isMachine ? 'Your best fit' : undefined}
-            reasonsTitle={isMachine ? 'Why the free setup won’t cover everything you need' : 'Why this fits you'}
-            reasons={
-              isMachine
-                ? offers.freeBlockers
-                : ['One workspace, one pipeline, and one dashboard, done for you in 7 days']
-            }
-            footer={
-              <div className="flex items-baseline justify-between flex-wrap gap-2">
-                <span className="text-[13px] font-ui text-hs-text-dark">
-                  <span className="line-through text-hs-text-light">$5,000</span>{' '}
-                  <span className="font-bold text-hs-navy">Free for qualified businesses</span>
-                </span>
-                <span className="text-[12px] font-ui font-semibold text-hs-red">4 per month, and that's the cap</span>
-              </div>
-            }
-          />
-
-          <OfferCard
-            offer={OFFERS.machine}
-            items={offers.machine.length ? offers.machine : ['Everything in the Free Setup, plus the full automation, reporting, and integration depth your plan calls for']}
-            fit={isMachine}
-            badge={isMachine ? 'Your best fit' : undefined}
-            reasonsTitle="Why your plan needs this"
-            reasons={isMachine ? offers.freeBlockers : undefined}
-            footer={
-              <span className="text-[12.5px] font-ui text-hs-text-dark">
-                The full 30-day done-for-you build. We scope and price it together on the call.
-              </span>
-            }
-          />
-
-          <OfferCard
-            offer={OFFERS.retainer}
-            items={offers.retainer}
-            footer={
-              <span className="text-[12.5px] font-ui text-hs-text-dark">
-                Optional after launch. We keep the pipeline moving so the system pays for itself.
-              </span>
-            }
+        {/* Best-fit offer, grouped scope */}
+        <div className="mt-6">
+          <BestFitCard
+            offer={bestOffer}
+            groups={groups}
+            guarantee={guarantee}
+            blockers={isMachine ? offers.freeBlockers : []}
           />
         </div>
 
         {/* Routed primary CTA */}
-        <div className="mt-8 bg-white border border-hs-border rounded-lg px-5 py-6 text-center">
+        <div className="mt-6 bg-white border border-hs-border rounded-lg px-5 py-6 text-center">
           {qualified ? (
             <>
               <h2 className="font-ui font-bold text-hs-navy text-xl">
@@ -234,6 +261,18 @@ export default function StepCTA() {
               </p>
             </>
           )}
+        </div>
+
+        {/* The rest of the ladder */}
+        <div className="mt-7">
+          <div className="text-[11px] font-ui font-semibold uppercase tracking-wide text-hs-text-light mb-2">
+            The rest of the ladder
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {secondary.map((s) => (
+              <MiniOffer key={s.offer.key} offer={s.offer} summary={s.summary} />
+            ))}
+          </div>
         </div>
 
         <div className="mt-6 text-center">

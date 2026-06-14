@@ -52,7 +52,7 @@ export function scopeOffers(session) {
   const firstWorkflow = workflows.find((wf) =>
     topProblem ? topProblem.workflows.includes(wf.templateId) : true
   )
-  if (firstWorkflow) free.push(`1 automation included — yours: "${firstWorkflow.name}"`)
+  if (firstWorkflow) free.push(`1 automation included, yours: "${firstWorkflow.name}"`)
   free.push('5 email templates + 10 snippets + meeting scheduler')
   free.push('Quote follow-up task cadence (3 / 7 / 14-day reminders)')
   free.push('1 owner dashboard: leads, deals, pipeline value, close rate')
@@ -68,19 +68,19 @@ export function scopeOffers(session) {
     )
   }
   if (workflows.some((wf) => wf.nodes?.some((n) => n.type === 'condition')))
-    machine.push('Branching (if/else) automation logic — HubSpot Pro workflows')
+    machine.push('Branching (if/else) automation logic, built on HubSpot Pro workflows')
   if ((session.customObjects || []).length > 0) {
     machine.push(
       `Custom object${session.customObjects.length === 1 ? '' : 's'}: ${session.customObjects
         .map((o) => o.plural || o.singular)
         .filter(Boolean)
-        .join(', ')} — Pro feature, built and associated to your records`
+        .join(', ')} (a Pro feature), built and associated to your records`
     )
   }
   if (leaks.includes('ticket_blindness'))
     machine.push('Service ticket pipeline with escalation automation')
   if (w.accounting && !['None', 'Something else', 'Spreadsheets / manual'].includes(w.accounting))
-    machine.push(`${w.accounting} accounting integration — invoices and AR visible on deals`)
+    machine.push(`${w.accounting} accounting integration: invoices and AR visible on deals`)
   if (leaks.includes('ar_visibility') && (!w.accounting || w.accounting === 'None'))
     machine.push('Accounting/AR visibility integration')
   const widgetCount = (session.dashboards?.widgets || []).length
@@ -118,14 +118,14 @@ export function scopeOffers(session) {
 
   // ---------- Sales Activation Retainer (ongoing execution) ----------
   if (arr(w.leadSources).includes('Cold outreach'))
-    retainer.push('Monthly cold outreach sent on your behalf — your CRM, our execution')
+    retainer.push('Monthly cold outreach sent on your behalf: your CRM, our execution')
   if (leaks.includes('quotes_no_followup'))
     retainer.push('Stalled-quote follow-up worked by a human, not just automation')
   const meetingsOn = (session.cadence?.meetings || []).filter((m) => m.enabled)
   if (meetingsOn.length > 0)
-    retainer.push('Dashboard reviews on your cadence — we read the numbers with you')
+    retainer.push('Dashboard reviews on your cadence: we read the numbers with you')
   if (leaks.includes('content_seo_gap'))
-    retainer.push('Content / SEO: its own engagement — we scope it with you after the install')
+    retainer.push('Content / SEO is its own engagement; we scope it with you after the install')
   retainer.push('Monthly optimization: one new automation, view, or fix every month')
 
   // ---------- Recommendation ----------
@@ -146,25 +146,25 @@ export function scopeOffers(session) {
   const freeBlockers = []
   if (hubsFiring.length >= 2)
     freeBlockers.push(
-      `Your needs span ${hubsFiring.join(' + ')} — the Free Setup builds one workspace, not the whole operation`
+      `Your needs span ${hubsFiring.join(' + ')}. The Free Setup builds one workspace, not the whole operation`
     )
   const extraWfCount = workflows.filter((wf) => wf.id !== firstWorkflow?.id).length
   if (extraWfCount > 0)
     freeBlockers.push(
-      `${extraWfCount + 1} automations to build — the Free Setup includes just 1 simple automation`
+      `${extraWfCount + 1} automations to build. The Free Setup includes just 1 simple automation`
     )
   if (workflows.some((wf) => wf.nodes?.some((n) => n.type === 'condition')))
-    freeBlockers.push('Branching (if/then) automations — a HubSpot Pro capability')
+    freeBlockers.push('Branching (if/then) automations, a HubSpot Pro capability')
   if ((session.customObjects || []).length > 0)
     freeBlockers.push(
-      `Custom "${(session.customObjects[0].plural || session.customObjects[0].singular)}" object — a HubSpot Pro feature`
+      `Custom "${(session.customObjects[0].plural || session.customObjects[0].singular)}" object, a HubSpot Pro feature`
     )
   if (w.accounting && !['None', 'Something else', 'Spreadsheets / manual'].includes(w.accounting))
-    freeBlockers.push(`${w.accounting} integration — invoices and AR synced onto deals`)
+    freeBlockers.push(`${w.accounting} integration: invoices and AR synced onto deals`)
   if ((session.dashboards?.widgets || []).length > 5)
-    freeBlockers.push('A multi-dashboard reporting suite — the Free Setup includes 1 owner dashboard')
+    freeBlockers.push('A multi-dashboard reporting suite. The Free Setup includes 1 owner dashboard')
   if (w.dataImport?.startsWith('Yes — but messy') || w.dataImport?.startsWith('Sort of'))
-    freeBlockers.push('A messy/scattered list to rescue — the Free Setup covers a clean import up to 5,000 contacts')
+    freeBlockers.push('A messy, scattered list to rescue. The Free Setup covers a clean import up to 5,000 contacts')
   if (['50–100', '100+'].includes(w.monthlyVolume))
     freeBlockers.push(`High lead volume (${w.monthlyVolume}/mo) needs routing + scoring beyond the free scope`)
 
