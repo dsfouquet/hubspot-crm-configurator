@@ -117,23 +117,22 @@ function IndexHeader({ count, noun, createLabel }) {
 }
 
 // Saved-view tab row — clickable views that actually filter the table, plus the
-// user's recommended views from the configurator (appended, also clickable but
-// shown unfiltered since their criteria are conceptual).
+// user's recommended views from the configurator (appended, marked with a
+// marigold star and also clickable — they filter the table just like the
+// built-in views).
 function SavedViews({ views, active, onPick, extraViews = [] }) {
+  const tabClass = (isActive) =>
+    `text-[12px] px-3 pb-2 whitespace-nowrap -mb-px border-b-2 ${
+      isActive
+        ? 'font-medium text-hs-navy border-hs-orange'
+        : 'text-hs-text-light hover:text-hs-navy border-transparent'
+    }`
   return (
-    <div className="flex items-center gap-1 mb-3 border-b border-hs-border overflow-x-auto">
+    <div className="flex items-center gap-1 mb-1.5 border-b border-hs-border overflow-x-auto">
       {views.map((v) => {
         const isActive = v.id === active
         return (
-          <button
-            key={v.id}
-            onClick={() => onPick(v.id)}
-            className={`text-[12px] px-3 pb-2 whitespace-nowrap -mb-px border-b-2 ${
-              isActive
-                ? 'font-medium text-hs-navy border-hs-orange'
-                : 'text-hs-text-light hover:text-hs-navy border-transparent'
-            }`}
-          >
+          <button key={v.id} onClick={() => onPick(v.id)} className={tabClass(isActive)}>
             {v.name}
             {v.count != null && (
               <span className={`ml-1 ${isActive ? 'text-hs-text-light' : 'text-hs-border'}`}>
@@ -143,21 +142,37 @@ function SavedViews({ views, active, onPick, extraViews = [] }) {
           </button>
         )
       })}
-      {extraViews.map((v) => (
-        <span
-          key={v.id}
-          className="inline-flex items-center gap-1 text-[12px] text-hs-text-light px-3 pb-2 whitespace-nowrap cursor-default"
-          title="Built for you from your fix plan"
-        >
-          <IconStar width={10} height={10} className="text-hs-marigold shrink-0" />
-          {v.name}
-        </span>
-      ))}
+      {extraViews.map((v) => {
+        const isActive = v.id === active
+        return (
+          <button
+            key={v.id}
+            onClick={() => onPick(v.id)}
+            className={`inline-flex items-center gap-1 ${tabClass(isActive)}`}
+            title="Built for you from your fix plan"
+          >
+            <IconStar width={10} height={10} className="text-hs-marigold shrink-0" />
+            {v.name}
+            {v.count != null && (
+              <span className={`${isActive ? 'text-hs-text-light' : 'text-hs-border'}`}>
+                {v.count}
+              </span>
+            )}
+          </button>
+        )
+      })}
       <span className="text-[12px] text-hs-text-light px-2 pb-2 whitespace-nowrap cursor-default">
         + Add view
       </span>
     </div>
   )
+}
+
+// Plain-English one-liner shown under the saved-view tab row describing what the
+// currently-active view is filtering to.
+function ViewDescription({ text }) {
+  if (!text) return null
+  return <div className="text-[11px] text-hs-text-light mb-3">{text}</div>
 }
 
 function IndexCard({ children }) {
@@ -169,18 +184,75 @@ function IndexCard({ children }) {
 const fmtK = (n) =>
   n >= 1000 ? `$${Math.round(n / 1000)}K` : `$${n.toLocaleString()}`
 
+// Concrete filters for the configurator's recommended ("built for you") views,
+// keyed by recommended-view id. Each returns a sensible non-empty subset of the
+// demo rows for its record type. Any recommended view WITHOUT an entry here
+// falls back to the first ~60% of rows (never an empty table) via fallbackSubset.
+const RECOMMENDED_FILTERS = {
+  // Contacts
+  cold_call_queue: (c) =>
+    c.lifecycle === 'Lead' || c.lifecycle === 'MQL' || !c.engaged,
+  sequence_enrollment: (c) =>
+    (c.lifecycle === 'Lead' || c.lifecycle === 'MQL') && c.lifecycle !== 'Customer',
+  // Companies
+  site_visit_schedule: (c) => c.tier === 'Tier 1' || c.tier === 'Tier 2',
+  // Deals
+  reengage_candidates: (d) => d.age > 10,
+  stale_deals: (d) => d.age >= 14,
+  quotes_awaiting: (d) => d.stage >= 2,
+  awaiting_quote_response: (d) => d.stage >= 2,
+  revenue_forecast: () => true,
+  pipeline_board: () => true,
+  renewal_tracker: (d) => d.name.toLowerCase().includes('contract') || d.stage >= 3,
+  rep_leaderboard: () => true,
+  // Tickets
+  open_tickets_priority: (t) => t.status !== 'Resolved' && t.status !== 'Closed',
+}
+
+// Apply a recommended view's filter to a row set. Falls back to the first ~60%
+// of rows when no specific filter is defined, so the table is never empty.
+function applyRecommended(viewId, rows) {
+  const fn = RECOMMENDED_FILTERS[viewId]
+  if (fn) {
+    const out = rows.filter(fn)
+    if (out.length > 0) return out
+  }
+  return rows.slice(0, Math.max(1, Math.ceil(rows.length * 0.6)))
+}
+
 // ---- Contacts --------------------------------------------------------------
 
 // Common contact views every sales team asks for — each really filters the table.
 const CONTACT_VIEWS = [
-  { id: 'all', name: 'All contacts', filter: () => true },
-  { id: 'leads', name: 'Leads', filter: (c) => c.lifecycle === 'Lead' || c.lifecycle === 'MQL' },
-  { id: 'customers', name: 'Customers', filter: (c) => c.lifecycle === 'Customer' },
-  { id: 'evangelists', name: 'Evangelists', filter: (c) => c.lifecycle === 'Evangelist' },
-  { id: 'decision', name: 'Decision Makers', filter: (c) => c.decisionMaker },
+  { id: 'all', name: 'All contacts', description: 'Everyone in your CRM', filter: () => true },
+  {
+    id: 'leads',
+    name: 'Leads',
+    description: 'Not yet customers — lifecycle is Lead or MQL',
+    filter: (c) => c.lifecycle === 'Lead' || c.lifecycle === 'MQL',
+  },
+  {
+    id: 'customers',
+    name: 'Customers',
+    description: 'Closed-won, now paying you',
+    filter: (c) => c.lifecycle === 'Customer',
+  },
+  {
+    id: 'evangelists',
+    name: 'Evangelists',
+    description: 'Happy customers who refer you',
+    filter: (c) => c.lifecycle === 'Evangelist',
+  },
+  {
+    id: 'decision',
+    name: 'Decision Makers',
+    description: 'Contacts flagged as the buyer',
+    filter: (c) => c.decisionMaker,
+  },
   {
     id: 'reengage',
     name: 'Re-engagement',
+    description: 'Gone quiet or past clients to win back',
     filter: (c) => !c.engaged || c.lifecycle === 'Past client',
   },
 ]
@@ -194,10 +266,17 @@ const LIFECYCLE_COLOR = {
 }
 
 function ContactsTab({ session, onOpen }) {
-  const recommended = activeViews(session).filter((v) => v.recordType === 'Contacts')
+  const recommended = activeViews(session)
+    .filter((v) => v.recordType === 'Contacts')
+    .map((v) => ({ ...v, count: applyRecommended(v.id, CONTACTS).length }))
   const [view, setView] = useState('all')
   const viewDefs = CONTACT_VIEWS.map((v) => ({ ...v, count: CONTACTS.filter(v.filter).length }))
-  const rows = CONTACTS.filter(CONTACT_VIEWS.find((v) => v.id === view).filter)
+  const builtIn = CONTACT_VIEWS.find((v) => v.id === view)
+  const rec = recommended.find((v) => v.id === view)
+  const rows = builtIn
+    ? CONTACTS.filter(builtIn.filter)
+    : applyRecommended(view, CONTACTS)
+  const activeDesc = (builtIn || rec)?.description
   const columns = [
     {
       key: 'name',
@@ -238,6 +317,7 @@ function ContactsTab({ session, onOpen }) {
       <IndexHeader count={rows.length} noun="contacts" createLabel="Create contact" />
       <IndexCard>
         <SavedViews views={viewDefs} active={view} onPick={setView} extraViews={recommended} />
+        <ViewDescription text={activeDesc} />
         <DataTable columns={columns} rows={rows} onRowClick={() => onOpen('contacts')} />
       </IndexCard>
     </div>
@@ -249,18 +329,45 @@ function ContactsTab({ session, onOpen }) {
 const TIER_COLOR = { 'Tier 1': 'green', 'Tier 2': 'blue', 'Tier 3': 'gray' }
 
 const COMPANY_VIEWS = [
-  { id: 'all', name: 'All companies', filter: () => true },
-  { id: 'customers', name: 'Customers', filter: (c) => c.lifecycle === 'Customer' },
-  { id: 'target', name: 'Target Market', filter: (c) => c.lifecycle === 'Target' },
-  { id: 'reengage', name: 'Re-engagement', filter: (c) => c.lifecycle === 'Past client' },
-  { id: 'tier1', name: 'Key Accounts', filter: (c) => c.tier === 'Tier 1' },
+  { id: 'all', name: 'All companies', description: 'Every company record', filter: () => true },
+  {
+    id: 'customers',
+    name: 'Customers',
+    description: "Companies you've closed",
+    filter: (c) => c.lifecycle === 'Customer',
+  },
+  {
+    id: 'target',
+    name: 'Target Market',
+    description: 'Fit your ideal-customer profile',
+    filter: (c) => c.lifecycle === 'Target',
+  },
+  {
+    id: 'reengage',
+    name: 'Re-engagement',
+    description: 'No recent activity',
+    filter: (c) => c.lifecycle === 'Past client',
+  },
+  {
+    id: 'tier1',
+    name: 'Key Accounts',
+    description: 'Your Tier-1 strategic accounts',
+    filter: (c) => c.tier === 'Tier 1',
+  },
 ]
 
 function CompaniesTab({ session, onOpen }) {
-  const recommended = activeViews(session).filter((v) => v.recordType === 'Companies')
+  const recommended = activeViews(session)
+    .filter((v) => v.recordType === 'Companies')
+    .map((v) => ({ ...v, count: applyRecommended(v.id, COMPANIES).length }))
   const [view, setView] = useState('all')
   const viewDefs = COMPANY_VIEWS.map((v) => ({ ...v, count: COMPANIES.filter(v.filter).length }))
-  const filtered = COMPANIES.filter(COMPANY_VIEWS.find((v) => v.id === view).filter)
+  const builtIn = COMPANY_VIEWS.find((v) => v.id === view)
+  const rec = recommended.find((v) => v.id === view)
+  const filtered = builtIn
+    ? COMPANIES.filter(builtIn.filter)
+    : applyRecommended(view, COMPANIES)
+  const activeDesc = (builtIn || rec)?.description
   const columns = [
     {
       key: 'name',
@@ -288,6 +395,7 @@ function CompaniesTab({ session, onOpen }) {
       <IndexHeader count={rows.length} noun="companies" createLabel="Create company" />
       <IndexCard>
         <SavedViews views={viewDefs} active={view} onPick={setView} extraViews={recommended} />
+        <ViewDescription text={activeDesc} />
         <DataTable columns={columns} rows={rows} onRowClick={() => onOpen('companies')} />
       </IndexCard>
     </div>
@@ -463,16 +571,33 @@ function DealsCalendar() {
   )
 }
 
+// Built-in deal saved view shown first; recommended deal views are appended.
+const DEAL_DEFAULT_VIEW = {
+  id: 'all_deals',
+  name: 'All deals',
+  description: 'Your open deals across every stage',
+}
+
 function DealsTab({ session, onOpen }) {
   const [mode, setMode] = useState('Board')
+  const recommended = activeViews(session)
+    .filter((v) => v.recordType === 'Deals')
+    .map((v) => ({ ...v, count: applyRecommended(v.id, DEALS).length }))
+  const [view, setView] = useState(DEAL_DEFAULT_VIEW.id)
+  const builtInView = { ...DEAL_DEFAULT_VIEW, count: DEALS.length }
+  const rec = recommended.find((v) => v.id === view)
+  const isDefault = view === DEAL_DEFAULT_VIEW.id
+  const deals = isDefault ? DEALS : applyRecommended(view, DEALS)
+  const activeDesc = isDefault ? DEAL_DEFAULT_VIEW.description : rec?.description
+
   const stages =
     session.deals?.pipelineStages?.length > 0
       ? session.deals.pipelineStages
       : [{ key: 'default', label: 'Pipeline' }]
 
-  // bucket deals into stage columns, clamping the stored index into range
+  // bucket the active view's deals into stage columns, clamping the stored index
   const cols = stages.map((st) => ({ ...st, deals: [] }))
-  DEALS.forEach((d) => {
+  deals.forEach((d) => {
     const idx = Math.min(Math.max(d.stage, 0), cols.length - 1)
     cols[idx].deals.push(d)
   })
@@ -481,7 +606,7 @@ function DealsTab({ session, onOpen }) {
     <div>
       <div className="flex items-center gap-3 mb-3">
         <h3 className="text-[15px] font-semibold text-hs-navy">Sales Pipeline</h3>
-        <span className="text-[12px] text-hs-text-light">{DEALS.length} deals</span>
+        <span className="text-[12px] text-hs-text-light">{deals.length} deals</span>
         {/* View switcher */}
         <div className="inline-flex rounded-md border border-hs-border bg-white p-0.5 ml-2">
           {DEAL_VIEW_MODES.map((m) => (
@@ -505,6 +630,8 @@ function DealsTab({ session, onOpen }) {
           Create deal
         </button>
       </div>
+      <SavedViews views={[builtInView]} active={view} onPick={setView} extraViews={recommended} />
+      <ViewDescription text={activeDesc} />
       {mode === 'Board' && <DealsBoard cols={cols} onOpen={onOpen} />}
       {mode === 'Table' && <DealsTable cols={cols} onOpen={onOpen} />}
       {mode === 'Calendar' && <DealsCalendar />}
@@ -527,7 +654,23 @@ function norm(s) {
   return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '')
 }
 
+const TICKET_DEFAULT_VIEW = {
+  id: 'all_tickets',
+  name: 'All tickets',
+  description: 'Every support ticket across all stages',
+}
+
 function TicketsTab({ session, onOpen }) {
+  const recommended = activeViews(session)
+    .filter((v) => v.recordType === 'Tickets')
+    .map((v) => ({ ...v, count: applyRecommended(v.id, TICKETS).length }))
+  const [view, setView] = useState(TICKET_DEFAULT_VIEW.id)
+  const builtInView = { ...TICKET_DEFAULT_VIEW, count: TICKETS.length }
+  const rec = recommended.find((v) => v.id === view)
+  const isDefault = view === TICKET_DEFAULT_VIEW.id
+  const tickets = isDefault ? TICKETS : applyRecommended(view, TICKETS)
+  const activeDesc = isDefault ? TICKET_DEFAULT_VIEW.description : rec?.description
+
   const stages =
     session.tickets?.pipelineStages?.length > 0
       ? session.tickets.pipelineStages
@@ -535,7 +678,7 @@ function TicketsTab({ session, onOpen }) {
 
   // match each ticket's status loosely to a stage; unmatched land in the first column
   const cols = stages.map((st) => ({ ...st, tickets: [] }))
-  TICKETS.forEach((t) => {
+  tickets.forEach((t) => {
     let idx = cols.findIndex((c) => norm(c.label) === norm(t.status))
     if (idx < 0) idx = cols.findIndex((c) => norm(c.label).includes(norm(t.status)) || norm(t.status).includes(norm(c.label)))
     if (idx < 0) idx = 0
@@ -551,7 +694,7 @@ function TicketsTab({ session, onOpen }) {
       </div>
       <div className="flex items-center gap-3 mb-3">
         <h3 className="text-[15px] font-semibold text-hs-navy">Support Pipeline</h3>
-        <span className="text-[12px] text-hs-text-light">{TICKETS.length} tickets</span>
+        <span className="text-[12px] text-hs-text-light">{tickets.length} tickets</span>
         <button
           type="button"
           className="hs-btn-primary ml-auto cursor-default" style={{ padding: '6px 12px', fontSize: 12 }}
@@ -559,6 +702,8 @@ function TicketsTab({ session, onOpen }) {
           Create ticket
         </button>
       </div>
+      <SavedViews views={[builtInView]} active={view} onPick={setView} extraViews={recommended} />
+      <ViewDescription text={activeDesc} />
       <div className="flex gap-3 overflow-x-auto pb-2">
         {cols.map((col) => (
           <div key={col.key} className="w-56 shrink-0">

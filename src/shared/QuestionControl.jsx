@@ -92,6 +92,32 @@ export default function QuestionControl({ question, size = 'compact' }) {
   // Size-dependent row padding/text.
   const rowText = large ? 'text-[14px] px-3.5 py-2.5' : 'text-[12.5px] px-2.5 py-1'
 
+  // One selectable row (used flat and inside journey-stage groups).
+  const renderRow = (opt) => {
+    const sel = isSelected(opt)
+    return (
+      <button
+        key={opt}
+        type="button"
+        onClick={() => toggle(opt)}
+        className={`w-full text-left flex items-center gap-2.5 rounded-md border font-ui transition-colors ${rowText} ${
+          sel
+            ? 'border-hs-orange bg-hs-orange/10'
+            : 'border-hs-border bg-white hover:border-hs-text-light'
+        }`}
+      >
+        <span
+          className={`flex items-center justify-center ${large ? 'w-[18px] h-[18px]' : 'w-3.5 h-3.5'} shrink-0 ${
+            isSingle ? 'rounded-full' : 'rounded'
+          } border ${sel ? 'bg-hs-orange border-hs-orange text-white' : 'border-hs-border'}`}
+        >
+          {sel && <span className={`${large ? 'text-[11px]' : 'text-[9px]'} leading-none`}>✓</span>}
+        </span>
+        <OptionLabel opt={opt} />
+      </button>
+    )
+  }
+
   return (
     <div>
       {isText && (
@@ -170,36 +196,32 @@ export default function QuestionControl({ question, size = 'compact' }) {
       )}
 
       {(isSingle || isMulti) && !isText && (
-        <div className={large ? 'space-y-2' : 'space-y-1'}>
-          {options.map((opt) => {
-            const sel = isSelected(opt)
-            // Every selection answer is a full-width vertical row: round check for
-            // single-select, square for multi-select.
-            return (
-              <button
-                key={opt}
-                type="button"
-                onClick={() => toggle(opt)}
-                className={`w-full text-left flex items-center gap-2.5 rounded-md border font-ui transition-colors ${rowText} ${
-                  sel
-                    ? 'border-hs-orange bg-hs-orange/10'
-                    : 'border-hs-border bg-white hover:border-hs-text-light'
-                }`}
-              >
-                <span
-                  className={`flex items-center justify-center ${large ? 'w-[18px] h-[18px]' : 'w-3.5 h-3.5'} shrink-0 ${
-                    isSingle ? 'rounded-full' : 'rounded'
-                  } border ${
-                    sel ? 'bg-hs-orange border-hs-orange text-white' : 'border-hs-border'
-                  }`}
-                >
-                  {sel && <span className={`${large ? 'text-[11px]' : 'text-[9px]'} leading-none`}>✓</span>}
-                </span>
-                <OptionLabel opt={opt} />
-              </button>
-            )
-          })}
-        </div>
+        // Grouped pain-multi (journey-ordered sections) when question.groups is set;
+        // otherwise a flat vertical list. Each option is a full-width row: round
+        // check for single-select, square for multi-select.
+        isPainMulti && question.groups?.length ? (
+          <div className={large ? 'space-y-5' : 'space-y-4'}>
+            {question.groups.map((group) => (
+              <div key={group.key}>
+                <div className="mb-1.5">
+                  <span className="text-[11px] font-ui font-bold uppercase tracking-wide text-hs-orange">
+                    {group.label}
+                  </span>
+                  {group.caption && (
+                    <span className="text-[11px] font-ui text-hs-text-light"> · {group.caption}</span>
+                  )}
+                </div>
+                <div className={large ? 'space-y-2' : 'space-y-1'}>
+                  {group.painIds.map((opt) => renderRow(opt))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className={large ? 'space-y-2' : 'space-y-1'}>
+            {options.map((opt) => renderRow(opt))}
+          </div>
+        )
       )}
 
       {/* Classic research-backed leaks — secondary, collapsed by default so the

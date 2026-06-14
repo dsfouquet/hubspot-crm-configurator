@@ -70,12 +70,16 @@ function EmailTab({ companyName }) {
   return (
     <div className="space-y-4">
       {/* Stat row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <StatCard label="Emails sent" value="1,240" />
         <StatCard label="Open rate" value="41.2%" delta="5.1%" deltaGood />
         <StatCard label="Click rate" value="6.8%" />
         <StatCard label="Replies" value="87" />
+        <StatCard label="Bounced" value="1.4%" />
       </div>
+
+      {/* Delivery breakdown mini-bar */}
+      <DeliveryBreakdown />
 
       {/* 2-col: newsletter mock + trend/nurture */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -121,6 +125,48 @@ function EmailTab({ companyName }) {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function DeliveryBreakdown() {
+  // % of the 1,240 sent. Delivered (98.6) splits into opened/clicked subsets;
+  // bar segments are illustrative and sum to 100% of sent.
+  const segments = [
+    { label: 'Delivered', pct: 57.4, color: '#516F90' },
+    { label: 'Opened', pct: 34.4, color: '#00A4BD' },
+    { label: 'Clicked', pct: 6.8, color: '#00BDA5' },
+    { label: 'Bounced', pct: 1.4, color: 'var(--hs-red, #f2545b)' },
+  ]
+  return (
+    <div className="bg-white rounded-lg border border-hs-border p-4">
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="text-[13px] font-semibold text-hs-navy">
+          Delivery breakdown
+        </h4>
+        <span className="text-[11px] text-hs-text-light">% of 1,240 sent</span>
+      </div>
+      <div className="flex w-full h-2.5 rounded-full overflow-hidden bg-hs-canvas">
+        {segments.map((s) => (
+          <span
+            key={s.label}
+            style={{ width: `${s.pct}%`, backgroundColor: s.color }}
+            title={`${s.label} · ${s.pct}%`}
+          />
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2.5">
+        {segments.map((s) => (
+          <span key={s.label} className="flex items-center gap-1.5">
+            <span
+              className="w-2.5 h-2.5 rounded-sm shrink-0"
+              style={{ backgroundColor: s.color }}
+            />
+            <span className="text-[11px] text-hs-text-dark">{s.label}</span>
+            <span className="text-[11px] text-hs-text-light">{s.pct}%</span>
+          </span>
+        ))}
       </div>
     </div>
   )

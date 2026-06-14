@@ -24,6 +24,63 @@ export function customerPainIds(industry) {
   return [...new Set([...avatarPains, ...CORE_PAINS])].slice(0, 10)
 }
 
+// The pains question (Q6) is grouped into a mini customer-journey order so the
+// prospect sees their problems the way a customer actually moves: Marketing →
+// Sales → Service/Retention → Ops. Presentation only — the pain ids stored in
+// wizard.pains are unchanged, so qualification/topLeak/autoBuild are unaffected.
+export const JOURNEY_STAGES = [
+  { key: 'marketing', label: 'Marketing', caption: 'Getting found & capturing leads' },
+  { key: 'sales', label: 'Sales', caption: 'Working deals to the close' },
+  { key: 'service', label: 'Service & Retention', caption: 'Keeping & growing customers' },
+  { key: 'ops', label: 'Operations & Reporting', caption: 'The back office that ties it together' },
+]
+
+// Every pain id → its journey stage (Daniel's guidance: leads = Marketing;
+// quotes/pipeline/tasks = Sales). Anything unmapped falls back to ops.
+export const PAIN_STAGE = {
+  // Marketing — attract & capture
+  leads_fall_through: 'marketing',
+  marketing_email_gap: 'marketing',
+  landing_pages_gap: 'marketing',
+  content_seo_gap: 'marketing',
+  marketing_attribution: 'marketing',
+  // Sales — work the deal
+  quotes_no_followup: 'sales',
+  pipeline_in_head: 'sales',
+  tasks_slip: 'sales',
+  contact_context: 'sales',
+  company_picture: 'sales',
+  focus_scatter: 'sales',
+  vip_segmentation: 'sales',
+  relationship_gap: 'sales',
+  playbook_gap: 'sales',
+  rep_workload_unproven: 'sales',
+  // Service & Retention — keep & grow
+  no_reengagement: 'service',
+  inconsistent_onboarding: 'service',
+  ticket_blindness: 'service',
+  kb_faq_repeat: 'service',
+  surveys_nps_blind: 'service',
+  // Operations & Reporting — back office
+  admin_overload: 'ops',
+  tools_dont_talk: 'ops',
+  reporting_excel_pain: 'ops',
+  unknown_close_rate: 'ops',
+  ai_manual_drafting: 'ops',
+  quotes_invoices_split: 'ops',
+  ar_visibility: 'ops',
+}
+
+// Build the journey-ordered groups for Q6 from the same avatar-weighted pain set
+// (so the 10-cap / weighting is preserved). Empty stages are dropped.
+export function customerPainGroups(industry) {
+  const ids = customerPainIds(industry)
+  return JOURNEY_STAGES.map((stage) => ({
+    ...stage,
+    painIds: ids.filter((id) => (PAIN_STAGE[id] || 'ops') === stage.key),
+  })).filter((g) => g.painIds.length > 0)
+}
+
 export const CUSTOMER_QUESTIONS = [
   {
     key: 'industry',
@@ -79,10 +136,10 @@ export const CUSTOMER_QUESTIONS = [
   {
     key: 'pains',
     qid: 'pains_customer',
-    prompt: 'Which of these is costing you money right now?',
-    hint: 'Select all that apply',
+    prompt: 'Where is it costing you money? This is your customer journey, start to finish.',
+    hint: 'Check all that apply — grouped the way a customer actually moves',
     type: 'pain-multi',
-    // painIds resolved at render time via customerPainIds(wizard.industry)
+    // painIds + journey groups resolved at render time from wizard.industry
     dynamicPains: true,
   },
   {

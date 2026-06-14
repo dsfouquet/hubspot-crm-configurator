@@ -94,6 +94,7 @@ export const useStore = create((set, get) => ({
   advisorOpen: false,
   focusedWorkflowId: null, // which workflow diagram the preview pane shows
   focusedProblemId: null, // which fix-plan problem the preview pane shows
+  previewZoom: 1, // presenter zoom on the demo previews (not persisted)
   gatePassed: restored
     ? Boolean(initialSession.gate?.email) || initialSession.mode === 'live'
     : false,
@@ -205,6 +206,17 @@ export const useStore = create((set, get) => ({
   // Persist the BANT qualification verdict (internal — drives the CTA routing).
   setQualification(q) {
     get().patchSession({ qualification: q })
+  },
+
+  // ---- Preview zoom (presenter readability; UI state only) ----
+  zoomIn() {
+    set((s) => ({ previewZoom: Math.min(2.5, Math.round((s.previewZoom + 0.1) * 10) / 10) }))
+  },
+  zoomOut() {
+    set((s) => ({ previewZoom: Math.max(0.75, Math.round((s.previewZoom - 0.1) * 10) / 10) }))
+  },
+  resetZoom() {
+    set({ previewZoom: 1 })
   },
 
   // ---- Wizard / Discovery (Step 1) ----

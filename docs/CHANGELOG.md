@@ -1,5 +1,54 @@
 # Changelog
 
+## Build 23 — Presenter zoom, journey spotlight, hub interactivity, 3-card CTA (June 13, 2026)
+
+A large review round after Daniel presented the demo. Ten items.
+
+- **A — Zoom control.** Every presenting surface (presenter step-previews, the
+  HubSpot hub demo, and the customer Build Plan) gets a floating zoom control
+  (−/%/+, click % to reset). Uses CSS `zoom`, range 75%–250%, persists across
+  steps. `previewZoom` store state + `src/preview/ZoomFrame.jsx` (owns scroll).
+- **B — Journey-ordered sectioned pains.** Customer intake Q6 is now grouped
+  into a mini customer journey: Marketing → Sales → Service & Retention → Ops,
+  with section captions. Leads sit under Marketing; Quotes/Pipeline/Tasks under
+  Sales. Pain ids are unchanged, so qualification/topLeak/autoBuild are
+  unaffected. `JOURNEY_STAGES` + `PAIN_STAGE` + `customerPainGroups()` in
+  customerQuestions.js; grouped rendering in QuestionControl.
+- **C — Journey card spotlight.** Clicking a journey card now zooms it from its
+  position to a centered, enlarged panel (phase chip, icon, layered detail,
+  tools, integrations) and shrinks back to its spot on close — replacing the
+  old right-side drawer. New reusable `src/preview/Spotlight.jsx` (FLIP
+  animation, portals to body so the zoom layer doesn't clip it).
+- **D — CRM views fixed + described.** Recommended views (Cold Call Queue,
+  Sequence Enrollment Queue, etc.) were inert `<span>`s — now real clickable
+  tabs with working filters (`RECOMMENDED_FILTERS`). Every view (Contacts,
+  Companies, Deals, Tickets) shows a plain-English filter description on select.
+- **E — Bounced email status** added to the Marketing Email tab (stat + a
+  red Bounced segment in a delivery-breakdown bar).
+- **F — Interactive sales workspace.** Call/email/to-do tasks, meetings, and
+  documents are clickable: call → in-app call window, email → compose window,
+  to-do → associated record, meeting → contact card. Documents show a
+  view-duration + per-page notification.
+- **G — Workflow stage spotlight.** Clicking a workflow node zooms it to center
+  (same Spotlight) with a kind badge and a plain-English explanation of what
+  that stage does — replacing the old bottom popover.
+- **H — Business Health reporting.** New executive dashboard (first tab): total
+  + recurring revenue, pipeline coverage, NPS, and a RevOps scorecard with
+  green/amber/red KPI status.
+- **I — Accountability ROI panel.** PreviewCadence leads with a "why this
+  matters" adoption→ROI story (3-step timeline + insight cards): software
+  doesn't create ROI, usage does.
+- **J — Step 4 of 4 redesign.** Selection overview + all three offer cards
+  always shown (Free / Core / Retainer), best fit highlighted, with reasons.
+  When scope exceeds the Free Setup, the Free card explains exactly why
+  (multi-hub, branching automations, custom objects, integrations, big import)
+  while still listing what it would do. `freeBlockers` added to offerScoper.js.
+
+Deferred (answered earlier): wiring the intake to a HubSpot form for real lead
+capture — keep the custom UI, POST to HubSpot's no-auth Forms endpoint when
+Daniel provides a portal ID + form GUID.
+
+
 ## Build 22 — Discovery UX: vertical options, A/S/N everywhere (June 13, 2026)
 
 Driven by Daniel's review of the presenter discovery flow.

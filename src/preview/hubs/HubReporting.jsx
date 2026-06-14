@@ -1,7 +1,7 @@
 // HubReporting — "HubSpot light" Reporting view for the preview portal.
-// Four dashboards (Sales Overview, Rep Activity, Marketing, Service) built from
-// the shared chart library + realistic demo data, so the reports read like a real
-// business's live HubSpot dashboards rather than placeholder toys.
+// Five dashboards (Business Health, Sales Overview, Rep Activity, Marketing, Service)
+// built from the shared chart library + realistic demo data, so the reports read like
+// a real business's live HubSpot dashboards rather than placeholder toys.
 
 import { useState } from 'react'
 import { useStore } from '../../store/useStore'
@@ -27,7 +27,7 @@ import {
   DEALS,
 } from '../demoData'
 
-const TABS = ['Sales Overview', 'Rep Activity', 'Marketing', 'Service']
+const TABS = ['Business Health', 'Sales Overview', 'Rep Activity', 'Marketing', 'Service']
 
 const money = (n) =>
   n >= 1000000 ? `$${(n / 1000000).toFixed(2)}M` : `$${Math.round(n / 1000)}K`
@@ -52,6 +52,83 @@ function FiltersBar({ title }) {
         Share
       </button>
     </div>
+  )
+}
+
+// ---- RevOps scorecard row (status dot + label + value) ----
+const STATUS_COLORS = {
+  green: 'bg-hs-green',
+  amber: 'bg-hs-marigold',
+  red: 'bg-hs-red',
+}
+
+function ScorecardRow({ label, value, status }) {
+  return (
+    <div className="flex items-center justify-between py-2 border-b border-hs-border last:border-b-0">
+      <div className="flex items-center gap-2">
+        <span className={`inline-block w-2.5 h-2.5 rounded-full ${STATUS_COLORS[status]}`} />
+        <span className="text-[13px] text-hs-text-dark">{label}</span>
+      </div>
+      <span className="text-[13px] font-semibold text-hs-navy">{value}</span>
+    </div>
+  )
+}
+
+// ===== Dashboard 0: Business Health (executive view) =====
+function BusinessHealth() {
+  const scorecard = [
+    { label: 'Speed-to-lead', value: '8 min', status: 'green' },
+    { label: 'Pipeline coverage', value: '2.4x', status: 'green' },
+    { label: 'Stale deals (30+ days)', value: '6', status: 'amber' },
+    { label: 'Forecast accuracy', value: '91%', status: 'green' },
+    { label: 'Win rate', value: '38%', status: 'amber' },
+    { label: 'Data hygiene', value: '96%', status: 'green' },
+  ]
+
+  return (
+    <>
+      <div className="col-span-2 -mb-1">
+        <p className="text-[13px] text-hs-text-light">
+          Your whole business at a glance — what you'd check first every Monday.
+        </p>
+      </div>
+
+      <div className="col-span-2 grid grid-cols-5 gap-3">
+        <StatCard label="Total revenue (6 mo)" value="$1.26M" delta="14%" />
+        <StatCard label="Recurring revenue" value="$412K" delta="9%" />
+        <StatCard label="New customers" value="14" delta="3" />
+        <StatCard label="Pipeline coverage" value="2.4x" />
+        <StatCard label="NPS" value="62" delta="7" />
+      </div>
+
+      <ReportCard title="RevOps scorecard" subtitle="HEALTH OF THE REVENUE ENGINE">
+        <div className="px-1">
+          {scorecard.map((kpi) => (
+            <ScorecardRow key={kpi.label} {...kpi} />
+          ))}
+        </div>
+      </ReportCard>
+
+      <ReportCard title="Revenue by source" subtitle="NEW LEADS · LAST 6 MONTHS">
+        <DonutChart data={LEAD_SOURCES} centerValue="103" centerLabel="leads" />
+      </ReportCard>
+
+      <ReportCard
+        title="Revenue trend"
+        subtitle="CLOSED REVENUE BY MONTH"
+        footer="Tracking 14% ahead of the same period last year."
+      >
+        <LineChart
+          series={[{ name: 'Revenue', color: '#FF7A59', points: REVENUE_TREND }]}
+          labels={MONTHS}
+          money
+        />
+      </ReportCard>
+
+      <ReportCard title="Revenue by rep" subtitle="CLOSED WON · LAST 6 MONTHS">
+        <HBarChart data={REP_PERFORMANCE} money />
+      </ReportCard>
+    </>
   )
 }
 
@@ -252,6 +329,7 @@ export default function HubReporting() {
 
   const overviewTitle = session.dashboards?.name || 'Sales Command Center'
   const titles = {
+    'Business Health': 'Business Health',
     'Sales Overview': overviewTitle,
     'Rep Activity': 'Rep Activity',
     Marketing: 'Marketing Performance',
@@ -286,6 +364,7 @@ export default function HubReporting() {
       {/* Dashboard content */}
       <div className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
         <div className="grid grid-cols-2 gap-3">
+          {active === 'Business Health' && <BusinessHealth />}
           {active === 'Sales Overview' && <SalesOverview stageLabels={stageLabels} />}
           {active === 'Rep Activity' && <RepActivity />}
           {active === 'Marketing' && <Marketing />}

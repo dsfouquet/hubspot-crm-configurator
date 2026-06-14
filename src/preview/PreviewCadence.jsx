@@ -1,5 +1,54 @@
 import { useStore } from '../store/useStore'
-import { IconCheck, IconBell, IconEye, IconWarning, IconTarget, IconCheckCircle } from './uiIcons'
+import {
+  IconCheck,
+  IconBell,
+  IconEye,
+  IconWarning,
+  IconTarget,
+  IconCheckCircle,
+  IconBolt,
+  IconDollar,
+} from './uiIcons'
+
+// Adoption → ROI argument: software only pays off when the team actually uses it.
+const ADOPTION_STEPS = [
+  {
+    title: 'Use it daily',
+    body: 'The team logs every call, email, and deal — no side spreadsheets.',
+  },
+  {
+    title: 'The data gets trustworthy',
+    body: 'Dashboards reflect reality, so reports stop being guesswork.',
+  },
+  {
+    title: 'You hit the number',
+    body: 'A forecast you can act on, sooner — and revenue follows.',
+  },
+]
+
+const WHY_CARDS = [
+  {
+    icon: IconWarning,
+    accent: 'text-hs-orange',
+    bar: 'bg-hs-orange',
+    head: 'CRMs fail from low adoption, not bad software.',
+    sub: 'The tool is rarely the problem. Unused tools are.',
+  },
+  {
+    icon: IconEye,
+    accent: 'text-hs-blue',
+    bar: 'bg-hs-blue',
+    head: 'Teams that review pipeline weekly forecast far more accurately.',
+    sub: 'A steady cadence turns a CRM into a decision tool.',
+  },
+  {
+    icon: IconBolt,
+    accent: 'text-hs-green',
+    bar: 'bg-hs-green',
+    head: 'Accountability rules let the CRM nudge the team.',
+    sub: 'The system reminds people, so you do not have to.',
+  },
+]
 
 // Mock accountability dashboard: cadence schedule, active rules, sample notification.
 export default function PreviewCadence() {
@@ -19,6 +68,79 @@ export default function PreviewCadence() {
 
   return (
     <div className="p-5 space-y-4">
+      {/* Why accountability matters: adoption → ROI */}
+      <div className="bg-white rounded-lg border border-hs-border overflow-hidden">
+        <div className="bg-hs-navy px-4 py-2.5 flex items-center gap-2">
+          <span className="text-hs-orange shrink-0">
+            <IconDollar width={15} height={15} />
+          </span>
+          <h2 className="font-preview font-semibold text-white text-[15px]">
+            Why this matters
+          </h2>
+        </div>
+        <div className="p-4">
+          <p className="text-[13px] font-preview text-hs-text-dark leading-snug">
+            <strong className="text-hs-navy">Software doesn&rsquo;t create ROI — usage does.</strong>{' '}
+            <span className="text-hs-text-light">
+              The CRM only pays off when the team actually works it. Faster adoption is
+              faster return.
+            </span>
+          </p>
+
+          {/* Adoption → ROI mini timeline */}
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-stretch gap-3 sm:gap-0">
+            {ADOPTION_STEPS.map((step, i) => (
+              <div
+                key={step.title}
+                className="flex sm:flex-1 items-start sm:items-stretch gap-3 sm:gap-0"
+              >
+                <div className="flex sm:flex-col sm:items-center sm:text-center shrink-0">
+                  <div className="flex items-center">
+                    <span className="flex items-center justify-center w-7 h-7 rounded-full bg-hs-orange text-white text-[12px] font-preview font-semibold shrink-0">
+                      {i + 1}
+                    </span>
+                    {i < ADOPTION_STEPS.length - 1 && (
+                      <span className="hidden sm:block h-0.5 flex-1 bg-hs-orange/30 mx-1" />
+                    )}
+                  </div>
+                </div>
+                <div className="sm:px-2 sm:pt-2 sm:text-center">
+                  <p className="text-[12px] font-preview font-semibold text-hs-navy leading-tight">
+                    {step.title}
+                  </p>
+                  <p className="text-[11px] font-preview text-hs-text-light leading-snug mt-0.5">
+                    {step.body}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Supporting stat / insight cards */}
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            {WHY_CARDS.map((c) => (
+              <div
+                key={c.head}
+                className="bg-white rounded-[3px] border border-hs-border p-2.5 flex gap-2"
+              >
+                <span className={`w-0.5 rounded-full ${c.bar} shrink-0`} />
+                <div>
+                  <span className={`${c.accent}`}>
+                    <c.icon width={13} height={13} />
+                  </span>
+                  <p className="text-[12px] font-preview font-semibold text-hs-text-dark leading-snug mt-1">
+                    {c.head}
+                  </p>
+                  <p className="text-[11px] font-preview text-hs-text-light leading-snug mt-0.5">
+                    {c.sub}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Cadence schedule */}
       <div className="bg-white rounded-lg border border-hs-border overflow-hidden">
         <div className="bg-hs-navy px-4 py-2.5">

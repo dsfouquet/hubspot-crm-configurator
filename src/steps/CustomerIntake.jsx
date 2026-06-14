@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { useStore } from '../store/useStore'
-import { CUSTOMER_QUESTIONS, customerPainIds } from '../constants/customerQuestions'
+import {
+  CUSTOMER_QUESTIONS,
+  customerPainIds,
+  customerPainGroups,
+} from '../constants/customerQuestions'
 import QuestionControl from '../shared/QuestionControl'
 import { autoBuildSession } from '../utils/autoBuild'
 import { qualify } from '../utils/qualification'
@@ -37,10 +41,16 @@ export default function CustomerIntake() {
     }, 30)
   }
 
-  // Resolve dynamic pieces: avatar-weighted pains + auto-advance handler.
+  // Resolve dynamic pieces: avatar-weighted pains (flat list for the answered
+  // check + topLeak source) and journey-ordered groups for rendering.
   const question = {
     ...raw,
-    ...(raw.dynamicPains ? { painIds: customerPainIds(wizard.industry) } : {}),
+    ...(raw.dynamicPains
+      ? {
+          painIds: customerPainIds(wizard.industry),
+          groups: customerPainGroups(wizard.industry),
+        }
+      : {}),
     ...(raw.autoAdvance && !isLast
       ? { onPick: () => setTimeout(advance, 220) }
       : {}),

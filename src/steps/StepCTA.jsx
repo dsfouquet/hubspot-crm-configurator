@@ -1,5 +1,5 @@
 import { useStore } from '../store/useStore'
-import { scopeOffers } from '../utils/offerScoper'
+import { scopeOffers, OFFERS } from '../utils/offerScoper'
 import DownloadPdfButton from '../components/DownloadPdfButton'
 import Logo from '../components/Logo'
 
@@ -9,30 +9,104 @@ const BOOKING_URL =
 const DIY_GUIDE_URL =
   import.meta.env.VITE_DIY_GUIDE_URL || 'https://www.crescentconnectla.com/free-crm'
 
-// Customer-mode final step. Hormozi sequence: recap (what we'll build) →
-// value stack with retail anchor → real scarcity → routed CTA. The BANT verdict
-// (session.qualification) routes the primary button — book a Free Setup call
-// for qualified prospects, the DIY guide for everyone else. The verdict itself
-// is never shown.
+function Check({ color = '#00BDA5' }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0" aria-hidden>
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  )
+}
+
+// One offer card. `fit` = this is the prospect's best-fit offer (highlighted).
+function OfferCard({ offer, items, fit, badge, reasonsTitle, reasons, footer }) {
+  const shown = items.slice(0, 6)
+  const extra = items.length - shown.length
+  return (
+    <div
+      className={`bg-white rounded-lg overflow-hidden border ${
+        fit ? 'shadow-sm' : 'border-hs-border'
+      }`}
+      style={fit ? { borderColor: offer.color, borderWidth: 2 } : undefined}
+    >
+      <div className="px-5 py-3.5 flex items-start justify-between gap-3" style={{ background: `${offer.color}0F` }}>
+        <div className="min-w-0">
+          <h3 className="font-ui font-bold text-[15px]" style={{ color: offer.color }}>
+            {offer.name}
+          </h3>
+          <p className="text-[12px] font-ui text-hs-text-dark mt-0.5">{offer.tagline}</p>
+        </div>
+        {badge && (
+          <span
+            className="shrink-0 text-[9px] font-ui font-bold uppercase tracking-wide text-white rounded px-2 py-1"
+            style={{ background: offer.color }}
+          >
+            {badge}
+          </span>
+        )}
+      </div>
+
+      {reasons?.length > 0 && (
+        <div className="px-5 pt-3.5">
+          <p className="text-[10px] font-ui font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
+            {reasonsTitle}
+          </p>
+          <ul className="space-y-1">
+            {reasons.map((r) => (
+              <li key={r} className="text-[12.5px] font-ui text-hs-text-dark flex gap-2">
+                <span className="text-hs-orange shrink-0">›</span>
+                {r}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {shown.length > 0 && (
+        <ul className="px-5 py-3.5 space-y-1.5">
+          {shown.map((item) => (
+            <li key={item} className="flex items-start gap-2 text-[13px] font-ui text-hs-text-dark">
+              <Check color={offer.color} />
+              <span>{item}</span>
+            </li>
+          ))}
+          {extra > 0 && (
+            <li className="text-[12px] font-ui text-hs-text-light pl-6">+ {extra} more in your plan</li>
+          )}
+        </ul>
+      )}
+
+      {footer && <div className="px-5 py-3 border-t border-hs-greatwhite">{footer}</div>}
+    </div>
+  )
+}
+
+// Customer-mode final step. Overview of what they picked, then ALL THREE offers
+// with the best fit highlighted and the reasons spelled out — including why the
+// Free Setup can't cover everything when the scope is bigger. Primary CTA still
+// routes by qualification.
 export default function StepCTA() {
   const session = useStore((s) => s.session)
   const goToStep = useStore((s) => s.goToStep)
 
   const offers = scopeOffers(session)
-  const qualified = session.qualification?.qualified !== false // default to booking if unset
+  const qualified = session.qualification?.qualified !== false
   const name = session.gate?.name?.split(' ')[0]
+  const isMachine = offers.recommended === 'machine'
 
+  const w = session.wizard || {}
   const stages = session.deals?.pipelineStages || []
   const workflowCount = (session.workflows || []).length
   const widgetCount = (session.dashboards?.widgets || []).length
   const customObj = (session.customObjects || [])[0]
+  const topLeak = (session.fixPlan?.problems || []).find((p) => p.isTop) || (session.fixPlan?.problems || [])[0]
 
   const recap = [
-    `${stages.length}-stage sales pipeline in your language`,
-    `${workflowCount} automations working while you sleep`,
-    `1 owner dashboard (${widgetCount} reports)`,
-    ...(customObj ? [`Custom "${customObj.plural || customObj.singular}" tracker`] : []),
-  ]
+    w.industry,
+    `${stages.length}-stage pipeline`,
+    `${workflowCount} automations`,
+    `${widgetCount}-report dashboard`,
+    ...(customObj ? [`"${customObj.plural || customObj.singular}" tracker`] : []),
+  ].filter(Boolean)
 
   return (
     <div className="h-full overflow-y-auto hs-scroll bg-hs-canvas">
@@ -45,86 +119,92 @@ export default function StepCTA() {
         </div>
 
         <h1 className="mt-6 font-ui font-bold text-hs-navy text-2xl sm:text-3xl leading-tight">
-          {name ? `${name}, your` : 'Your'} CRM build plan is ready.
+          {name ? `${name}, here's` : "Here's"} how we get this built for you.
         </h1>
         <p className="mt-2 text-[15px] font-ui text-hs-text-dark">
-          Everything you just previewed is real — and we build it for you. You don't
-          touch a setting.
+          Everything you previewed is real. Here's which Crescent Connect build fits the
+          plan you just designed.
         </p>
 
-        {/* Build recap */}
-        <div className="mt-6 flex flex-wrap gap-2">
-          {recap.map((r) => (
-            <span
-              key={r}
-              className="text-[12.5px] font-ui font-medium text-hs-navy bg-white border border-hs-border rounded-full px-3 py-1.5"
-            >
-              {r}
-            </span>
-          ))}
+        {/* Selection overview */}
+        <div className="mt-5 rounded-lg bg-hs-navydeep px-4 py-3">
+          <div className="text-[10px] font-ui font-semibold uppercase tracking-wide text-hs-orange">
+            What you designed
+          </div>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {recap.map((r) => (
+              <span key={r} className="text-[12px] font-ui font-medium text-white bg-white/10 rounded px-2 py-1">
+                {r}
+              </span>
+            ))}
+          </div>
+          {topLeak && (
+            <p className="mt-2 text-[12.5px] font-ui text-white/80">
+              Biggest leak to plug first: <span className="font-semibold text-white">{topLeak.title}</span>
+            </p>
+          )}
         </div>
 
-        {/* Value stack */}
-        <div className="mt-8 bg-white border border-hs-border rounded-lg overflow-hidden">
-          <div className="bg-hs-navydeep px-5 py-4">
-            <h2 className="font-ui font-bold text-white text-lg">
-              {qualified
-                ? 'The Free CRM Setup — done for you in 7 days'
-                : 'Your complete CRM build — everything in your plan'}
-            </h2>
-            <p className="text-[13px] font-ui text-white/70 mt-0.5">
-              {qualified
-                ? 'One call, one spreadsheet. We do the rest.'
-                : 'Every piece below is mapped out and ready to build.'}
-            </p>
-          </div>
-          <ul className="px-5 py-4 space-y-2">
-            {offers.free.map((item) => (
-              <li key={item} className="flex items-start gap-2.5 text-[14px] font-ui text-hs-text-dark">
-                <span className="text-hs-green mt-0.5 shrink-0">✓</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="px-5 py-4 border-t border-hs-greatwhite flex items-baseline justify-between flex-wrap gap-2">
-            {qualified ? (
-              <>
-                <span className="font-ui text-[14px] text-hs-text-dark">
-                  Retail value:{' '}
+        {/* Three offers, best fit highlighted */}
+        <div className="mt-7 space-y-3">
+          <OfferCard
+            offer={OFFERS.free}
+            items={offers.free}
+            fit={!isMachine}
+            badge={!isMachine ? 'Your best fit' : undefined}
+            reasonsTitle={isMachine ? 'Why the free setup won’t cover everything you need' : 'Why this fits you'}
+            reasons={
+              isMachine
+                ? offers.freeBlockers
+                : ['One workspace, one pipeline, one dashboard — done for you in 7 days']
+            }
+            footer={
+              <div className="flex items-baseline justify-between flex-wrap gap-2">
+                <span className="text-[13px] font-ui text-hs-text-dark">
                   <span className="line-through text-hs-text-light">$5,000</span>{' '}
                   <span className="font-bold text-hs-navy">Free for qualified businesses</span>
                 </span>
-                <span className="text-[12.5px] font-ui font-semibold text-hs-red">
-                  4 setups per month — that's the cap
-                </span>
-              </>
-            ) : (
-              <span className="font-ui text-[14px] text-hs-text-dark">
-                Done-for-you value:{' '}
-                <span className="font-bold text-hs-navy">$5,000</span> — the DIY Guide
-                walks you through the same build yourself.
+                <span className="text-[12px] font-ui font-semibold text-hs-red">4 per month — that's the cap</span>
+              </div>
+            }
+          />
+
+          <OfferCard
+            offer={OFFERS.machine}
+            items={offers.machine.length ? offers.machine : ['Everything in the Free Setup, plus the full automation, reporting, and integration depth your plan calls for']}
+            fit={isMachine}
+            badge={isMachine ? 'Your best fit' : undefined}
+            reasonsTitle="Why your plan needs this"
+            reasons={isMachine ? offers.freeBlockers : undefined}
+            footer={
+              <span className="text-[12.5px] font-ui text-hs-text-dark">
+                The full 30-day done-for-you build. We scope and price it together on the call.
               </span>
-            )}
-          </div>
+            }
+          />
+
+          <OfferCard
+            offer={OFFERS.retainer}
+            items={offers.retainer}
+            footer={
+              <span className="text-[12.5px] font-ui text-hs-text-dark">
+                Optional after launch — we keep the pipeline moving so the system pays for itself.
+              </span>
+            }
+          />
         </div>
 
-        {/* Routed CTA */}
+        {/* Routed primary CTA */}
         <div className="mt-8 bg-white border border-hs-border rounded-lg px-5 py-6 text-center">
           {qualified ? (
             <>
               <h2 className="font-ui font-bold text-hs-navy text-xl">
-                Claim one of this month's setups
+                {isMachine ? 'Book your build call' : "Claim one of this month's free setups"}
               </h2>
               <p className="mt-1.5 text-[14px] font-ui text-hs-text-dark">
-                15-minute call. We confirm scope, you hand us a spreadsheet, and your
-                CRM is live in 7 days.
+                15 minutes. We confirm scope, show you the plan, and map the fastest path to live.
               </p>
-              <a
-                href={BOOKING_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="hs-btn-primary mt-4 !px-8 !py-3 !text-[15px]"
-              >
+              <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="hs-btn-primary mt-4 !px-8 !py-3 !text-[15px]">
                 Book Your Free CRM Setup Call →
               </a>
               <div className="mt-3">
@@ -137,15 +217,10 @@ export default function StepCTA() {
                 Your build plan is ready — here's the fastest way to get it done
               </h2>
               <p className="mt-1.5 text-[14px] font-ui text-hs-text-dark">
-                The DIY CRM Build Guide walks you through this exact setup step by
-                step — videos, templates, and the same workflows you just previewed.
+                The DIY CRM Build Guide walks you through this exact setup — videos, templates,
+                and the same workflows you just previewed.
               </p>
-              <a
-                href={DIY_GUIDE_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="hs-btn-primary mt-4 !px-8 !py-3 !text-[15px]"
-              >
+              <a href={DIY_GUIDE_URL} target="_blank" rel="noreferrer" className="hs-btn-primary mt-4 !px-8 !py-3 !text-[15px]">
                 Get the DIY CRM Build Guide →
               </a>
               <div className="mt-3">

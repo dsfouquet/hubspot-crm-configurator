@@ -10,7 +10,7 @@ const RULES = [
     id: 'cold_call_queue',
     name: 'Cold Call Queue',
     recordType: 'Contacts',
-    description: 'Contacts to call, ordered by priority.',
+    description: 'Contacts to call now, highest-priority first.',
     reason: 'You selected cold calling',
     when: (c) =>
       c.activities.includes('Cold calling / call blocking') ||

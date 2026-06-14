@@ -140,5 +140,33 @@ export function scopeOffers(session) {
       ? 'Solo operator? There is also a self-paced DIY CRM Build Guide if you would rather build it yourself.'
       : null
 
-  return { free, machine, retainer, recommended, diyNote, hubsFiring }
+  // Plain-English reasons the Free Setup can't cover the FULL scope — i.e. why
+  // the Core Offer (30-Day Revenue Machine) is the real fit. Derived from the
+  // same signals that populate machine[]. Used by the 3-card CTA.
+  const freeBlockers = []
+  if (hubsFiring.length >= 2)
+    freeBlockers.push(
+      `Your needs span ${hubsFiring.join(' + ')} — the Free Setup builds one workspace, not the whole operation`
+    )
+  const extraWfCount = workflows.filter((wf) => wf.id !== firstWorkflow?.id).length
+  if (extraWfCount > 0)
+    freeBlockers.push(
+      `${extraWfCount + 1} automations to build — the Free Setup includes just 1 simple automation`
+    )
+  if (workflows.some((wf) => wf.nodes?.some((n) => n.type === 'condition')))
+    freeBlockers.push('Branching (if/then) automations — a HubSpot Pro capability')
+  if ((session.customObjects || []).length > 0)
+    freeBlockers.push(
+      `Custom "${(session.customObjects[0].plural || session.customObjects[0].singular)}" object — a HubSpot Pro feature`
+    )
+  if (w.accounting && !['None', 'Something else', 'Spreadsheets / manual'].includes(w.accounting))
+    freeBlockers.push(`${w.accounting} integration — invoices and AR synced onto deals`)
+  if ((session.dashboards?.widgets || []).length > 5)
+    freeBlockers.push('A multi-dashboard reporting suite — the Free Setup includes 1 owner dashboard')
+  if (w.dataImport?.startsWith('Yes — but messy') || w.dataImport?.startsWith('Sort of'))
+    freeBlockers.push('A messy/scattered list to rescue — the Free Setup covers a clean import up to 5,000 contacts')
+  if (['50–100', '100+'].includes(w.monthlyVolume))
+    freeBlockers.push(`High lead volume (${w.monthlyVolume}/mo) needs routing + scoring beyond the free scope`)
+
+  return { free, machine, retainer, recommended, diyNote, hubsFiring, freeBlockers }
 }

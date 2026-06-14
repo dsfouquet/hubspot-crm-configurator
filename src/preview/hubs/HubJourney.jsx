@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useStore } from '../../store/useStore'
 import { industryCopy } from '../industryCopy'
+import Spotlight from '../Spotlight'
 import {
   integrationsForStep,
   searchIntegrations,
@@ -64,9 +65,23 @@ const Chip = ({ children, accent }) => (
 
 export default function HubJourney() {
   const session = useStore((s) => s.session)
-  const [open, setOpen] = useState(null)
+  const [open, setOpen] = useState(null) // { id, rect } of the spotlighted card
   const [query, setQuery] = useState('')
   const [highlight, setHighlight] = useState([])
+  const cardRefs = useRef({})
+
+  // Open a step's spotlight, growing from the clicked card's on-screen position.
+  const openStepFrom = (id, rect) => {
+    const r =
+      rect ||
+      cardRefs.current[id]?.getBoundingClientRect() || {
+        left: window.innerWidth / 2 - 80,
+        top: window.innerHeight / 2 - 40,
+        width: 160,
+        height: 80,
+      }
+    setOpen({ id, rect: r })
+  }
 
   const copy = industryCopy(session.wizard?.industry)
   const stages = session.deals?.pipelineStages?.map((s) => s.label) || []
@@ -312,7 +327,7 @@ export default function HubJourney() {
     setHighlight(integ.journeySteps)
     setQuery(integ.name)
     const first = visibleSteps.find((s) => integ.journeySteps.includes(s.id))
-    if (first) setOpen(first.id)
+    if (first) openStepFrom(first.id)
   }
 
   // Group visible steps into phase columns, preserving phase order.
@@ -322,7 +337,7 @@ export default function HubJourney() {
     steps: visibleSteps.filter((s) => s.phase === phase),
   })).filter((p) => p.steps.length > 0)
 
-  const openStep = visibleSteps.find((s) => s.id === open) || null
+  const openStep = visibleSteps.find((s) => s.id === open?.id) || null
   const openIntegs = openStep ? integrationsForStep(openStep.id) : []
 
   return (
@@ -407,7 +422,7 @@ export default function HubJourney() {
                 <div className="flex flex-col gap-2">
                   {p.steps.map((step) => {
                     const isHighlighted = highlight.includes(step.id)
-                    const isOpen = open === step.id
+                    const isOpen = open?.id === step.id
                     const integs = integrationsForStep(step.id)
                     return (
                       <div key={step.id}>
@@ -421,7 +436,12 @@ export default function HubJourney() {
                           </div>
                         )}
                         <button
-                          onClick={() => setOpen(isOpen ? null : step.id)}
+                          ref={(el) => (cardRefs.current[step.id] = el)}
+                          onClick={(e) =>
+                            isOpen
+                              ? setOpen(null)
+                              : openStepFrom(step.id, e.currentTarget.getBoundingClientRect())
+                          }
                           className={`w-full text-left flex items-center gap-2 bg-white rounded-[4px] border px-2.5 py-2 shadow-sm transition-all hover:shadow-md ${
                             isHighlighted ? 'ring-2 ring-hs-green' : ''
                           }`}
@@ -463,78 +483,77 @@ export default function HubJourney() {
         </div>
       </div>
 
-      {/* 4) DETAIL DRAWER — right-side overlay inside the journey area */}
+      {/* 4) DETAIL SPOTLIGHT — the clicked card zooms to center; click-out shrinks
+          back to where it sat so you can see which step you opened. */}
       {openStep && (
-        <>
-          {/* Dimmed backdrop closes the drawer */}
-          <button
-            aria-label="Close detail"
-            onClick={() => setOpen(null)}
-            className="absolute inset-0 bg-hs-navy/20 z-30"
-          />
-          <div className="absolute right-0 top-0 bottom-0 w-[26rem] max-w-[85%] bg-white border-l border-hs-border shadow-xl z-40 flex flex-col">
-            <div className="flex-1 overflow-y-auto hs-scroll px-5 py-4">
-              <div className="flex items-start justify-between gap-3">
-                <span
-                  className="inline-block text-[10px] font-bold uppercase tracking-wide text-white rounded-[3px] px-2 py-0.5"
-                  style={{ backgroundColor: PHASE_COLORS[openStep.phase] }}
-                >
-                  {openStep.phase}
-                </span>
-                <button
-                  onClick={() => setOpen(null)}
-                  className="text-hs-text-light hover:text-hs-text-dark text-[20px] leading-none -mt-1"
-                  aria-label="Close"
-                >
-                  ×
-                </button>
+        <Spotlight
+          originRect={open.rect}
+          accent={PHASE_COLORS[openStep.phase]}
+          onClose={() => setOpen(null)}
+        >
+          <div className="px-6 py-5">
+            <span
+              className="inline-block text-[10px] font-bold uppercase tracking-wide text-white rounded-[3px] px-2 py-0.5"
+              style={{ backgroundColor: PHASE_COLORS[openStep.phase] }}
+            >
+              {openStep.phase}
+            </span>
+
+            <div className="flex items-center gap-3 mt-3">
+              <span
+                className="shrink-0 w-11 h-11 rounded-lg flex items-center justify-center"
+                style={{
+                  backgroundColor: `${PHASE_COLORS[openStep.phase]}1A`,
+                  color: PHASE_COLORS[openStep.phase],
+                }}
+              >
+                <openStep.icon width={22} height={22} />
+              </span>
+              <h3 className="text-[18px] font-semibold text-hs-navy leading-snug">
+                {openStep.title}
+              </h3>
+            </div>
+
+            {/* Layered rows, journey-map style: the hook, then the full story */}
+            <p className="text-[13.5px] text-hs-text-dark mt-3 font-medium">{openStep.summary}</p>
+            <p className="text-[13px] text-hs-text-dark leading-relaxed mt-2.5">{openStep.detail}</p>
+
+            {openStep.handoff && (
+              <div className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-medium bg-hs-canvas border border-hs-border rounded-[3px] px-2.5 py-1 text-hs-text-dark">
+                Handoff: {openStep.handoff.from}
+                <IconArrowRight width={11} height={11} className="text-hs-orange shrink-0" />
+                {openStep.handoff.to}
               </div>
+            )}
 
-              <div className="flex items-center gap-2.5 mt-3">
-                <span
-                  className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
-                  style={{
-                    backgroundColor: `${PHASE_COLORS[openStep.phase]}1A`,
-                    color: PHASE_COLORS[openStep.phase],
-                  }}
-                >
-                  <openStep.icon width={18} height={18} />
-                </span>
-                <h3 className="text-[15px] font-semibold text-hs-navy leading-snug">{openStep.title}</h3>
+            <div className="mt-4">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
+                HubSpot tools at this step
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {openStep.tools.map((t) => (
+                  <Chip key={t}>{t}</Chip>
+                ))}
               </div>
+            </div>
 
-              <p className="text-[12px] text-hs-text-dark mt-2 font-medium">{openStep.summary}</p>
-              <p className="text-[12px] text-hs-text-dark leading-relaxed mt-2.5">{openStep.detail}</p>
-
+            {openIntegs.length > 0 && (
               <div className="mt-4">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
-                  HubSpot tools
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1.5 flex items-center gap-1">
+                  <IconPlug width={11} height={11} className="shrink-0" />
+                  Plug in what you already use
                 </p>
                 <div className="flex flex-wrap gap-1.5">
-                  {openStep.tools.map((t) => (
-                    <Chip key={t}>{t}</Chip>
+                  {openIntegs.map((g) => (
+                    <Chip key={g.name} accent={highlight.length > 0 && query === g.name}>
+                      {g.name}
+                    </Chip>
                   ))}
                 </div>
               </div>
-
-              {openIntegs.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1.5 flex items-center gap-1">
-                    <IconPlug width={11} height={11} className="shrink-0" />
-                    Plug in what you already use
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {openIntegs.map((g) => (
-                      <Chip key={g.name} accent={highlight.length > 0 && query === g.name}>
-                        {g.name}
-                      </Chip>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            )}
           </div>
-        </>
+        </Spotlight>
       )}
 
       {/* 5) Footer — navy LTV closer band */}
