@@ -69,7 +69,7 @@ export default function CustomerIntake() {
   const pct = Math.round(((qIdx + 1) / total) * 100)
 
   return (
-    <div className="h-full overflow-y-auto hs-scroll bg-hs-canvas">
+    <div className="flex-1 w-full h-full overflow-y-auto hs-scroll bg-hs-canvas">
       <div className="max-w-xl mx-auto px-5 py-8 sm:py-12">
         <div className="flex items-center justify-end mb-6">
           <span className="text-[12px] font-ui text-hs-text-light">

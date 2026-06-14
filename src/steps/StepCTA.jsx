@@ -109,7 +109,7 @@ export default function StepCTA() {
   ].filter(Boolean)
 
   return (
-    <div className="h-full overflow-y-auto hs-scroll bg-hs-canvas">
+    <div className="flex-1 w-full h-full overflow-y-auto hs-scroll bg-hs-canvas">
       <div className="max-w-2xl mx-auto px-5 py-8 sm:py-12">
         <div className="flex items-center justify-between gap-3">
           <Logo />
