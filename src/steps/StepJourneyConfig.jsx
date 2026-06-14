@@ -6,18 +6,18 @@ import {
   journeyDefaults,
 } from '../constants/journeyMilestones'
 
-const PHASES = ['ATTRACT', 'CONVERT', 'CLOSE', 'DELIVER', 'RETAIN']
+const PHASES = ['GENERATE', 'QUALIFY', 'WIN', 'DELIVER', 'KEEP']
 const PHASE_COLORS = {
-  ATTRACT: '#FF7A59',
-  CONVERT: '#0091AE',
-  CLOSE: '#6A78D1',
+  GENERATE: '#FF7A59',
+  QUALIFY: '#0091AE',
+  WIN: '#6A78D1',
   DELIVER: '#00BDA5',
-  RETAIN: '#F5C26B',
+  KEEP: '#F5C26B',
 }
 
-// "Customer Journey" config step: map how this business actually markets, sells,
-// and operates. Toggles are pre-set from discovery; the Journey demo (right pane)
-// updates live — no marketing means the journey starts at cold/warm outreach.
+// "Sales Process" config step: map how this business actually generates, sells,
+// delivers, and keeps customers. Toggles are pre-set from discovery; the Sales
+// Process demo (right pane) updates live. No marketing means it starts at outreach.
 export default function StepJourneyConfig({ index }) {
   const session = useStore((s) => s.session)
   const setJourneyOverride = useStore((s) => s.setJourneyOverride)
@@ -31,12 +31,12 @@ export default function StepJourneyConfig({ index }) {
     <StepBody>
       <StepHeader
         index={index}
-        intro="How does your business actually attract, sell, deliver, and retain? Toggle what applies — the journey on the right rebuilds itself."
+        intro="How does your business actually generate, sell, deliver, and keep customers? Toggle what applies, and the sales process on the right rebuilds itself."
       />
 
       <div className="mb-3 flex items-center justify-between">
         <span className="text-[12px] font-ui text-hs-text-light">
-          {enabledCount} of {JOURNEY_MILESTONES.length} steps in your journey · pre-set from your
+          {enabledCount} of {JOURNEY_MILESTONES.length} steps in your sales process · pre-set from your
           discovery
         </span>
         {hasOverrides && (
@@ -113,8 +113,8 @@ export default function StepJourneyConfig({ index }) {
       })}
 
       <p className="text-[12px] font-ui text-hs-text-light">
-        Example: skip every marketing step and the journey opens directly with cold and warm
-        outreach — exactly how an outbound-only shop runs.
+        Example: skip every marketing step and the process opens directly with outreach, exactly how
+        an outbound-only shop runs.
       </p>
     </StepBody>
   )

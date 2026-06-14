@@ -8,39 +8,38 @@ import {
 import { journeyEnabled } from '../../constants/journeyMilestones'
 import { IconSearch, IconPlug, IconCheck, IconArrowRight } from '../hubIcons'
 
-// The Customer Journey tab: a HORIZONTAL PHASE BOARD (Attract → Convert → Close →
-// Deliver → Retain), each phase holding a few copy-only step cards. Click any card
-// for a spotlight with the full story + the HubSpot tools + where your tools plug
-// in. No per-card icons by design: clear copy reads faster than a pictogram.
-// Step set consolidated to 14 (June 2026) on expert review for scannability.
+// The Sales Process tab: a horizontal board from the SELLER'S point of view
+// (Generate → Qualify → Win → Deliver → Keep), each stage holding a few
+// copy-only cards of what you and the CRM do. Click any card for the full story
+// + the HubSpot tools + where your tools plug in. Team handoffs render on the
+// seam entering each stage. Reframed from the buyer journey on expert review.
 
-const PHASE_ORDER = ['ATTRACT', 'CONVERT', 'CLOSE', 'DELIVER', 'RETAIN']
+const PHASE_ORDER = ['GENERATE', 'QUALIFY', 'WIN', 'DELIVER', 'KEEP']
 
-// One calm palette: navy phase labels + a single orange accent for active states.
+// One calm palette: navy stage labels + a single orange accent for active states.
 const ACCENT = '#FF7A59'
 const PHASE_COLORS = {
-  ATTRACT: '#2D3E50',
-  CONVERT: '#2D3E50',
-  CLOSE: '#2D3E50',
+  GENERATE: '#2D3E50',
+  QUALIFY: '#2D3E50',
+  WIN: '#2D3E50',
   DELIVER: '#2D3E50',
-  RETAIN: '#2D3E50',
+  KEEP: '#2D3E50',
 }
 
-// Plain-language sublabel under each phase chip, for first-time readers.
 const PHASE_SUBLABELS = {
-  ATTRACT: 'Get found',
-  CONVERT: 'Capture & qualify',
-  CLOSE: 'Win the deal',
-  DELIVER: 'Do the work',
-  RETAIN: 'Keep & grow',
+  GENERATE: 'Get found and reach out',
+  QUALIFY: 'Capture, score, and route',
+  WIN: 'Book, quote, and close',
+  DELIVER: 'Sold work hands off clean',
+  KEEP: 'Service, reviews, and repeat',
 }
 
-// Department handoffs render at the boundary ENTERING each phase (keyed by the
-// phase the handoff FOLLOWS). The baton passes automatically, nothing re-typed.
+// Department handoffs render at the boundary ENTERING each stage (keyed by the
+// stage the handoff FOLLOWS). The baton passes automatically, nothing re-typed.
 const BOUNDARY_HANDOFFS = {
-  ATTRACT: [{ from: 'Marketing', to: 'Sales' }], // shows entering CONVERT
-  CLOSE: [{ from: 'Sales', to: 'Operations' }], // shows entering DELIVER
-  DELIVER: [{ from: 'Operations', to: 'Service' }], // shows entering RETAIN
+  GENERATE: [{ from: 'Marketing', to: 'Sales' }], // shows entering QUALIFY
+  WIN: [{ from: 'Sales', to: 'Operations' }], // shows entering DELIVER
+  DELIVER: [{ from: 'Operations', to: 'Service' }], // shows entering KEEP
 }
 
 const Chip = ({ children, accent }) => (
@@ -83,155 +82,164 @@ export default function HubJourney() {
       : 'your accounting software'
 
   const STEPS = [
-    // ---------------- ATTRACT ----------------
+    // ---------------- GENERATE ----------------
     {
-      id: 'find_online',
-      phase: 'ATTRACT',
-      title: 'They find you through search, ads, and your content',
-      summary:
-        'However a stranger discovers you, Google, an ad, or a LinkedIn post, the visit is tracked from the first click.',
+      id: 'gen_find',
+      phase: 'GENERATE',
+      title: 'People find you through search, ads, and content',
+      summary: 'Search, paid ads, and your posts all run from one place and feed the same CRM.',
       detail:
-        'Your SEO pages, paid ads, and social posts all run from one place and feed the same CRM. Every visitor is tracked from the first click, so you know what brought them in before you ever talk. Ad reporting goes past clicks to real cost-per-lead and closed revenue per campaign, so you finally know which spend works.',
+        'SEO pages, Google and Meta ads, and social posts publish from one calendar and track every visitor from the first click. Ad reporting goes past clicks to real cost-per-lead and closed revenue per campaign, so you finally know which spend works.',
       tools: ['Website tracking', 'Ads management', 'Social publishing', 'Source attribution'],
     },
     {
-      id: 'outreach',
-      phase: 'ATTRACT',
+      id: 'gen_outreach',
+      phase: 'GENERATE',
       title: 'Outreach runs in the background while you sell',
-      summary:
-        'Cold and warm outreach work themselves: sequences to new targets and to the past clients you already have.',
+      summary: 'Sequences work new targets and your back book of past clients without you remembering to.',
       detail:
-        'Build a target list and the sequence sends emails, queues call tasks, and prompts LinkedIn touches on schedule. The same engine works your back book: past clients you have not touched in months and referral partners due for a check-in. Opens, clicks, and replies all log, and a reply pauses the sequence and pings the rep.',
+        'Build a list and the sequence sends emails, queues call tasks, and prompts LinkedIn touches on schedule. The same engine works past clients you have not touched in months and referral partners due for a check-in. A reply pauses the sequence and pings the rep.',
       tools: ['Sales sequences', 'Segments & lists', 'Breeze prospecting', 'Reply tracking'],
     },
     {
-      id: 'inbound',
-      phase: 'ATTRACT',
-      title: 'However they reach you, it all lands in one place',
-      summary:
-        'Calls, emails, and form fills become the same contact record, with their source and history attached.',
+      id: 'gen_phone',
+      phase: 'GENERATE',
+      title: 'You call and text from one place, every touch logs itself',
+      summary: 'Calls and texts go out from the CRM, on your office line or your cell, and write themselves to the record.',
       detail:
-        'A form submission, an inbound call, a direct email: they all create or update one contact record with everything the person shared and where they came from. Nothing lives only in someone inbox or on a sticky note. The prospect gets an instant acknowledgment so they know you saw them.',
-      tools: ['Forms', 'Call tracking', 'Shared inbox', 'Contact record'],
+        'Click to call from the contact record, on your desk line or your phone, and the call logs and records on its own. Two-way texting threads on the same timeline. HubSpot calling is built in; texting is native where available, and we plug in Twilio or Kixie where it is not. No more guessing who you talked to and when.',
+      tools: ['Phone / calling', 'Text / SMS', 'Auto call logging', 'Call recording'],
     },
 
-    // ---------------- CONVERT ----------------
+    // ---------------- QUALIFY ----------------
     {
-      id: 'route',
-      phase: 'CONVERT',
-      title: 'Every lead routes to the right rep in seconds',
-      summary:
-        'The owner is assigned automatically and the rep is notified on their phone, with a call task ready.',
+      id: 'capture',
+      phase: 'QUALIFY',
+      title: 'However they reach you, it all lands on one record',
+      summary: 'A call, a text, an email, or a form: every channel threads onto one contact record.',
       detail:
-        'Routing rules assign by territory or round-robin, with the full lead details in the notification. Speed-to-lead wins deals: the company that calls back first usually gets the job.',
-      tools: ['Lead routing', 'Mobile notifications', 'Tasks'],
+        'Inbound calls, texts, emails, web chat, and form fills all create or update one contact with their full history attached. Nothing lives only in someone inbox or on a sticky note, and the prospect gets an instant acknowledgment so they know you saw them.',
+      tools: ['Forms', 'Shared inbox', 'Call & text logging', 'Contact record'],
     },
     {
-      id: 'nurture',
-      phase: 'CONVERT',
-      title: 'Not ready to buy? They stay warm, and sales gets pinged when they heat up',
-      summary:
-        'A not-yet-ready lead drops into nurture. When their interest crosses the line, the rep gets the hot hand-raise.',
+      id: 'route_score',
+      phase: 'QUALIFY',
+      title: 'Hot leads get scored and routed to a rep in seconds',
+      summary: 'The system scores each lead and assigns the right rep automatically, so you call the hot ones first.',
       detail:
-        'Useful marketing emails keep a "just looking" contact engaged instead of forgotten. Every open, click, and pricing-page revisit quietly raises their score. When fit and interest cross your threshold, the lifecycle stage advances and the owner is notified with the full history. Marketing and sales stop arguing about lead quality, the data decides.',
+        'Fit and engagement add up to a score, and routing rules assign by territory or round-robin with the full lead details in the notification. The rep gets a hot lead with a call task ready, not a cold list. Speed-to-lead wins deals: the business that calls back first usually gets the job.',
+      tools: ['Lead scoring', 'Lead routing', 'Mobile notifications', 'Tasks'],
+    },
+    {
+      id: 'warm',
+      phase: 'QUALIFY',
+      title: 'Not ready yet? They stay warm, and you get pinged when they heat up',
+      summary: 'A not-ready lead drops into nurture, and the rep gets the hand-raise the moment their interest crosses the line.',
+      detail:
+        'Useful emails and the occasional text keep a "just looking" contact engaged instead of forgotten. Every open, click, and pricing-page revisit raises their score. When they cross your threshold, the lifecycle stage advances and the owner is notified with the full history. Marketing and sales stop arguing about lead quality, the data decides.',
       tools: ['Email nurture', 'Lead scoring', 'Lifecycle stages', 'Auto-notifications'],
+    },
+
+    // ---------------- WIN ----------------
+    {
+      id: 'meeting',
+      phase: 'WIN',
+      title: 'Appointments book themselves, and a text cuts the no-shows',
+      summary: 'A calendar link kills the back-and-forth, and an automatic text reminder keeps the slot.',
+      detail:
+        'After the call an automatic follow-up includes the rep booking link. The prospect picks a slot, it lands on the calendar, and the meeting logs to the record. A reminder text the day before cuts no-shows, and reschedules handle themselves.',
+      tools: ['Meeting scheduler', 'Reminder SMS', 'Auto follow-up', 'Calendar sync'],
     },
     {
       id: 'ai_prep',
-      phase: 'CONVERT',
-      title: 'AI preps your rep before the call',
-      summary:
-        'Breeze enriches the contact and company, then surfaces the right playbook, so the first call sounds like the fifth.',
+      phase: 'WIN',
+      title: 'AI sums up the history before you pick up the phone',
+      summary: 'Breeze enriches the contact and writes a summary of every touch, so the call sounds like the fifth, not the first.',
       detail:
-        'Company size, industry, and role fill in automatically. The rep opens a playbook with the questions to ask for this kind of lead, and AI call summaries write the notes back to the record afterward. Six months later anyone can pick up the relationship where it left off, even if the original rep is gone.',
-      tools: ['Breeze Intelligence', 'Playbooks', 'AI call summaries'],
-    },
-
-    // ---------------- CLOSE ----------------
-    {
-      id: 'meeting',
-      phase: 'CLOSE',
-      title: 'Appointments book themselves',
-      summary: 'A calendar link kills the back-and-forth, and the follow-up email already went out.',
-      detail:
-        'After the call, an automatic follow-up includes the rep booking link. The prospect picks a slot, it lands on the calendar, and the meeting logs to the record. Reschedules handle themselves.',
-      tools: ['Meeting scheduler', 'Auto follow-up', 'Calendar sync'],
+        'Company size, industry, and role fill in automatically, and AI summarizes the whole timeline of calls, texts, and emails. The rep opens a playbook with the questions to ask for this kind of deal. Six months later anyone can pick it up where it left off, even if the original rep is gone.',
+      tools: ['Breeze Intelligence', 'AI deal summaries', 'Playbooks'],
     },
     {
       id: 'stages',
-      phase: 'CLOSE',
-      title: 'Deals move through your stages on their own',
+      phase: 'WIN',
+      title: 'Deals move across one board, with a nudge when they stall',
       summary: stageStr,
       detail:
-        'Each stage transition fires its own automation: tasks for the rep, pings to the office so the proposal keeps moving, and alerts when a deal sits too long. Re-engagement sequences pick up the ones that stall.',
-      tools: ['Stage automation', 'Internal pings', 'Stale-deal alerts'],
+        'Every open deal sits on one board you can read in a glance. Each stage transition fires its own automation: tasks for the rep, pings to the office so the proposal keeps moving, and alerts when a deal sits too long. Re-engagement sequences pick up the ones that stall.',
+      tools: ['Deal pipeline', 'Stage automation', 'Stale-deal alerts', 'Internal pings'],
     },
     {
       id: 'quote',
-      phase: 'CLOSE',
-      title: 'Quote, sign, and deposit in one motion',
-      summary:
-        'The quote builds from the deal. They sign and pay through one link, and the follow-up chases itself.',
+      phase: 'WIN',
+      title: 'Quote, sign, and deposit in one link',
+      summary: 'The quote builds from the deal. They sign and pay the deposit through the same link, and the follow-up chases itself.',
       detail:
-        'Branded quotes build from deal data with e-signature and a payment link. If it goes quiet, the follow-up sequence runs. Documents from your other systems link right on the deal, so everything about this customer is one click away.',
-      tools: ['Quotes (CPQ)', 'E-sign + payments', 'Quote follow-up'],
+        'Branded quotes build from deal line items with e-signature and a payment link. They sign and pay the deposit in one motion, and if it goes quiet the follow-up sequence runs. Quoting lives right in the deal with the rep who owns it, no separate desk.',
+      tools: ['Quotes (CPQ)', 'E-sign on quotes', 'Payments / deposit', 'Quote follow-up'],
     },
 
     // ---------------- DELIVER ----------------
     {
       id: 'handoff',
       phase: 'DELIVER',
-      title: 'Deal closes, operations picks it up automatically',
-      summary: 'The delivery team is notified with full context, and the customer never repeats themselves.',
+      title: 'Closed won kicks off the work, nothing re-typed',
+      summary: 'The moment a deal is won, operations gets the order off the same record, with the signed quote attached.',
       detail:
-        'The handoff workflow notifies ops, creates the onboarding checklist, and sends the customer a kickoff email, the same way every time no matter who closed it. Everything sales learned travels with the record.',
+        'Closed Won fires a workflow that creates the project or onboarding record, notifies the team, and sends the customer a kickoff email, the same way every time no matter who closed it. The signed quote, line items, deposit status, and deal notes all carry over. Ops starts with the order, not a blank form.',
       tools: ['Handoff workflows', 'Onboarding tasks', 'Internal notifications'],
     },
     {
-      id: 'fulfill',
+      id: 'team_record',
       phase: 'DELIVER',
-      title: 'Fulfillment and invoicing run off the same record',
-      summary: `Projects sync to your work tools and invoices sync to ${accounting}, with nothing re-typed.`,
+      title: 'The team works off the same record you sold from',
+      summary: 'Whoever delivers the work sees exactly what was sold and promised, so the customer never repeats themselves.',
       detail:
-        'The deal becomes a project in your project tool and an invoice in your accounting software, automatically. Payment status shows back on the deal record, so anyone can answer "did they pay?" without calling bookkeeping.',
-      tools: ['Project sync', `${accounting} sync`, 'Payment visibility'],
+        'Projects sync to your work tools and the whole history travels with the record: what they bought, what was promised, who to call. HubSpot is not a full project or field-service system, so we connect it to the tool your team already uses and keep the data flowing both ways.',
+      tools: ['Project sync', 'Two-way data sync', 'Shared record'],
+    },
+    {
+      id: 'invoicing',
+      phase: 'DELIVER',
+      title: 'Invoicing and your books stay in sync',
+      summary: `Invoices fire from the deal and sync to ${accounting}, so payment status shows on the record.`,
+      detail: `The deal becomes an invoice and syncs to ${accounting}, with payment status back on the record so anyone can answer "did they pay?" without calling bookkeeping. HubSpot connects to your books, it does not replace them.`,
+      tools: ['HubSpot Invoices', `${accounting} sync`, 'Payment visibility'],
     },
 
-    // ---------------- RETAIN ----------------
+    // ---------------- KEEP ----------------
     {
       id: 'support',
-      phase: 'RETAIN',
-      title: 'When something breaks, service sees it right away',
-      summary: 'Tickets carry owners and SLAs, with the full sales history right there.',
+      phase: 'KEEP',
+      title: 'Support tickets land on the same customer record',
+      summary: 'A problem becomes a ticket with an owner and an SLA, and service sees the whole sales history.',
       detail:
         'Support requests become tickets with priorities and escalation rules. Because service sees the whole relationship, the deals, the notes, the promises made, the customer never has to explain who they are.',
       tools: ['Help desk', 'SLA escalation', 'Knowledge base'],
     },
     {
       id: 'feedback',
-      phase: 'RETAIN',
-      title: 'A quick text and email ask how it went',
-      summary: 'Happy customers get pointed to a review. Unhappy ones alert you before they churn.',
+      phase: 'KEEP',
+      title: 'A text and email ask how it went, and happy clients get pointed to a review',
+      summary: 'Surveys go out after the job; high scores ask for a Google review, low scores alert the owner before they churn.',
       detail:
-        'NPS and CSAT surveys go out by text and email after delivery. High scores trigger a review request while the goodwill is fresh; low scores alert the account owner immediately. You hear it from HubSpot, not from a lost renewal.',
-      tools: ['NPS / CSAT surveys', 'SMS', 'Review requests', 'Low-score alerts'],
+        'NPS and CSAT surveys go out by text and email after delivery. High scores trigger a review request while the goodwill is fresh; low scores alert the account owner immediately. You hear it from HubSpot, not from a lost renewal or a one-star review.',
+      tools: ['NPS / CSAT surveys', 'Review requests', 'Text / SMS', 'Low-score alerts'],
     },
     {
       id: 'retain',
-      phase: 'RETAIN',
-      title: 'Repeat business and win-backs run on their own',
-      summary: 'Renewals trigger early and lapsed customers get win-back sequences, so lifetime value climbs.',
+      phase: 'KEEP',
+      title: 'Win-backs and renewals fire on their own',
+      summary: 'Renewal dates and quiet accounts trigger their own sequences, so lifetime value climbs without you tracking it.',
       detail:
-        'Renewal dates create deals and alerts 60 days out. Quiet customers drop into re-engagement sequences, and past clients stay on lists that actually get emailed. Delighted customers refer the next ones.',
+        'Renewal dates create deals and alerts 60 days out. Quiet customers drop into re-engagement sequences, and past clients stay on lists that actually get emailed and texted. Delighted customers refer the next ones.',
       tools: ['Renewal alerts', 'Win-back sequences', 'Segments', 'LTV reporting'],
     },
   ]
 
-  // Only the milestones this business actually uses (config step + discovery defaults).
+  // Only the steps this business actually uses (config step + discovery defaults).
   const visibleSteps = STEPS.filter((s) => journeyEnabled(session, s.id))
 
   const results = searchIntegrations(query)
-  // Picking a tool HIGHLIGHTS the steps it plugs into; it does not open a card.
   const pickIntegration = (integ) => {
     setHighlight(integ.journeySteps)
     setQuery(integ.name)
@@ -254,12 +262,12 @@ export default function HubJourney() {
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h2 className="font-semibold text-hs-navy text-[16px]">
-              Every step a customer takes with you, in one place
+              Your sales process, end to end
             </h2>
             <p className="text-[12px] text-hs-text-light">
-              This is the path a customer takes with you, start to finish. Click any step to see how
-              HubSpot handles it. The plug icon shows where the tools you already use fit in, and you can
-              search for them on the right.
+              This is how a deal moves through your business, from first touch to repeat customer.
+              Click any step to see how HubSpot runs it. The plug icon shows where the tools you already
+              use fit in, and you can search for them on the right.
             </p>
           </div>
           <div className="relative">
@@ -311,8 +319,8 @@ export default function HubJourney() {
         </p>
       </div>
 
-      {/* 3) THE BOARD — responsive phase grid. Department handoffs sit in the
-          header of the phase they feed INTO, so the baton-pass reads on the seam. */}
+      {/* 3) THE BOARD — responsive stage grid. Department handoffs sit in the
+          header of the stage they feed INTO, so the baton-pass reads on the seam. */}
       <div className="flex-1 min-h-0 overflow-y-auto hs-scroll bg-hs-canvas">
         <div
           className="grid gap-x-3 gap-y-5 px-4 py-4 items-start"
@@ -322,7 +330,7 @@ export default function HubJourney() {
             const incoming = pi > 0 ? BOUNDARY_HANDOFFS[phases[pi - 1].phase] || [] : []
             return (
               <div key={p.phase} className="flex flex-col min-w-0">
-                {/* Phase header: chip + inline incoming handoff(s), sublabel, rule */}
+                {/* Stage header: chip + inline incoming handoff(s), sublabel, rule */}
                 <div className="mb-2.5">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span
@@ -349,7 +357,7 @@ export default function HubJourney() {
                   <span className="block mt-1.5 h-px w-full rounded-full bg-hs-border" />
                 </div>
 
-                {/* Stacked copy-only milestone cards */}
+                {/* Stacked copy-only step cards */}
                 <div className="flex flex-col gap-2">
                   {p.steps.map((step, si) => {
                     const isHighlighted = highlight.includes(step.id)
@@ -410,11 +418,7 @@ export default function HubJourney() {
 
       {/* 4) DETAIL SPOTLIGHT — clicked card zooms to center with the full story. */}
       {openStep && (
-        <Spotlight
-          originRect={open.rect}
-          accent={ACCENT}
-          onClose={() => setOpen(null)}
-        >
+        <Spotlight originRect={open.rect} accent={ACCENT} onClose={() => setOpen(null)}>
           <div className="px-6 py-5">
             <span
               className="inline-block text-[10px] font-bold uppercase tracking-wide text-white rounded-[3px] px-2 py-0.5"
@@ -427,7 +431,6 @@ export default function HubJourney() {
               {openStep.title}
             </h3>
 
-            {/* The hook, then the full story */}
             <p className="text-[13.5px] text-hs-text-dark mt-2.5 font-medium">{openStep.summary}</p>
             <p className="text-[13px] text-hs-text-dark leading-relaxed mt-2.5">{openStep.detail}</p>
 
@@ -461,17 +464,17 @@ export default function HubJourney() {
         </Spotlight>
       )}
 
-      {/* 5) Payoff strip — the owner watching the machine. */}
+      {/* 5) Payoff strip — the owner watching the whole process run. */}
       <div className="shrink-0 bg-white border-t border-hs-border px-5 py-2.5 text-center">
         <p className="text-[12.5px] font-semibold text-hs-navy">
-          And you watch all of it on one live dashboard, updated as it happens.
+          And you watch the whole thing on one live dashboard, updated as it happens.
         </p>
       </div>
 
       {/* 6) Footer — navy closer band */}
       <div className="shrink-0 bg-hs-navy px-5 py-2.5 text-center">
         <p className="text-[12px] text-white/90 leading-snug max-w-4xl mx-auto">
-          These are the same customers and the same team you already have. Once every step is connected,
+          This is the same team and the same customers you already have. Once every step is connected,
           the work stops falling through the cracks, and{' '}
           <span className="text-hs-sorbet font-semibold">
             the relationships you have already earned keep bringing you more business.

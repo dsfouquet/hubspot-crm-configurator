@@ -32,7 +32,7 @@ import {
 // is a polished multi-screen demo view (benefits only — the Crescent Connect
 // build work behind it lives in the Fix Plan, not here).
 const HUBS = [
-  { key: 'journey', label: 'Journey', Icon: IconJourney, render: () => <HubJourney /> },
+  { key: 'journey', label: 'Sales Process', Icon: IconJourney, render: () => <HubJourney /> },
   { key: 'crm', label: 'CRM', Icon: IconCRM, render: () => <HubCRM /> },
   { key: 'marketing', label: 'Marketing', Icon: IconMarketing, render: () => <HubMarketing /> },
   { key: 'sales', label: 'Sales', Icon: IconSales, render: () => <HubSales /> },

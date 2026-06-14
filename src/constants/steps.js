@@ -13,7 +13,7 @@ export const STEPS = [
   { key: 'views', label: 'Views & Tabs', short: 'Views' },
   { key: 'dashboards', label: 'Dashboards', short: 'Dashboards' },
   { key: 'cadence', label: 'Accountability Cadence', short: 'Cadence' },
-  { key: 'journeyMap', label: 'Customer Journey', short: 'Journey' },
+  { key: 'journeyMap', label: 'Sales Process', short: 'Process' },
   { key: 'preview', label: 'Your HubSpot Preview', short: 'Preview' },
 ]
 

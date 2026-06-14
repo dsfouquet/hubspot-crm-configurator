@@ -1,32 +1,35 @@
-// Journey milestone metadata + smart defaults. The "Customer Journey" config
-// step toggles these; HubJourney renders only the enabled ones. Defaults derive
-// from discovery answers (no marketing signals -> journey starts at outreach),
-// and the user's explicit overrides (session.journey.overrides) win.
+// Sales-process step metadata + smart defaults. The "Sales Process" config step
+// toggles these; HubJourney renders only the enabled ones. Defaults derive from
+// discovery answers, and the user's explicit overrides (session.journey.overrides)
+// win.
 //
-// Step set was consolidated (June 2026) from 21 milestones to 14 so the board
-// scans in seconds: the lead-source channels merged into find_online / outreach /
-// inbound, and the convert phase folded scoring + sales-nurture into nurture.
+// Reframed June 2026 from the buyer's customer journey to the SELLER'S sales
+// process (Generate -> Qualify -> Win -> Deliver -> Keep): the team handoffs and
+// the connecting tools (phone, text, quoting, accounting, service) map to a
+// sales-process frame, which is what the product actually is.
 
 export const JOURNEY_MILESTONES = [
-  { id: 'find_online', phase: 'ATTRACT', icon: '🔍', label: 'They find you (search, ads, content)' },
-  { id: 'outreach', phase: 'ATTRACT', icon: '📣', label: 'Outreach runs in the background' },
-  { id: 'inbound', phase: 'ATTRACT', icon: '📥', label: 'Inbound calls, emails, and forms' },
-  { id: 'route', phase: 'CONVERT', icon: '⚡', label: 'Instant lead routing (speed-to-lead)' },
-  { id: 'nurture', phase: 'CONVERT', icon: '📧', label: 'Stay-warm nurture and sales alert' },
-  { id: 'ai_prep', phase: 'CONVERT', icon: '🤖', label: 'AI prep and playbooks' },
-  { id: 'meeting', phase: 'CLOSE', icon: '📅', label: 'Self-booking appointments' },
-  { id: 'stages', phase: 'CLOSE', icon: '📊', label: 'Deal stages with automation' },
-  { id: 'quote', phase: 'CLOSE', icon: '🧾', label: 'Quote, sign, deposit' },
+  { id: 'gen_find', phase: 'GENERATE', icon: '🔍', label: 'Get found (search, ads, content)' },
+  { id: 'gen_outreach', phase: 'GENERATE', icon: '📣', label: 'Outreach runs in the background' },
+  { id: 'gen_phone', phase: 'GENERATE', icon: '📞', label: 'Call and text from the CRM' },
+  { id: 'capture', phase: 'QUALIFY', icon: '📥', label: 'Everything lands on one record' },
+  { id: 'route_score', phase: 'QUALIFY', icon: '⚡', label: 'Score and route to a rep' },
+  { id: 'warm', phase: 'QUALIFY', icon: '📧', label: 'Stay-warm nurture and alert' },
+  { id: 'meeting', phase: 'WIN', icon: '📅', label: 'Self-booking and reminder texts' },
+  { id: 'ai_prep', phase: 'WIN', icon: '🤖', label: 'AI deal summaries and playbooks' },
+  { id: 'stages', phase: 'WIN', icon: '📊', label: 'Deal pipeline with automation' },
+  { id: 'quote', phase: 'WIN', icon: '🧾', label: 'Quote, sign, deposit' },
   { id: 'handoff', phase: 'DELIVER', icon: '🤝', label: 'Closed-won handoff to ops' },
-  { id: 'fulfill', phase: 'DELIVER', icon: '📦', label: 'Fulfillment and invoicing sync' },
-  { id: 'support', phase: 'RETAIN', icon: '🛟', label: 'Service tickets and help desk' },
-  { id: 'feedback', phase: 'RETAIN', icon: '⭐', label: 'Surveys, reviews, and alerts' },
-  { id: 'retain', phase: 'RETAIN', icon: '🔁', label: 'Renewals and re-engagement' },
+  { id: 'team_record', phase: 'DELIVER', icon: '📦', label: 'Team works off the same record' },
+  { id: 'invoicing', phase: 'DELIVER', icon: '💵', label: 'Invoicing and books in sync' },
+  { id: 'support', phase: 'KEEP', icon: '🛟', label: 'Service tickets and help desk' },
+  { id: 'feedback', phase: 'KEEP', icon: '⭐', label: 'Surveys, reviews, and alerts' },
+  { id: 'retain', phase: 'KEEP', icon: '🔁', label: 'Win-backs and renewals' },
 ]
 
 const arr = (v) => (Array.isArray(v) ? v : v ? [v] : [])
 
-// Derive which milestones SHOULD be on, from discovery answers.
+// Derive which steps SHOULD be on, from discovery answers.
 // Unanswered discovery -> everything on (full showcase).
 export function journeyDefaults(session) {
   const w = session?.wizard || {}
@@ -55,12 +58,15 @@ export function journeyDefaults(session) {
     pains.includes('no_reengagement')
 
   const on = new Set()
-  // Core convert/close/deliver/retain steps + inbound capture are always on.
-  ;['inbound', 'route', 'nurture', 'ai_prep', 'meeting', 'stages', 'quote',
-    'handoff', 'fulfill', 'support', 'feedback', 'retain'].forEach((id) => on.add(id))
+  // Core capture/qualify/win/deliver/keep steps + calling are always on; a seller
+  // always works the phone and texts.
+  ;['gen_phone', 'capture', 'route_score', 'warm', 'meeting', 'ai_prep', 'stages', 'quote',
+    'handoff', 'team_record', 'invoicing', 'support', 'feedback', 'retain'].forEach((id) =>
+    on.add(id)
+  )
 
-  if (marketingSignal) on.add('find_online')
-  if (outreachSignal) on.add('outreach')
+  if (marketingSignal) on.add('gen_find')
+  if (outreachSignal) on.add('gen_outreach')
   return on
 }
 
