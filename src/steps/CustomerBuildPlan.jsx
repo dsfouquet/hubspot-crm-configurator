@@ -10,7 +10,6 @@ export default function CustomerBuildPlan() {
   const session = useStore((s) => s.session)
   const goToStep = useStore((s) => s.goToStep)
   const markStepComplete = useStore((s) => s.markStepComplete)
-  const [openId, setOpenId] = useState(null)
 
   const fixPlan = session.fixPlan
   const problems = fixPlan?.problems || []
@@ -18,7 +17,9 @@ export default function CustomerBuildPlan() {
   const workflowCount = (session.workflows || []).length
   const customObj = (session.customObjects || [])[0]
 
-  const expandedId = openId || problems[0]?.id
+  // First card open by default; clicking toggles, only one open at a time.
+  const [openId, setOpenId] = useState(() => problems[0]?.id ?? null)
+  const expandedId = openId
 
   const next = () => {
     markStepComplete(1)
@@ -100,7 +101,7 @@ export default function CustomerBuildPlan() {
                 }`}
               >
                 <button
-                  onClick={() => setOpenId(isOpen ? `closed_${p.id}` : p.id)}
+                  onClick={() => setOpenId(isOpen ? null : p.id)}
                   className="w-full text-left px-4 py-3.5 flex items-center gap-3"
                   aria-expanded={isOpen}
                 >
@@ -133,45 +134,55 @@ export default function CustomerBuildPlan() {
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </button>
-                {isOpen && (
-                  <div className="px-4 pb-4 border-t border-hs-greatwhite pt-3">
-                    {p.implication && (
-                      <p className="text-[13px] font-ui text-hs-red">
-                        <span className="font-semibold">The real cost:</span> {p.implication}
+                <div
+                  className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+                    isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <div
+                      className={`px-4 pb-4 border-t border-hs-greatwhite pt-3 transition-opacity duration-300 ${
+                        isOpen ? 'opacity-100' : 'opacity-0'
+                      }`}
+                    >
+                      {p.implication && (
+                        <p className="text-[13px] font-ui text-hs-red">
+                          <span className="font-semibold">The real cost:</span> {p.implication}
+                        </p>
+                      )}
+                      <p className="text-[13.5px] font-ui text-hs-text-dark mt-1.5">
+                        {p.narrative}
                       </p>
-                    )}
-                    <p className="text-[13.5px] font-ui text-hs-text-dark mt-1.5">
-                      {p.narrative}
-                    </p>
-                    <div className="mt-3">
-                      <div className="text-[10px] font-ui font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
-                        What Crescent Connect builds for you
-                      </div>
-                      <ul className="space-y-1">
-                        {(p.ccBuild || []).map((item, j) => (
-                          <li
-                            key={j}
-                            className="text-[13px] font-ui text-hs-text-dark flex gap-2"
-                          >
-                            <svg
-                              width="14"
-                              height="14"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              className="text-hs-green shrink-0 mt-0.5"
-                              aria-hidden
+                      <div className="mt-3">
+                        <div className="text-[10px] font-ui font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
+                          What Crescent Connect builds for you
+                        </div>
+                        <ul className="space-y-1">
+                          {(p.ccBuild || []).map((item, j) => (
+                            <li
+                              key={j}
+                              className="text-[13px] font-ui text-hs-text-dark flex gap-2"
                             >
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
+                              <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                className="text-hs-green shrink-0 mt-0.5"
+                                aria-hidden
+                              >
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             )
           })}

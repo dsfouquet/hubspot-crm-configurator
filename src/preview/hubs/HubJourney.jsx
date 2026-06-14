@@ -51,6 +51,26 @@ const PHASE_COLORS = {
   RETAIN: '#F5C26B',
 }
 
+// Plain-language sublabel under each colored phase chip — for first-time readers.
+const PHASE_SUBLABELS = {
+  ATTRACT: 'Get found',
+  CONVERT: 'Capture & qualify',
+  CLOSE: 'Win the deal',
+  DELIVER: 'Do the work',
+  RETAIN: 'Keep & grow',
+}
+
+// Fixed department handoffs that always show at phase boundaries, regardless of
+// which steps are filtered out. Keyed by the phase the connector FOLLOWS.
+const BOUNDARY_HANDOFFS = {
+  CONVERT: [{ from: 'Marketing', to: 'Sales' }],
+  CLOSE: [
+    { from: 'Sales', to: 'Commerce' },
+    { from: 'Sales', to: 'Operations' },
+  ],
+  DELIVER: [{ from: 'Operations', to: 'Service' }],
+}
+
 const Chip = ({ children, accent }) => (
   <span
     className={`inline-block text-[10px] font-preview rounded-[3px] px-2 py-0.5 ${
@@ -347,10 +367,11 @@ export default function HubJourney() {
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h2 className="font-semibold text-hs-navy text-[16px]">
-              Your customer journey, run as one revenue operation
+              Every step a customer takes with you, in one place
             </h2>
             <p className="text-[12px] text-hs-text-light">
-              First touch to rising LTV — click any step for detail. The plug icon shows what connects.
+              Read left to right — each step a customer takes with you. Click any step to see how HubSpot
+              runs it. The plug icon shows tools that connect. Already use other tools? Search at right.
             </p>
           </div>
           <div className="relative">
@@ -396,8 +417,9 @@ export default function HubJourney() {
       <div className="shrink-0 bg-white border-b border-hs-border px-5 py-2">
         <p className="text-[11px] text-hs-text-dark leading-snug">
           <span className="text-[10px] font-bold uppercase tracking-wide text-hs-orange">This is RevOps:</span>{' '}
-          Marketing, sales, billing, and service as one continuous process — every handoff automatic,
-          nothing re-typed. Companies pay a $250K/yr VP to run this; HubSpot runs it itself.
+          Marketing, sales, billing, and service as one connected process. The arrows between phases are the
+          department handoffs — and every one happens automatically, with nothing re-typed. Companies pay a
+          $250K/yr VP to run this; HubSpot runs it itself.
         </p>
       </div>
 
@@ -407,7 +429,7 @@ export default function HubJourney() {
           {phases.map((p, pi) => (
             <div key={p.phase} className="flex items-stretch">
               <div className="min-w-[200px] flex-1 flex flex-col">
-                {/* Phase header chip + underline */}
+                {/* Phase header chip + plain-language sublabel + underline */}
                 <div className="mb-2.5">
                   <span
                     className="inline-block text-[10px] font-bold uppercase tracking-wide text-white rounded-[3px] px-2 py-0.5"
@@ -415,23 +437,29 @@ export default function HubJourney() {
                   >
                     {p.phase}
                   </span>
+                  <span className="block mt-1 text-[11px] text-hs-text-light leading-tight">
+                    {PHASE_SUBLABELS[p.phase]}
+                  </span>
                   <span className="block mt-1.5 h-[2px] w-full rounded-full" style={{ backgroundColor: p.color }} />
                 </div>
 
                 {/* Stacked compact milestone cards */}
                 <div className="flex flex-col gap-2">
-                  {p.steps.map((step) => {
+                  {p.steps.map((step, si) => {
                     const isHighlighted = highlight.includes(step.id)
                     const isOpen = open?.id === step.id
                     const integs = integrationsForStep(step.id)
+                    const isStart = pi === 0 && si === 0
                     return (
                       <div key={step.id}>
-                        {step.handoff && (
+                        {isStart && (
                           <div className="mb-1">
-                            <span className="inline-flex items-center gap-1 text-[9px] font-preview bg-white border border-hs-border rounded-[3px] px-2 py-0.5 text-hs-text-dark">
-                              {step.handoff.from}
-                              <IconArrowRight width={9} height={9} className="text-hs-orange shrink-0" />
-                              {step.handoff.to}
+                            <span
+                              className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide text-white rounded-[3px] px-1.5 py-0.5"
+                              style={{ backgroundColor: p.color }}
+                            >
+                              Start here
+                              <IconArrowRight width={9} height={9} className="shrink-0" />
                             </span>
                           </div>
                         )}
@@ -472,10 +500,25 @@ export default function HubJourney() {
                 </div>
               </div>
 
-              {/* Flow connector between phases */}
+              {/* Flow connector between phases — always-visible department handoffs */}
               {pi < phases.length - 1 && (
-                <div className="flex items-center px-1.5 self-stretch text-hs-border">
-                  <IconChevronRight width={16} height={16} />
+                <div className="flex flex-col items-center justify-center px-1.5 self-stretch min-w-[92px]">
+                  {(BOUNDARY_HANDOFFS[p.phase] || []).length > 0 && (
+                    <div className="flex flex-col gap-1 mb-1.5">
+                      {BOUNDARY_HANDOFFS[p.phase].map((h) => (
+                        <span
+                          key={`${h.from}-${h.to}`}
+                          className="inline-flex items-center gap-1 text-[9px] font-semibold font-preview bg-white border border-hs-orange/40 rounded-full px-2 py-0.5 text-hs-text-dark whitespace-nowrap shadow-sm"
+                          title={`Automatic handoff: ${h.from} → ${h.to}`}
+                        >
+                          {h.from}
+                          <IconArrowRight width={9} height={9} className="text-hs-orange shrink-0" />
+                          {h.to}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <IconChevronRight width={16} height={16} className="text-hs-border" />
                 </div>
               )}
             </div>

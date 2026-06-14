@@ -208,12 +208,13 @@ export const useStore = create((set, get) => ({
     get().patchSession({ qualification: q })
   },
 
-  // ---- Preview zoom (presenter readability; UI state only) ----
+  // ---- Demo zoom (in-panel magnify of the preview; UI state only) ----
+  // Min 1 so the demo always fills the panel; magnify + scroll above that.
   zoomIn() {
-    set((s) => ({ previewZoom: Math.min(2.5, Math.round((s.previewZoom + 0.1) * 10) / 10) }))
+    set((s) => ({ previewZoom: Math.min(2.5, Math.round((s.previewZoom + 0.25) * 100) / 100) }))
   },
   zoomOut() {
-    set((s) => ({ previewZoom: Math.max(0.75, Math.round((s.previewZoom - 0.1) * 10) / 10) }))
+    set((s) => ({ previewZoom: Math.max(1, Math.round((s.previewZoom - 0.25) * 100) / 100) }))
   },
   resetZoom() {
     set({ previewZoom: 1 })

@@ -14,7 +14,6 @@ import CustomerIntake from './steps/CustomerIntake'
 import CustomerBuildPlan from './steps/CustomerBuildPlan'
 import StepCTA from './steps/StepCTA'
 import BlueprintDocument from './components/BlueprintDocument'
-import ZoomFrame from './preview/ZoomFrame'
 import { stepsForMode } from './constants/steps'
 
 export default function App() {
@@ -60,18 +59,10 @@ export default function App() {
         <Header />
         <div className="flex-1 flex min-h-0 relative">
           {stepKey === 'wizard' && <CustomerIntake />}
-          {stepKey === 'fixPlan' && (
-            <div className="flex-1 min-w-0">
-              <ZoomFrame>
-                <CustomerBuildPlan />
-              </ZoomFrame>
-            </div>
-          )}
+          {stepKey === 'fixPlan' && <CustomerBuildPlan />}
           {stepKey === 'preview' && (
             <div className="flex-1 min-w-0">
-              <ZoomFrame>
-                <Step11_Preview />
-              </ZoomFrame>
+              <Step11_Preview />
             </div>
           )}
           {stepKey === 'cta' && <StepCTA />}

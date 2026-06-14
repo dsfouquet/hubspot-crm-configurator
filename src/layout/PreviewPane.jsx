@@ -14,13 +14,17 @@ export default function PreviewPane() {
   const render = PREVIEW_COMPONENTS[stepKey]
   if (!render) return null
 
+  // The full hub preview (Step11) zooms its own demo region internally; every
+  // other per-step preview gets the in-panel ZoomFrame here.
+  const selfZooms = stepKey === 'preview'
+
   return (
     <section
       className={`flex-1 min-w-0 bg-hs-canvas overflow-hidden font-preview ${
         presenterMode ? 'text-[1.2em]' : ''
       }`}
     >
-      <ZoomFrame>{render(currentStep)}</ZoomFrame>
+      {selfZooms ? render(currentStep) : <ZoomFrame>{render(currentStep)}</ZoomFrame>}
     </section>
   )
 }

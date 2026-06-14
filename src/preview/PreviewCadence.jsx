@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import {
   IconCheck,
@@ -8,7 +9,63 @@ import {
   IconCheckCircle,
   IconBolt,
   IconDollar,
+  IconCalendar,
 } from './uiIcons'
+
+// Chevron used in every section header — rotates when the section is open.
+function Chevron({ open }) {
+  return (
+    <svg
+      width={14}
+      height={14}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`shrink-0 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  )
+}
+
+// Unified collapsible card: navy header bar (icon + title + summary + chevron)
+// over a smoothly animated grid-rows body.
+function Section({ icon: Icon, title, summary, open, onToggle, children }) {
+  return (
+    <div className="bg-white rounded-lg border border-hs-border overflow-hidden">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full bg-hs-navy px-4 py-2.5 flex items-center gap-2 text-left"
+      >
+        <span className="text-hs-orange shrink-0">
+          <Icon width={15} height={15} />
+        </span>
+        <h2 className="font-preview font-semibold text-white text-[15px] leading-tight">
+          {title}
+        </h2>
+        {summary && (
+          <span className="font-preview text-[11px] text-white/55 leading-tight ml-1">
+            {summary}
+          </span>
+        )}
+        <span className="ml-auto text-white/70">
+          <Chevron open={open} />
+        </span>
+      </button>
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+          open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+        }`}
+      >
+        <div className="overflow-hidden">{children}</div>
+      </div>
+    </div>
+  )
+}
 
 // Adoption → ROI argument: software only pays off when the team actually uses it.
 const ADOPTION_STEPS = [
@@ -56,6 +113,14 @@ export default function PreviewCadence() {
   const meetings = cadence.meetings.filter((m) => m.enabled)
   const rules = cadence.rules
 
+  const [open, setOpen] = useState({
+    why: true,
+    cadence: true,
+    rules: true,
+    notifications: true,
+  })
+  const toggle = (key) => setOpen((o) => ({ ...o, [key]: !o[key] }))
+
   const activeRules = []
   if (rules.flagNoActivityEnabled)
     activeRules.push(`Flag deals idle > ${rules.flagNoActivityDays} days`)
@@ -66,18 +131,56 @@ export default function PreviewCadence() {
     activeRules.push(`Close date required past ${rules.requireCloseDatePastStage}`)
   if (rules.minCallsEnabled) activeRules.push(`Min ${rules.minCallsPerWeek} calls/week`)
 
+  const channels = cadence.notifications.channels
+
+  const NOTIFICATIONS = [
+    {
+      icon: IconBell,
+      iconColor: 'text-hs-orange',
+      text: <><strong>Gulf Coast — Vacuum Pump Package</strong> has had no activity in 15 days.</>,
+      action: 'Re-engage this deal →',
+      style: 'border-hs-orange/30 bg-hs-orange/5',
+    },
+    {
+      icon: IconEye,
+      iconColor: 'text-hs-green',
+      text: <><strong>Maria Chen</strong> just viewed your quote — 3rd time today.</>,
+      action: 'Strike while it\'s hot: call now →',
+      style: 'border-hs-green/30 bg-hs-green/5',
+    },
+    {
+      icon: IconWarning,
+      iconColor: 'text-hs-red',
+      text: <><strong>Crescent City Logistics</strong> rated their last service a 4/10.</>,
+      action: 'Account owner alerted — save the relationship →',
+      style: 'border-hs-red/30 bg-hs-red/5',
+    },
+    {
+      icon: IconTarget,
+      iconColor: 'text-hs-blue',
+      text: <><strong>Gloria Washington</strong> crossed the lead-score threshold — now a sales-qualified lead.</>,
+      action: 'Assigned to Catherine with full history →',
+      style: 'border-hs-blue/30 bg-hs-blue/5',
+    },
+    {
+      icon: IconCheckCircle,
+      iconColor: 'text-hs-text-light',
+      text: <>3 tasks overdue for <strong>Marcus Hebert</strong> — auto-reminder sent.</>,
+      action: 'View his task queue →',
+      style: 'border-hs-border bg-white',
+    },
+  ]
+
   return (
     <div className="p-5 space-y-4">
       {/* Why accountability matters: adoption → ROI */}
-      <div className="bg-white rounded-lg border border-hs-border overflow-hidden">
-        <div className="bg-hs-navy px-4 py-2.5 flex items-center gap-2">
-          <span className="text-hs-orange shrink-0">
-            <IconDollar width={15} height={15} />
-          </span>
-          <h2 className="font-preview font-semibold text-white text-[15px]">
-            Why this matters
-          </h2>
-        </div>
+      <Section
+        icon={IconDollar}
+        title="Why this matters"
+        summary="Adoption → ROI"
+        open={open.why}
+        onToggle={() => toggle('why')}
+      >
         <div className="p-4">
           <p className="text-[13px] font-preview text-hs-text-dark leading-snug">
             <strong className="text-hs-navy">Software doesn&rsquo;t create ROI — usage does.</strong>{' '}
@@ -139,14 +242,17 @@ export default function PreviewCadence() {
             ))}
           </div>
         </div>
-      </div>
+      </Section>
 
       {/* Cadence schedule */}
-      <div className="bg-white rounded-lg border border-hs-border overflow-hidden">
-        <div className="bg-hs-navy px-4 py-2.5">
-          <h2 className="font-preview font-semibold text-white text-[15px]">Team Cadence</h2>
-        </div>
-        <div className="p-3">
+      <Section
+        icon={IconCalendar}
+        title="Team Cadence"
+        summary={`${meetings.length} meeting${meetings.length === 1 ? '' : 's'}/week`}
+        open={open.cadence}
+        onToggle={() => toggle('cadence')}
+      >
+        <div className="p-4">
           {meetings.length === 0 ? (
             <p className="text-[13px] font-preview text-hs-text-light">No meetings scheduled.</p>
           ) : (
@@ -170,94 +276,68 @@ export default function PreviewCadence() {
             </ul>
           )}
         </div>
-      </div>
+      </Section>
 
       {/* Active rules */}
-      <div className="bg-white rounded-lg border border-hs-border p-3">
-        <p className="text-[11px] font-preview font-semibold uppercase tracking-wide text-hs-text-light mb-2">
-          Active Accountability Rules
-        </p>
-        {activeRules.length === 0 ? (
-          <p className="text-[13px] font-preview text-hs-text-light">No rules enabled.</p>
-        ) : (
-          <ul className="space-y-1">
-            {activeRules.map((r) => (
-              <li key={r} className="text-[13px] font-preview text-hs-text-dark flex items-center gap-2">
-                <IconCheck width={12} height={12} className="text-hs-green shrink-0" /> {r}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <Section
+        icon={IconCheck}
+        title="Accountability Rules"
+        summary={`${activeRules.length} active`}
+        open={open.rules}
+        onToggle={() => toggle('rules')}
+      >
+        <div className="p-4">
+          {activeRules.length === 0 ? (
+            <p className="text-[13px] font-preview text-hs-text-light">No rules enabled.</p>
+          ) : (
+            <ul className="space-y-1.5">
+              {activeRules.map((r) => (
+                <li key={r} className="text-[13px] font-preview text-hs-text-dark flex items-center gap-2">
+                  <IconCheck width={12} height={12} className="text-hs-green shrink-0" /> {r}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </Section>
 
       {/* Sample notification + channels */}
-      <div className="bg-white rounded-lg border border-hs-border p-3">
-        <p className="text-[11px] font-preview font-semibold uppercase tracking-wide text-hs-text-light mb-2">
-          Notifications · {cadence.notifications.frequency}
-        </p>
-        <div className="space-y-2">
-          {[
-            {
-              icon: IconBell,
-              iconColor: 'text-hs-orange',
-              text: <><strong>Gulf Coast — Vacuum Pump Package</strong> has had no activity in 15 days.</>,
-              action: 'Re-engage this deal →',
-              style: 'border-hs-orange/30 bg-hs-orange/5',
-            },
-            {
-              icon: IconEye,
-              iconColor: 'text-hs-green',
-              text: <><strong>Maria Chen</strong> just viewed your quote — 3rd time today.</>,
-              action: 'Strike while it\'s hot: call now →',
-              style: 'border-hs-green/30 bg-hs-green/5',
-            },
-            {
-              icon: IconWarning,
-              iconColor: 'text-hs-red',
-              text: <><strong>Crescent City Logistics</strong> rated their last service a 4/10.</>,
-              action: 'Account owner alerted — save the relationship →',
-              style: 'border-hs-red/30 bg-hs-red/5',
-            },
-            {
-              icon: IconTarget,
-              iconColor: 'text-hs-blue',
-              text: <><strong>Gloria Washington</strong> crossed the lead-score threshold — now a sales-qualified lead.</>,
-              action: 'Assigned to Catherine with full history →',
-              style: 'border-hs-blue/30 bg-hs-blue/5',
-            },
-            {
-              icon: IconCheckCircle,
-              iconColor: 'text-hs-text-light',
-              text: <>3 tasks overdue for <strong>Marcus Hebert</strong> — auto-reminder sent.</>,
-              action: 'View his task queue →',
-              style: 'border-hs-border bg-white',
-            },
-          ].map((n, i) => (
-            <div
-              key={i}
-              className={`rounded-md border px-3 py-2 flex items-start gap-2 ${n.style}`}
-            >
-              <span className={`${n.iconColor} shrink-0 mt-0.5`}>
-                <n.icon width={14} height={14} />
-              </span>
-              <div>
-                <p className="text-[13px] font-preview text-hs-text-dark leading-snug">{n.text}</p>
-                <p className="text-[11px] font-preview text-hs-text-light">{n.action}</p>
+      <Section
+        icon={IconBell}
+        title="Notifications"
+        summary={`${cadence.notifications.frequency} · ${channels.length} channel${channels.length === 1 ? '' : 's'}`}
+        open={open.notifications}
+        onToggle={() => toggle('notifications')}
+      >
+        <div className="p-4">
+          <div className="space-y-2">
+            {NOTIFICATIONS.map((n, i) => (
+              <div
+                key={i}
+                className={`rounded-md border px-3 py-2 flex items-start gap-2 ${n.style}`}
+              >
+                <span className={`${n.iconColor} shrink-0 mt-0.5`}>
+                  <n.icon width={14} height={14} />
+                </span>
+                <div>
+                  <p className="text-[13px] font-preview text-hs-text-dark leading-snug">{n.text}</p>
+                  <p className="text-[11px] font-preview text-hs-text-light">{n.action}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {channels.map((ch) => (
+              <span
+                key={ch}
+                className="text-[11px] font-preview font-semibold bg-hs-blue/10 text-hs-blue rounded-[3px] px-2 py-0.5"
+              >
+                {ch}
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="flex gap-1.5 mt-2">
-          {cadence.notifications.channels.map((ch) => (
-            <span
-              key={ch}
-              className="text-[11px] font-preview font-semibold bg-hs-blue/10 text-hs-blue rounded-[3px] px-2 py-0.5"
-            >
-              {ch}
-            </span>
-          ))}
-        </div>
-      </div>
+      </Section>
     </div>
   )
 }

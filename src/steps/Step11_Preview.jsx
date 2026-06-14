@@ -11,6 +11,7 @@ import HubService from '../preview/hubs/HubService'
 import HubReporting from '../preview/hubs/HubReporting'
 import PreviewAutomations from '../preview/PreviewAutomations'
 import PreviewCadence from '../preview/PreviewCadence'
+import ZoomFrame from '../preview/ZoomFrame'
 import {
   IconJourney,
   IconCRM,
@@ -237,9 +238,10 @@ export default function Step11_Preview() {
           </div>
         </nav>
 
-        {/* Active hub view (also the PDF export root) */}
+        {/* Active hub view (also the PDF export root). Zoom magnifies just this
+            demo region — the rail, top bar, and action bar stay fixed. */}
         <div id="preview-export-root" className="flex-1 min-w-0 min-h-0">
-          {active.render()}
+          <ZoomFrame>{active.render()}</ZoomFrame>
         </div>
       </div>
 

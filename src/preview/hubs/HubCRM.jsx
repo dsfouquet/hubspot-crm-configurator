@@ -16,10 +16,25 @@ import PreviewDealRecord from '../PreviewDealRecord'
 
 const TABS = ['Contacts', 'Companies', 'Deals', 'Tickets']
 
+// Default deal pipeline stages used when the session has none configured yet.
+const DEAL_STAGES_FALLBACK = [
+  { key: 'appointment', label: 'Appointment scheduled' },
+  { key: 'qualified', label: 'Qualified to buy' },
+  { key: 'proposal', label: 'Proposal sent' },
+  { key: 'negotiation', label: 'In negotiation' },
+  { key: 'won', label: 'Closed won' },
+]
+
 // Record-page popup: clicking any row/card opens the same record preview the
 // configurator steps show (exactly as the user configured it on the left tabs).
-function RecordModal({ slice, onClose }) {
+function RecordModal({ slice, record, session, onClose }) {
   if (!slice) return null
+  // A specific deal was clicked → show that single deal's record detail (no board).
+  const dealStages =
+    session?.deals?.pipelineStages?.length > 0
+      ? session.deals.pipelineStages
+      : DEAL_STAGES_FALLBACK
+  const showDealDetail = slice === 'deals' && record
   return (
     <div
       className="fixed inset-0 z-50 bg-hs-navy/50 flex items-center justify-center p-6"
@@ -31,7 +46,7 @@ function RecordModal({ slice, onClose }) {
       >
         <div className="shrink-0 flex items-center justify-between bg-white border-b border-hs-border px-4 py-2.5">
           <span className="text-[12px] font-medium text-hs-text-light">
-            Record preview · exactly as you configured it
+            {showDealDetail ? 'Deal record' : 'Record preview · exactly as you configured it'}
           </span>
           <button
             onClick={onClose}
@@ -42,7 +57,13 @@ function RecordModal({ slice, onClose }) {
           </button>
         </div>
         <div className="flex-1 min-h-0 overflow-y-auto">
-          {slice === 'deals' ? <PreviewDealRecord /> : <PreviewRecord slice={slice} />}
+          {showDealDetail ? (
+            <DealRecordDetail deal={record} stages={dealStages} />
+          ) : slice === 'deals' ? (
+            <PreviewDealRecord />
+          ) : (
+            <PreviewRecord slice={slice} />
+          )}
         </div>
       </div>
     </div>
@@ -452,7 +473,7 @@ function DealsBoard({ cols, onOpen }) {
                 <div className="text-[10px] text-hs-text-light text-center py-6">No deals</div>
               ) : (
                 col.deals.map((d, i) => (
-                  <DealCard key={i} deal={d} onClick={() => onOpen('deals')} />
+                  <DealCard key={i} deal={d} onClick={() => onOpen('deals', d)} />
                 ))
               )}
             </div>
@@ -498,7 +519,7 @@ function DealsTable({ cols, onOpen }) {
   ]
   return (
     <IndexCard>
-      <DataTable columns={columns} rows={rows} onRowClick={() => onOpen('deals')} />
+      <DataTable columns={columns} rows={rows} onRowClick={(row) => onOpen('deals', row)} />
     </IndexCard>
   )
 }
@@ -639,6 +660,194 @@ function DealsTab({ session, onOpen }) {
   )
 }
 
+// ---- Single deal record detail (modal click-through) -----------------------
+
+// Tiny inline icons for the activity timeline — no emojis, HubSpot-flat style.
+function TimelineIcon({ type }) {
+  const common = { viewBox: '0 0 16 16', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round', className: 'w-3.5 h-3.5' }
+  switch (type) {
+    case 'email':
+      return (
+        <svg {...common}>
+          <rect x="1.5" y="3" width="13" height="10" rx="1.5" />
+          <path d="M2 4l6 5 6-5" />
+        </svg>
+      )
+    case 'call':
+      return (
+        <svg {...common}>
+          <path d="M3 3.5c0 5 4.5 9.5 9.5 9.5l1-2.5-3-1.5-1.5 1.5C7 9.5 6.5 9 5 6.5L6.5 5 5 2 3 3.5z" />
+        </svg>
+      )
+    case 'note':
+      return (
+        <svg {...common}>
+          <path d="M3 2.5h7L13 5.5v8H3z" />
+          <path d="M5.5 7.5h5M5.5 10h5" />
+        </svg>
+      )
+    case 'stage':
+      return (
+        <svg {...common}>
+          <path d="M2 8h9" />
+          <path d="M8 5l3 3-3 3" />
+          <circle cx="13" cy="8" r="1" />
+        </svg>
+      )
+    case 'task':
+    default:
+      return (
+        <svg {...common}>
+          <circle cx="8" cy="8" r="6" />
+          <path d="M5.5 8l1.5 1.5L11 6" />
+        </svg>
+      )
+  }
+}
+
+// Horizontal pipeline progress bar highlighting the deal's current stage.
+function StageProgress({ stages, current }) {
+  return (
+    <div className="flex items-stretch gap-0.5 mt-1">
+      {stages.map((st, i) => {
+        const done = i < current
+        const active = i === current
+        return (
+          <div
+            key={st.key || i}
+            title={st.label}
+            className={`flex-1 min-w-0 text-center text-[9px] leading-tight px-1 py-1 truncate border ${
+              active
+                ? 'bg-hs-orange text-white border-hs-orange font-semibold'
+                : done
+                ? 'bg-hs-green/10 text-hs-green border-hs-green/30'
+                : 'bg-white text-hs-text-light border-hs-border'
+            }`}
+            style={{ borderRadius: 3 }}
+          >
+            {st.label}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// "About this deal" property row.
+function PropRow({ label, children }) {
+  return (
+    <div className="flex items-start justify-between gap-3 py-1.5 border-b border-hs-canvas last:border-0">
+      <span className="text-[11px] text-hs-text-light shrink-0">{label}</span>
+      <span className="text-[12px] text-hs-text-dark text-right min-w-0">{children}</span>
+    </div>
+  )
+}
+
+// HubSpot-style single deal record: header + About (left) + Activity (right).
+// NO kanban board. Uses the clicked deal's real data where possible.
+function DealRecordDetail({ deal, stages }) {
+  const stageIdx = Math.min(Math.max(deal.stage ?? 0, 0), stages.length - 1)
+  const stageLabel = stages[stageIdx]?.label || 'Pipeline'
+  const dealType = deal.age > 10 ? 'Existing business' : 'New business'
+  const priority = deal.amount >= 50000 ? 'High' : deal.amount >= 15000 ? 'Medium' : 'Low'
+  const priorityColor = priority === 'High' ? 'red' : priority === 'Medium' ? 'orange' : 'gray'
+
+  // Mock activity timeline anchored to the deal's real fields.
+  const timeline = [
+    { type: 'note', title: 'Note added', body: `Logged scope + next steps for ${deal.company}.`, when: '2 hours ago' },
+    { type: 'email', title: `Email to ${deal.owner}`, body: `Re: ${deal.name} — sent updated pricing.`, when: 'Yesterday' },
+    { type: 'stage', title: `Stage changed to ${stageLabel}`, body: `Moved forward in the pipeline.`, when: '3 days ago' },
+    { type: 'call', title: 'Call logged', body: `Discovery call with ${deal.company}. 12 min.`, when: '5 days ago' },
+    { type: 'task', title: 'Task created', body: `Follow up before ${deal.closeDate}.`, when: '1 week ago' },
+  ]
+
+  return (
+    <div className="bg-hs-canvas">
+      {/* Header */}
+      <div className="bg-white border-b border-hs-border px-5 py-4">
+        <div className="flex items-start gap-3">
+          <Avatar name={deal.company} square />
+          <div className="min-w-0 flex-1">
+            <div className="text-[16px] font-semibold text-hs-navy leading-tight truncate">
+              {deal.name}
+            </div>
+            <div className="text-[12px] text-hs-text-light truncate">
+              <span className="hs-link">{deal.company}</span>
+            </div>
+          </div>
+          <div className="text-right shrink-0">
+            <div className="text-[20px] font-semibold text-hs-green leading-none">
+              {fmtK(deal.amount)}
+            </div>
+            <div className="mt-1">
+              <Tag color="blue">{stageLabel}</Tag>
+            </div>
+          </div>
+        </div>
+        <StageProgress stages={stages} current={stageIdx} />
+      </div>
+
+      {/* Body: two columns */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5">
+        {/* LEFT — About this deal */}
+        <div className="bg-white rounded-lg border border-hs-border p-4">
+          <h4 className="text-[12px] font-semibold text-hs-navy uppercase tracking-wide mb-2">
+            About this deal
+          </h4>
+          <PropRow label="Amount">
+            <span className="font-semibold text-hs-green">{fmtK(deal.amount)}</span>
+          </PropRow>
+          <PropRow label="Deal stage">
+            <Tag color="blue">{stageLabel}</Tag>
+          </PropRow>
+          <PropRow label="Close date">{deal.closeDate}</PropRow>
+          <PropRow label="Deal owner">
+            <span className="inline-flex items-center gap-1.5 justify-end">
+              <Avatar name={deal.owner} />
+              {deal.owner}
+            </span>
+          </PropRow>
+          <PropRow label="Company">
+            <span className="hs-link">{deal.company}</span>
+          </PropRow>
+          <PropRow label="Days in stage">
+            <span className={deal.age > 10 ? 'text-hs-orange font-medium' : ''}>
+              {deal.age} days
+            </span>
+          </PropRow>
+          <PropRow label="Deal type">{dealType}</PropRow>
+          <PropRow label="Priority">
+            <Tag color={priorityColor}>{priority}</Tag>
+          </PropRow>
+        </div>
+
+        {/* RIGHT — Activity timeline */}
+        <div className="bg-white rounded-lg border border-hs-border p-4">
+          <h4 className="text-[12px] font-semibold text-hs-navy uppercase tracking-wide mb-3">
+            Activity
+          </h4>
+          <ol className="space-y-3">
+            {timeline.map((ev, i) => (
+              <li key={i} className="flex gap-2.5">
+                <span className="mt-0.5 inline-flex items-center justify-center w-6 h-6 rounded-full bg-hs-canvas text-hs-text-light shrink-0">
+                  <TimelineIcon type={ev.type} />
+                </span>
+                <div className="min-w-0">
+                  <div className="text-[12px] font-medium text-hs-text-dark leading-tight">
+                    {ev.title}
+                  </div>
+                  <div className="text-[11px] text-hs-text-light truncate">{ev.body}</div>
+                  <div className="text-[10px] text-hs-text-light mt-0.5">{ev.when}</div>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ---- Tickets ---------------------------------------------------------------
 
 const PRIORITY_COLOR = { High: 'red', Medium: 'orange', Low: 'gray' }
@@ -762,6 +971,10 @@ export default function HubCRM() {
   const [openRecord, setOpenRecord] = useState(null)
   const session = useStore((s) => s.session)
 
+  // onOpen(slice, record?) — record is an optional payload (e.g. a clicked deal)
+  // that drives a single-record detail view instead of the generic preview.
+  const openRecordWith = (slice, record = null) => setOpenRecord({ slice, record })
+
   return (
     <div className="h-full flex flex-col font-preview">
       {/* sub-tab bar */}
@@ -787,13 +1000,18 @@ export default function HubCRM() {
 
       {/* content */}
       <div className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
-        {tab === 'Contacts' && <ContactsTab session={session} onOpen={setOpenRecord} />}
-        {tab === 'Companies' && <CompaniesTab session={session} onOpen={setOpenRecord} />}
-        {tab === 'Deals' && <DealsTab session={session} onOpen={setOpenRecord} />}
-        {tab === 'Tickets' && <TicketsTab session={session} onOpen={setOpenRecord} />}
+        {tab === 'Contacts' && <ContactsTab session={session} onOpen={openRecordWith} />}
+        {tab === 'Companies' && <CompaniesTab session={session} onOpen={openRecordWith} />}
+        {tab === 'Deals' && <DealsTab session={session} onOpen={openRecordWith} />}
+        {tab === 'Tickets' && <TicketsTab session={session} onOpen={openRecordWith} />}
       </div>
 
-      <RecordModal slice={openRecord} onClose={() => setOpenRecord(null)} />
+      <RecordModal
+        slice={openRecord?.slice}
+        record={openRecord?.record}
+        session={session}
+        onClose={() => setOpenRecord(null)}
+      />
     </div>
   )
 }

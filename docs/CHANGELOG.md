@@ -1,5 +1,41 @@
 # Changelog
 
+## Build 24 — Researched pains + RevOps, zoom redo, journey/cadence polish (June 13, 2026 · pm)
+
+- **Deeper, researched pains + RevOps section (Q6).** The intake's journey-grouped
+  pains are now a curated ~17-pain set across 5 stages — Marketing, Sales,
+  Service & Retention, Operations, and a new **RevOps "tie it all together"**
+  climax (Sync / Handoffs / Close rate). Grounded in Daniel's documented 12-pain
+  library, avatar hooks, and the RevOps positioning brief. Added 2 new pains with
+  full SOLUTION_MAP entries: **key-person risk** (bus factor) and **handoff-void**
+  (leads die between teams). They flow into the fix plan, topLeak, and autoBuild.
+- **Researched "I want…" outcomes (Q8).** Expanded the goal quick-picks to 8
+  outcome statements mirroring the pains (stop losing deals to slow follow-up,
+  close more quotes, pipeline visible without 5 tabs, one system instead of five…).
+- **Step 2 Build Plan: animated accordion.** Cards now smoothly expand/collapse —
+  clicking one animates the open card closed while the next opens (grid-rows height
+  transition), instead of an instant jump.
+- **Zoom redone correctly.** The layout now always stays full-screen; the zoom
+  magnifies ONLY the demo content (transform-scale, like the Automations ReactFlow
+  controls), with a −/%/+ control bottom-left. The hub rail, top bar, and app
+  chrome stay fixed. Applies to the hub demo (rail-fixed) and every presenter
+  per-step preview; removed from the Build Plan (it's a document).
+- **Deals: click an example → single record.** Clicking a deal card now opens just
+  that deal's record (header, stage-progress bar, "About this deal" properties,
+  activity timeline) — no kanban board inside the modal.
+- **Journey: always-visible handoffs + first-timer review.** Department handoffs
+  (Marketing→Sales, Sales→Commerce, Sales→Operations, Operations→Service) now render
+  at the phase boundaries regardless of which steps are enabled, so Marketing→Sales
+  always shows. Added plain-language phase sublabels (Get found / Capture & qualify
+  / Win the deal / Do the work / Keep & grow), a "how to read this" helper, a
+  "Start here" marker, and tightened copy for someone evaluating a CRM with fresh
+  eyes.
+- **Accountability: unified, collapsible sections.** All four sections (Why this
+  matters, Team Cadence, Accountability Rules, Notifications) now share one navy
+  header + icon + chevron pattern and collapse/expand smoothly, each with a summary
+  line so a collapsed card still informs.
+
+
 ## Build 23 — Presenter zoom, journey spotlight, hub interactivity, 3-card CTA (June 13, 2026)
 
 A large review round after Daniel presented the demo. Ten items.

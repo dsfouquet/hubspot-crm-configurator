@@ -432,6 +432,38 @@ export const SOLUTION_MAP = {
     ],
     keywords: ['tasks slip', 'forgot', 'fell through', 'memory', 'slack message', 'dropped ball', 'not written down'],
   },
+
+  // ---- RevOps / cross-cutting (added June 2026 from the documented pain library) ----
+  key_person_risk: {
+    title: "The business that doesn't walk out the door",
+    narrative:
+      'Every relationship, deal, and next step lives in the CRM instead of one person\'s head. If your top rep leaves, the book of business stays — the new hire picks up exactly where they left off.',
+    workflows: ['new_lead_assignment'],
+    viewIds: ['pipeline_board'],
+    widgets: ['rep_activity', 'pipeline_value_stage'],
+    cadenceRules: { requireNextStep: true },
+    ccBuild: [
+      'Every account, contact, and open deal documented in the CRM, not in memory',
+      'Logged activity and next steps on every relationship, so coverage survives a departure',
+      'Ownership and reassignment rules so a leaving rep\'s book transfers cleanly',
+    ],
+    keywords: ['bus factor', 'in her head', 'in his head', 'if they leave', 'top rep', 'single point', 'one person knows', 'walks out'],
+  },
+  handoff_void: {
+    title: 'No more leads dying between teams',
+    narrative:
+      'Marketing, sales, and operations run off one system, so a lead never lands in a void at the handoff. Qualified leads route to the right rep instantly, closed-won kicks off delivery, and nothing waits on someone remembering to forward an email.',
+    workflows: ['new_lead_assignment', 'closed_won_handoff'],
+    viewIds: ['stale_deals'],
+    widgets: ['contacts_by_lifecycle'],
+    cadenceRules: { requireNextStep: true },
+    ccBuild: [
+      'Lead routing + lifecycle stages so marketing-qualified leads reach sales automatically',
+      'Closed-won → onboarding handoff workflow so delivery starts itself',
+      'A shared definition of "qualified" so nothing falls between marketing, sales, and ops',
+    ],
+    keywords: ['handoff', 'hand-off', 'falls through', 'between teams', 'lost in the gap', 'nobody owns', 'marketing and sales', 'disconnected teams'],
+  },
 }
 
 // SPIN layer (sales/discovery-questions/Discovery-Questions-By-Hub.md):
@@ -547,6 +579,14 @@ const SPIN_EXTRAS = {
     hub: 'Operations',
     implication: 'One dropped task in client delivery — what is the downstream cost in rework and client trust?',
   },
+  key_person_risk: {
+    hub: 'RevOps',
+    implication: 'If your top producer left tomorrow, would the book survive the quarter — or walk out with them?',
+  },
+  handoff_void: {
+    hub: 'RevOps',
+    implication: 'A lead that dies in the gap between marketing and sales never shows up in a report. How many did last month?',
+  },
 }
 
 Object.entries(SPIN_EXTRAS).forEach(([id, extra]) => {
@@ -582,6 +622,8 @@ const PAIN_LABELS = {
   focus_scatter: { pain: 'Focus', painDesc: "data's everywhere — we don't know who to spend time on or who's heard from us" },
   vip_segmentation: { pain: 'VIPs', painDesc: "can't tell customers from leads from our best relationships at a glance" },
   relationship_gap: { pain: 'Relationships', painDesc: "we haven't built deep enough relationships with the right people yet" },
+  key_person_risk: { pain: 'Key-person risk', painDesc: 'the pipeline lives in one rep\'s head — if they leave, the book walks too' },
+  handoff_void: { pain: 'Handoffs', painDesc: 'leads die in the gap between marketing, sales, and ops' },
 }
 
 Object.entries(PAIN_LABELS).forEach(([id, labels]) => {

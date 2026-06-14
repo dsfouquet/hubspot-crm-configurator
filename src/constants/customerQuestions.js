@@ -6,22 +6,44 @@
 
 import { AVATARS, AVATAR_NAMES } from './avatars'
 
-// Universal pains every market recognizes — merged with the avatar's top pains.
-export const CORE_PAINS = [
-  'leads_fall_through',
-  'quotes_no_followup',
-  'pipeline_in_head',
-  'tasks_slip',
-  'no_reengagement',
-  'reporting_excel_pain',
-  'admin_overload',
-  'tools_dont_talk',
+// Curated, research-backed pain set across the customer journey (~3-4 per stage).
+// Grounded in Daniel's documented 12-pain library (P1-P12), the avatar hooks, and
+// the RevOps positioning brief. Order within a stage = priority. The RevOps stage
+// is the climax: "tie it all together." Each id maps to a SOLUTION_MAP entry.
+export const JOURNEY_PAIN_SET = [
+  // Marketing — get found & capture leads
+  'leads_fall_through', // P4 speed-to-lead
+  'marketing_attribution', // P8 can't measure spend
+  'landing_pages_gap', // site doesn't capture
+  // Sales — work the deal to the close
+  'quotes_no_followup', // P1 quotes go silent
+  'pipeline_in_head', // P2 owner visibility
+  'tasks_slip', // follow-ups slip
+  'rep_workload_unproven', // P7/P12 rep visibility
+  'key_person_risk', // P5 bus factor
+  // Service & Retention — keep & grow customers
+  'no_reengagement', // P3/P6 past clients ignored
+  'inconsistent_onboarding', // P10
+  'surveys_nps_blind', // silent churn
+  // Operations — the back office
+  'admin_overload', // P9 admin eats selling time
+  'reporting_excel_pain', // reports = hours of Excel
+  'ar_visibility', // cash / receivables blind
+  // RevOps — tie it all together
+  'tools_dont_talk', // disconnected systems
+  'handoff_void', // leads die between teams
+  'unknown_close_rate', // numbers a mystery
 ]
 
-// Avatar-weighted pain list: their market's top pains first, then the core set.
+// Back-compat alias (was the universal core before the journey set).
+export const CORE_PAINS = JOURNEY_PAIN_SET
+
+// Avatar-weighted pains: the market's top pains pinned first, then the full
+// curated journey set. No hard cap — it's grouped by stage so the length reads
+// as ~3-4 short rows per section, not a wall.
 export function customerPainIds(industry) {
   const avatarPains = AVATARS[industry]?.topPains || []
-  return [...new Set([...avatarPains, ...CORE_PAINS])].slice(0, 10)
+  return [...new Set([...avatarPains, ...JOURNEY_PAIN_SET])]
 }
 
 // The pains question (Q6) is grouped into a mini customer-journey order so the
@@ -32,7 +54,8 @@ export const JOURNEY_STAGES = [
   { key: 'marketing', label: 'Marketing', caption: 'Getting found & capturing leads' },
   { key: 'sales', label: 'Sales', caption: 'Working deals to the close' },
   { key: 'service', label: 'Service & Retention', caption: 'Keeping & growing customers' },
-  { key: 'ops', label: 'Operations & Reporting', caption: 'The back office that ties it together' },
+  { key: 'ops', label: 'Operations & Reporting', caption: 'The back office behind it all' },
+  { key: 'revops', label: 'RevOps — tie it all together', caption: 'Make every team run off one connected system' },
 ]
 
 // Every pain id → its journey stage (Daniel's guidance: leads = Marketing;
@@ -55,6 +78,7 @@ export const PAIN_STAGE = {
   relationship_gap: 'sales',
   playbook_gap: 'sales',
   rep_workload_unproven: 'sales',
+  key_person_risk: 'sales',
   // Service & Retention — keep & grow
   no_reengagement: 'service',
   inconsistent_onboarding: 'service',
@@ -63,12 +87,14 @@ export const PAIN_STAGE = {
   surveys_nps_blind: 'service',
   // Operations & Reporting — back office
   admin_overload: 'ops',
-  tools_dont_talk: 'ops',
   reporting_excel_pain: 'ops',
-  unknown_close_rate: 'ops',
   ai_manual_drafting: 'ops',
   quotes_invoices_split: 'ops',
   ar_visibility: 'ops',
+  // RevOps — connect it all together
+  tools_dont_talk: 'revops',
+  handoff_void: 'revops',
+  unknown_close_rate: 'revops',
 }
 
 // Build the journey-ordered groups for Q6 from the same avatar-weighted pain set
@@ -163,11 +189,13 @@ export const CUSTOMER_QUESTIONS = [
     placeholder: 'In your own words — this becomes the headline of your build plan.',
     quickPicks: [
       'I want more leads',
-      'I want to close more deals',
-      'I want faster follow-up',
-      'I want my time back',
-      'I want more repeat business',
-      'I want to scale fast',
+      'I want to stop losing deals to slow follow-up',
+      'I want to close more of the quotes I send',
+      'I want my pipeline visible without opening 5 tabs',
+      'I want past clients buying again',
+      'I want my numbers in one dashboard',
+      'I want my time back from admin',
+      'I want one system instead of five',
     ],
   },
 ]
