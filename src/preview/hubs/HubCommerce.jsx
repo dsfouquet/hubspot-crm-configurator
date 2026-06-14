@@ -11,7 +11,14 @@ import {
   DataTable,
 } from '../charts'
 import { Tag, IconCheck } from '../uiIcons'
-import { INVOICES, AR_AGING, DEALS, REVENUE_TREND, MONTHS } from '../demoData'
+import {
+  INVOICES,
+  AR_AGING,
+  DEALS,
+  REVENUE_TREND,
+  MONTHS,
+  CONTACTS,
+} from '../demoData'
 import { industryCopy } from '../industryCopy'
 
 const TABS = ['Quotes', 'Invoices', 'Payments']
@@ -65,21 +72,96 @@ export default function HubCommerce() {
 /* QUOTES                                                              */
 /* ------------------------------------------------------------------ */
 
-const QUOTE_STATUS = [
-  { color: 'green', label: 'Signed' },
-  { color: 'orange', label: 'Awaiting reply' },
-  { color: 'gray', label: 'Draft' },
-  { color: 'green', label: 'Signed' },
-  { color: 'orange', label: 'Awaiting reply' },
+// Quote-list view tabs (mirrors real HubSpot's saved views).
+const QUOTE_VIEWS = [
+  'All quotes',
+  'Expiring soon',
+  'Pending acceptance',
+  'Pending approval',
 ]
 
-const QUOTE_SENT = [
+// Status: colored dot + label, like the real Quotes index.
+const QUOTE_STATUS = [
+  { dot: '#00BDA5', label: 'Published' },
+  { dot: '#00A4BD', label: 'Sent' },
+  { dot: '#7C98B6', label: 'Draft' },
+  { dot: '#00BDA5', label: 'Published' },
+  { dot: '#F2545B', label: 'Expired' },
+  { dot: '#00A4BD', label: 'Sent' },
+  { dot: '#00BDA5', label: 'Published' },
+]
+
+const QUOTE_SIGNING = [
+  'Signed',
+  'Pending signature',
+  'Not applicable',
+  'Signed',
+  'Not applicable',
+  'Pending signature',
+  'Not applicable',
+]
+
+const QUOTE_CREATED = [
   'Jun 4, 2026',
   'Jun 6, 2026',
   'Jun 9, 2026',
   'May 28, 2026',
+  'May 12, 2026',
   'Jun 10, 2026',
+  'Jun 11, 2026',
 ]
+
+const QUOTE_NUMBERS = [
+  '20260604-084201337',
+  '20260606-091544210',
+  '20260609-130277815',
+  '20260528-074422509',
+  '20260512-061190044',
+  '20260610-145833612',
+  '20260611-064204941',
+]
+
+// "Jun 4, 2026" -> "Jul 4, 2026" (create + 30 days, month-rounded for the demo).
+const MONTHS_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+function expiryFrom(dateStr) {
+  const m = /(\w+) (\d+), (\d+)/.exec(dateStr)
+  if (!m) return dateStr
+  const idx = MONTHS_ABBR.indexOf(m[1])
+  if (idx === -1) return dateStr
+  const next = (idx + 1) % 12
+  const year = next === 0 ? Number(m[3]) + 1 : Number(m[3])
+  return `${MONTHS_ABBR[next]} ${m[2]}, ${year}`
+}
+
+function initials(name) {
+  return name
+    .split(' ')
+    .map((p) => p[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
+}
+
+// Owner avatar swatches keyed off rep name (stable per owner).
+const OWNER_BG = {
+  You: '#FF7A59',
+  'Marcus Hebert': '#00A4BD',
+  'Aimee Landry': '#00BDA5',
+  'Catherine Roy': '#7C98B6',
+}
+
+function StatusDot({ status }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[12px] text-hs-text-dark">
+      <span
+        className="inline-block w-2 h-2 rounded-full shrink-0"
+        style={{ background: status.dot }}
+      />
+      {status.label}
+    </span>
+  )
+}
 
 function QuotesTab() {
   // Industry-specific quote document (line items, bill-to, quote number).
@@ -87,166 +169,283 @@ function QuotesTab() {
   const q = industryCopy(industry).quote
   const quoteLines = q.lines.map((l) => ({ desc: l.item, qty: 1, amount: l.price }))
   const quoteSubtotal = quoteLines.reduce((s, l) => s + l.amount, 0)
+  const quoteTax = Math.max(0, q.total - quoteSubtotal)
 
-  const rows = DEALS.slice(0, 5).map((d, i) => ({
-    quote: d.name,
+  const [view, setView] = useState('All quotes')
+
+  // ~7 quote rows built from the demo deals.
+  const quotes = DEALS.slice(0, 7).map((d, i) => ({
+    id: i,
+    title: d.name,
+    company: d.company,
     amount: d.amount,
     status: QUOTE_STATUS[i],
-    sent: QUOTE_SENT[i],
+    signing: QUOTE_SIGNING[i],
+    owner: d.owner,
+    created: QUOTE_CREATED[i],
+    number: QUOTE_NUMBERS[i],
   }))
 
+  const [selectedId, setSelectedId] = useState(0)
+  const selected = quotes.find((x) => x.id === selectedId) || quotes[0]
+
+  // Two sample contacts for the preview panel's Contacts block.
+  const contacts =
+    CONTACTS.filter((c) => c.company === selected.company).slice(0, 2)
+      .length >= 2
+      ? CONTACTS.filter((c) => c.company === selected.company).slice(0, 2)
+      : CONTACTS.slice(selected.id % 5, (selected.id % 5) + 2)
+
   return (
-    <div className="grid grid-cols-2 gap-4">
-      {/* LEFT — branded quote document */}
-      <div className="space-y-2">
-        <div className="bg-white rounded-lg border border-hs-border shadow-[0_2px_12px_rgba(45,62,80,0.10)] overflow-hidden">
-          {/* Document header */}
-          <div className="px-5 pt-5 pb-4 flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div
-                className="w-11 h-11 rounded-md flex items-center justify-center text-white text-[15px] font-bold shrink-0"
-                style={{ background: 'linear-gradient(135deg,#2D3E50,#0091AE)' }}
+    <div className="flex gap-4 h-full">
+      {/* LEFT — quote list */}
+      <div className="flex-1 min-w-0 flex flex-col">
+        {/* View tabs */}
+        <div className="flex items-center gap-1 mb-3 border-b border-hs-border">
+          {QUOTE_VIEWS.map((v) => {
+            const active = v === view
+            return (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                className={`relative text-[13px] py-2 px-3 -mb-px transition-colors ${
+                  active
+                    ? 'text-hs-navy font-medium'
+                    : 'text-hs-text-light hover:text-hs-text-dark'
+                }`}
               >
-                YC
-              </div>
-              <div className="leading-tight">
-                <p className="text-[13px] font-semibold text-hs-navy">
-                  Your Company
-                </p>
-                <p className="text-[10px] text-hs-text-light">
-                  Your logo & brand colors here
-                </p>
-              </div>
-            </div>
-            <div className="text-right leading-tight">
-              <p className="text-[15px] font-bold text-hs-navy">QUOTE</p>
-              <p className="text-[11px] text-hs-text-light">#{q.number}</p>
-            </div>
-          </div>
+                {v}
+                {active && (
+                  <span className="absolute left-0 right-0 -bottom-px h-0.5 bg-hs-orange rounded-full" />
+                )}
+              </button>
+            )
+          })}
+        </div>
 
-          {/* Bill-to */}
-          <div className="px-5 pb-3">
-            <p className="text-[9px] uppercase tracking-wide text-hs-text-light mb-0.5">
-              Bill to
-            </p>
-            <p className="text-[12px] font-medium text-hs-text-dark leading-tight">
-              {q.billTo.company}
-            </p>
-            <p className="text-[11px] text-hs-text-light leading-tight">
-              {q.billTo.contact}
-            </p>
-            <p className="text-[11px] text-hs-text-light leading-tight">
-              Baton Rouge, LA
-            </p>
-          </div>
-
-          {/* Line items */}
-          <div className="px-5">
-            <table className="w-full">
-              <thead>
-                <tr className="border-y border-hs-border">
-                  <th className="text-left text-[9px] uppercase tracking-wide text-hs-text-light py-1.5">
-                    Description
-                  </th>
-                  <th className="text-center text-[9px] uppercase tracking-wide text-hs-text-light py-1.5 w-10">
-                    Qty
-                  </th>
-                  <th className="text-right text-[9px] uppercase tracking-wide text-hs-text-light py-1.5 w-24">
-                    Amount
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {quoteLines.map((l) => (
-                  <tr key={l.desc} className="border-b border-hs-canvas">
-                    <td className="text-[11px] text-hs-text-dark py-2 pr-2 leading-tight">
-                      {l.desc}
+        {/* List table */}
+        <div className="bg-white rounded-[3px] border border-hs-border overflow-hidden">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b border-hs-border bg-hs-canvas/40">
+                {['Title', 'Status', 'Amount', 'Signing status', 'Owner', 'Create date'].map(
+                  (h, i) => (
+                    <th
+                      key={h}
+                      className={`text-[11px] uppercase tracking-wide text-hs-text-light font-semibold py-2.5 px-3 ${
+                        i === 2 ? 'text-right' : 'text-left'
+                      }`}
+                    >
+                      {h}
+                    </th>
+                  )
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {quotes.map((qr) => {
+                const active = qr.id === selectedId
+                return (
+                  <tr
+                    key={qr.id}
+                    onClick={() => setSelectedId(qr.id)}
+                    className={`cursor-pointer border-b border-hs-border last:border-0 transition-colors ${
+                      active
+                        ? 'bg-hs-koala border-l-2 border-l-hs-orange'
+                        : 'hover:bg-hs-canvas/50 border-l-2 border-l-transparent'
+                    }`}
+                  >
+                    <td className="py-2.5 px-3 max-w-[180px]">
+                      <span className="hs-link text-[13px] block truncate">
+                        {qr.title}
+                      </span>
+                      <span className="text-[11px] text-hs-text-light block truncate">
+                        {qr.company}
+                      </span>
                     </td>
-                    <td className="text-[11px] text-hs-text-light py-2 text-center">
-                      {l.qty}
+                    <td className="py-2.5 px-3">
+                      <StatusDot status={qr.status} />
                     </td>
-                    <td className="text-[11px] text-hs-text-dark py-2 text-right tabular-nums">
-                      {dollars(l.amount)}
+                    <td className="py-2.5 px-3 text-right text-[13px] text-hs-text-dark tabular-nums">
+                      {dollars(qr.amount)}
+                    </td>
+                    <td className="py-2.5 px-3 text-[12px] text-hs-text-light whitespace-nowrap">
+                      {qr.signing}
+                    </td>
+                    <td className="py-2.5 px-3">
+                      <span className="inline-flex items-center gap-1.5">
+                        <span
+                          className="inline-flex items-center justify-center w-6 h-6 rounded-full text-white text-[9px] font-semibold shrink-0"
+                          style={{ background: OWNER_BG[qr.owner] || '#7C98B6' }}
+                        >
+                          {initials(qr.owner)}
+                        </span>
+                        <span className="text-[12px] text-hs-text-dark whitespace-nowrap">
+                          {qr.owner}
+                        </span>
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 text-[12px] text-hs-text-light whitespace-nowrap">
+                      {qr.created}
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-          {/* Totals */}
-          <div className="px-5 pt-2 pb-4">
-            <div className="ml-auto w-44 space-y-1">
-              <div className="flex justify-between text-[11px] text-hs-text-light">
-                <span>Subtotal</span>
-                <span className="tabular-nums">{dollars(quoteSubtotal)}</span>
-              </div>
-              <div className="flex justify-between text-[11px] text-hs-text-light">
-                <span>Tax (estimated)</span>
-                <span className="tabular-nums">{dollars(Math.max(0, q.total - quoteSubtotal))}</span>
-              </div>
-              <div className="flex justify-between text-[14px] font-bold text-hs-navy border-t border-hs-border pt-1.5 mt-1">
-                <span>Total</span>
-                <span className="tabular-nums">{dollars(q.total)}</span>
-              </div>
+      {/* RIGHT — preview panel */}
+      <div className="w-[320px] shrink-0">
+        <div className="bg-white rounded-[3px] border border-hs-border overflow-hidden max-h-full flex flex-col">
+          {/* Header */}
+          <div className="px-4 pt-4 pb-3 border-b border-hs-border">
+            <p className="text-[14px] font-semibold text-hs-navy leading-snug">
+              {selected.title}
+            </p>
+            <p className="text-[24px] font-bold text-hs-green leading-tight tabular-nums mt-1">
+              {dollars(selected.amount)}
+            </p>
+            <p className="text-[11px] text-hs-text-light mt-0.5">
+              Quote #{selected.number}
+            </p>
+            <div className="mt-2">
+              <StatusDot status={selected.status} />
             </div>
           </div>
 
-          {/* Signature + CTA */}
-          <div className="px-5 py-3 border-t border-hs-border bg-hs-canvas/40 flex items-center justify-between">
-            <span
-              className="inline-flex items-center gap-1 text-[11px] font-semibold rounded-[3px] px-2.5 py-1"
-              style={{ background: '#E5F8F6', color: '#00A38D' }}
-            >
-              <IconCheck width={11} height={11} className="shrink-0" /> Signed electronically
-            </span>
-            <button
-              className="text-[12px] font-semibold text-white rounded-md px-4 py-1.5 shadow-sm"
-              style={{ background: '#FF7A59' }}
-            >
-              Pay deposit
-            </button>
+          {/* Scrollable body */}
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            {/* About this quote */}
+            <div className="px-4 py-3 border-b border-hs-border">
+              <p className="text-[10px] uppercase tracking-wide text-hs-text-light font-semibold mb-2">
+                About this quote
+              </p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-hs-text-light">Owner</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span
+                      className="inline-flex items-center justify-center w-5 h-5 rounded-full text-white text-[8px] font-semibold shrink-0"
+                      style={{ background: OWNER_BG[selected.owner] || '#7C98B6' }}
+                    >
+                      {initials(selected.owner)}
+                    </span>
+                    <span className="text-[12px] text-hs-text-dark">
+                      {selected.owner}
+                    </span>
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-hs-text-light">Create date</span>
+                  <span className="text-[12px] text-hs-text-dark">
+                    {selected.created}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-hs-text-light">
+                    Expiration date
+                  </span>
+                  <span className="text-[12px] text-hs-text-dark">
+                    {expiryFrom(selected.created)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-hs-text-light">
+                    Signing status
+                  </span>
+                  <span className="text-[12px] text-hs-text-dark">
+                    {selected.signing}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Contacts */}
+            <div className="px-4 py-3 border-b border-hs-border">
+              <p className="text-[10px] uppercase tracking-wide text-hs-text-light font-semibold mb-2">
+                Contacts ({contacts.length})
+              </p>
+              <div className="space-y-2.5">
+                {contacts.map((c) => (
+                  <div key={c.email} className="flex items-start gap-2">
+                    <span
+                      className="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-[10px] font-semibold shrink-0"
+                      style={{ background: '#0091AE' }}
+                    >
+                      {initials(c.name)}
+                    </span>
+                    <div className="min-w-0 leading-tight">
+                      <span className="hs-link text-[12px] block truncate">
+                        {c.name}
+                      </span>
+                      <span className="text-[11px] text-hs-text-light block truncate">
+                        {c.title}
+                      </span>
+                      <span className="hs-link text-[11px] block truncate">
+                        {c.email}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Compact branded quote doc */}
+            <div className="px-4 py-3">
+              <p className="text-[10px] uppercase tracking-wide text-hs-text-light font-semibold mb-2">
+                Quote document
+              </p>
+              <div className="rounded-[3px] border border-hs-border overflow-hidden">
+                <div
+                  className="px-3 py-2.5 flex items-center justify-between text-white"
+                  style={{ background: 'linear-gradient(135deg,#2D3E50,#0091AE)' }}
+                >
+                  <span className="text-[11px] font-semibold">Your Company</span>
+                  <span className="text-[10px] opacity-80">#{q.number}</span>
+                </div>
+                <table className="w-full">
+                  <tbody>
+                    {quoteLines.map((l) => (
+                      <tr key={l.desc} className="border-b border-hs-canvas">
+                        <td className="text-[10px] text-hs-text-dark py-1.5 px-3 leading-tight">
+                          {l.desc}
+                        </td>
+                        <td className="text-[10px] text-hs-text-dark py-1.5 px-3 text-right tabular-nums whitespace-nowrap">
+                          {dollars(l.amount)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="px-3 py-2 space-y-1 border-t border-hs-border">
+                  <div className="flex justify-between text-[10px] text-hs-text-light">
+                    <span>Subtotal</span>
+                    <span className="tabular-nums">{dollars(quoteSubtotal)}</span>
+                  </div>
+                  <div className="flex justify-between text-[10px] text-hs-text-light">
+                    <span>Tax (estimated)</span>
+                    <span className="tabular-nums">{dollars(quoteTax)}</span>
+                  </div>
+                  <div className="flex justify-between text-[12px] font-bold text-hs-navy border-t border-hs-border pt-1">
+                    <span>Total</span>
+                    <span className="tabular-nums">{dollars(q.total)}</span>
+                  </div>
+                </div>
+                <div className="px-3 py-2 border-t border-hs-border bg-hs-canvas/40 flex items-center justify-between">
+                  <span
+                    className="inline-flex items-center gap-1 text-[10px] font-semibold rounded-[3px] px-2 py-0.5"
+                    style={{ background: '#E5F8F6', color: '#00A38D' }}
+                  >
+                    <IconCheck width={10} height={10} className="shrink-0" /> e-Sign
+                  </span>
+                  <span className="hs-link text-[11px]">View quote</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <p className="text-[11px] text-hs-text-light px-1">
-          Prospect signs and pays the deposit in one link.
-        </p>
-      </div>
-
-      {/* RIGHT — quote status table + stat */}
-      <div className="space-y-4">
-        <ReportCard
-          title="Quotes sent"
-          subtitle="Live status of outstanding quotes"
-        >
-          <DataTable
-            columns={[
-              { key: 'quote', label: 'Quote' },
-              {
-                key: 'amount',
-                label: 'Amount',
-                align: 'right',
-                render: (v) => (
-                  <span className="tabular-nums">{dollars(v)}</span>
-                ),
-              },
-              {
-                key: 'status',
-                label: 'Status',
-                render: (v) => <Tag color={v.color}>{v.label}</Tag>,
-              },
-              { key: 'sent', label: 'Sent' },
-            ]}
-            rows={rows}
-          />
-        </ReportCard>
-
-        <StatCard
-          label="Avg time quote → signed"
-          value="6.2 days"
-          delta="3.1 days"
-          deltaGood
-        />
       </div>
     </div>
   )

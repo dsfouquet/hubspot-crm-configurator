@@ -90,7 +90,7 @@ export default function CustomerIntake() {
         </h2>
         {(question.hint || question.optional) && (
           <p className="mt-1.5 text-[13px] font-ui text-hs-text-light">
-            {question.optional ? 'Optional — skip if nothing comes to mind.' : question.hint}
+            {question.optional ? 'Optional. Skip if nothing comes to mind.' : question.hint}
           </p>
         )}
 
@@ -118,7 +118,7 @@ export default function CustomerIntake() {
         </div>
 
         <p className="mt-10 text-center text-[11px] font-ui text-hs-text-light">
-          Built by Crescent Connect — HubSpot setup done for you, free for qualified
+          Built by Crescent Connect. HubSpot setup done for you, free for qualified
           Louisiana businesses.
         </p>
       </div>

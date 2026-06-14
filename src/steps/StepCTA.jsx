@@ -156,7 +156,7 @@ export default function StepCTA() {
             reasons={
               isMachine
                 ? offers.freeBlockers
-                : ['One workspace, one pipeline, one dashboard — done for you in 7 days']
+                : ['One workspace, one pipeline, and one dashboard, done for you in 7 days']
             }
             footer={
               <div className="flex items-baseline justify-between flex-wrap gap-2">
@@ -164,7 +164,7 @@ export default function StepCTA() {
                   <span className="line-through text-hs-text-light">$5,000</span>{' '}
                   <span className="font-bold text-hs-navy">Free for qualified businesses</span>
                 </span>
-                <span className="text-[12px] font-ui font-semibold text-hs-red">4 per month — that's the cap</span>
+                <span className="text-[12px] font-ui font-semibold text-hs-red">4 per month, and that's the cap</span>
               </div>
             }
           />
@@ -188,7 +188,7 @@ export default function StepCTA() {
             items={offers.retainer}
             footer={
               <span className="text-[12.5px] font-ui text-hs-text-dark">
-                Optional after launch — we keep the pipeline moving so the system pays for itself.
+                Optional after launch. We keep the pipeline moving so the system pays for itself.
               </span>
             }
           />
@@ -214,10 +214,10 @@ export default function StepCTA() {
           ) : (
             <>
               <h2 className="font-ui font-bold text-hs-navy text-xl">
-                Your build plan is ready — here's the fastest way to get it done
+                Your build plan is ready. Here's the fastest way to get it done.
               </h2>
               <p className="mt-1.5 text-[14px] font-ui text-hs-text-dark">
-                The DIY CRM Build Guide walks you through this exact setup — videos, templates,
+                The DIY CRM Build Guide walks you through this exact setup: videos, templates,
                 and the same workflows you just previewed.
               </p>
               <a href={DIY_GUIDE_URL} target="_blank" rel="noreferrer" className="hs-btn-primary mt-4 !px-8 !py-3 !text-[15px]">
@@ -246,7 +246,7 @@ export default function StepCTA() {
         </div>
 
         <p className="mt-8 text-center text-[11px] font-ui text-hs-text-light">
-          Crescent Connect LA — HubSpot implementation for Louisiana businesses.
+          Crescent Connect LA. HubSpot implementation for Louisiana businesses.
         </p>
       </div>
     </div>

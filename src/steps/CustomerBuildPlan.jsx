@@ -2,6 +2,26 @@ import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import { painParts } from '../constants/discoveryQuestions'
 
+// Small inline icons for the "what's in the build" tiles.
+const svg = { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true }
+const TileIcons = {
+  pipeline: (
+    <svg {...svg}><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="14" y2="12" /><line x1="4" y1="18" x2="9" y2="18" /></svg>
+  ),
+  bolt: (
+    <svg {...svg}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
+  ),
+  chart: (
+    <svg {...svg}><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /><line x1="3" y1="20" x2="21" y2="20" /></svg>
+  ),
+  database: (
+    <svg {...svg}><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5v14a9 3 0 0 0 18 0V5" /><path d="M3 12a9 3 0 0 0 18 0" /></svg>
+  ),
+  contacts: (
+    <svg {...svg}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
+  ),
+}
+
 // Customer-mode Step 2: a single-column, guided build plan. One idea per card:
 // "you said X is leaking money → here's exactly what we build to plug it."
 // No split panes, no diagrams, no offer matrix — that depth lives in the
@@ -17,8 +37,8 @@ export default function CustomerBuildPlan() {
   const workflowCount = (session.workflows || []).length
   const customObj = (session.customObjects || [])[0]
 
-  // First card open by default; clicking toggles, only one open at a time.
-  const [openId, setOpenId] = useState(() => problems[0]?.id ?? null)
+  // Cards collapsed by default — the page opens clean and the detail is one tap away.
+  const [openId, setOpenId] = useState(null)
   const expandedId = openId
 
   const next = () => {
@@ -54,8 +74,8 @@ export default function CustomerBuildPlan() {
           Here's what we'll build for you in 7 days
         </h1>
         <p className="mt-2 text-[15px] font-ui text-hs-text-dark">
-          We found {problems.length} revenue leak{problems.length === 1 ? '' : 's'} in
-          your answers. Each one gets a fix, built into your CRM before you ever log in.
+          From your answers, we found {problems.length} place{problems.length === 1 ? '' : 's'} revenue is
+          slipping. Each one has a fix, and we build all of it into your CRM before you ever log in.
         </p>
 
         {/* Their #1 goal, front and center */}
@@ -70,21 +90,32 @@ export default function CustomerBuildPlan() {
           </div>
         )}
 
-        {/* What's in the build — quick chips */}
-        <div className="mt-5 flex flex-wrap gap-2">
+        {/* What's in the build — visual tiles (icon + number + short label) */}
+        <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           {[
-            `${stages.length}-stage pipeline in your language`,
-            `${workflowCount} automations`,
-            '1 owner dashboard',
-            ...(customObj ? [`Custom "${customObj.plural || customObj.singular}" tracker`] : []),
-            'Your contacts imported & de-duped',
-          ].map((c) => (
-            <span
-              key={c}
-              className="text-[12px] font-ui font-medium text-hs-navy bg-white border border-hs-border rounded-full px-3 py-1"
+            { icon: TileIcons.pipeline, value: stages.length, label: 'stage pipeline' },
+            { icon: TileIcons.bolt, value: workflowCount, label: workflowCount === 1 ? 'automation' : 'automations' },
+            { icon: TileIcons.chart, value: 1, label: 'owner dashboard' },
+            customObj
+              ? { icon: TileIcons.database, value: customObj.plural || customObj.singular, label: 'tracker' }
+              : { icon: TileIcons.contacts, value: '✓', label: 'contacts imported' },
+          ].map((t) => (
+            <div
+              key={t.label}
+              className="bg-white border border-hs-border rounded-lg px-3 py-2.5 flex items-center gap-2.5"
             >
-              {c}
-            </span>
+              <span className="shrink-0 w-8 h-8 rounded-md bg-hs-orange/10 text-hs-orange flex items-center justify-center">
+                {t.icon}
+              </span>
+              <span className="min-w-0">
+                <span className="block font-ui font-bold text-hs-navy text-[16px] leading-none truncate">
+                  {t.value}
+                </span>
+                <span className="block text-[11px] font-ui text-hs-text-light leading-tight mt-0.5">
+                  {t.label}
+                </span>
+              </span>
+            </div>
           ))}
         </div>
 

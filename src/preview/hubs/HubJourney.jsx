@@ -370,8 +370,9 @@ export default function HubJourney() {
               Every step a customer takes with you, in one place
             </h2>
             <p className="text-[12px] text-hs-text-light">
-              Read left to right — each step a customer takes with you. Click any step to see how HubSpot
-              runs it. The plug icon shows tools that connect. Already use other tools? Search at right.
+              This is the path a customer takes with you, start to finish. Click any step to see how
+              HubSpot handles it. The plug icon shows where the tools you already use fit in, and you can
+              search for them on the right.
             </p>
           </div>
           <div className="relative">
@@ -406,7 +407,7 @@ export default function HubJourney() {
             {highlight.length > 0 && (
               <p className="absolute right-0 mt-1 text-[10px] text-hs-green whitespace-nowrap flex items-center gap-1">
                 <IconCheck width={11} height={11} className="shrink-0" />
-                Plugs in at {highlight.length} step{highlight.length === 1 ? '' : 's'} — highlighted below
+                Plugs in at {highlight.length} step{highlight.length === 1 ? '' : 's'}, highlighted below
               </p>
             )}
           </div>
@@ -417,9 +418,9 @@ export default function HubJourney() {
       <div className="shrink-0 bg-white border-b border-hs-border px-5 py-2">
         <p className="text-[11px] text-hs-text-dark leading-snug">
           <span className="text-[10px] font-bold uppercase tracking-wide text-hs-orange">This is RevOps:</span>{' '}
-          Marketing, sales, billing, and service as one connected process. The arrows between phases are the
-          department handoffs — and every one happens automatically, with nothing re-typed. Companies pay a
-          $250K/yr VP to run this; HubSpot runs it itself.
+          Your marketing, sales, billing, and service all run as one connected process, and every handoff
+          between them happens on its own, with nothing re-typed. It is the kind of system a company would
+          usually hire a full-time operations lead to run.
         </p>
       </div>
 
@@ -598,11 +599,14 @@ export default function HubJourney() {
         </Spotlight>
       )}
 
-      {/* 5) Footer — navy LTV closer band */}
+      {/* 5) Footer — navy closer band */}
       <div className="shrink-0 bg-hs-navy px-5 py-2.5 text-center">
-        <p className="text-[12px] text-white/90 font-medium tracking-[0.01em]">
-          Same customers. Same team. Every step connected —
-          <span className="text-hs-sorbet font-semibold"> and lifetime value climbing on its own.</span>
+        <p className="text-[12px] text-white/90 leading-snug max-w-4xl mx-auto">
+          These are the same customers and the same team you already have. Once every step is connected,
+          the work stops falling through the cracks, and{' '}
+          <span className="text-hs-sorbet font-semibold">
+            the relationships you have already earned keep bringing you more business.
+          </span>
         </p>
       </div>
     </div>

@@ -45,7 +45,7 @@ export default function EmailGateModal() {
         <div className="bg-hs-canvas px-7 pt-7 pb-5 border-b border-hs-border">
           <Logo />
           <h1 className="mt-4 font-ui font-bold text-hs-navy text-2xl leading-tight">
-            See the exact CRM we'll build for you — free
+            See the exact CRM we'll build for you, free
           </h1>
           <p className="mt-2 text-sm text-hs-text-dark font-ui">
             Answer 8 quick questions and watch your HubSpot CRM take shape: your
