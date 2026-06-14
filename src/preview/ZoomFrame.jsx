@@ -15,13 +15,16 @@ export default function ZoomFrame({ children }) {
       {/* Scroll viewport — always full size. */}
       <div className="absolute inset-0 overflow-auto hs-scroll">
         {/* Content magnifies via scale; the narrower layout width + top-left
-            origin keep it filling the panel width and scrolling vertically. */}
+            origin keep it filling the panel width and scrolling vertically.
+            Height is DEFINITE (not min-height) so children using h-full resolve
+            to a real height — ReactFlow diagrams need this or they collapse to 0.
+            Taller flow content still overflows and the parent scrolls it. */}
         <div
           style={{
             transform: `scale(${zoom})`,
             transformOrigin: 'top left',
             width: `${100 / zoom}%`,
-            minHeight: `${100 / zoom}%`,
+            height: `${100 / zoom}%`,
           }}
         >
           {children}

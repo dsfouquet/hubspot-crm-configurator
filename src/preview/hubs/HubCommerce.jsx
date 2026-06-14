@@ -164,12 +164,9 @@ function StatusDot({ status }) {
 }
 
 function QuotesTab() {
-  // Industry-specific quote document (line items, bill-to, quote number).
+  // Industry-specific quote-document template (line-item names + bill-to).
   const industry = useStore((s) => s.session?.wizard?.industry)
   const q = industryCopy(industry).quote
-  const quoteLines = q.lines.map((l) => ({ desc: l.item, qty: 1, amount: l.price }))
-  const quoteSubtotal = quoteLines.reduce((s, l) => s + l.amount, 0)
-  const quoteTax = Math.max(0, q.total - quoteSubtotal)
 
   const [view, setView] = useState('All quotes')
 
@@ -188,6 +185,22 @@ function QuotesTab() {
 
   const [selectedId, setSelectedId] = useState(0)
   const selected = quotes.find((x) => x.id === selectedId) || quotes[0]
+
+  // Build the quote-document line items for the SELECTED quote: take the
+  // industry template's item names and scale their amounts so they sum to this
+  // quote's total. Last line absorbs the rounding remainder. This makes each
+  // quote's document distinct instead of every one showing the same numbers.
+  const tmplTotal = q.lines.reduce((s, l) => s + l.price, 0) || 1
+  let running = 0
+  const quoteLines = q.lines.map((l, i) => {
+    const isLast = i === q.lines.length - 1
+    const amount = isLast
+      ? selected.amount - running
+      : Math.round((l.price / tmplTotal) * selected.amount)
+    running += amount
+    return { desc: l.item, amount }
+  })
+  const quoteSubtotal = quoteLines.reduce((s, l) => s + l.amount, 0)
 
   // Two sample contacts for the preview panel's Contacts block.
   const contacts =
@@ -403,7 +416,7 @@ function QuotesTab() {
                   style={{ background: 'linear-gradient(135deg,#2D3E50,#0091AE)' }}
                 >
                   <span className="text-[11px] font-semibold">Your Company</span>
-                  <span className="text-[10px] opacity-80">#{q.number}</span>
+                  <span className="text-[10px] opacity-80">#Q-{2041 + selected.id}</span>
                 </div>
                 <table className="w-full">
                   <tbody>
@@ -426,11 +439,11 @@ function QuotesTab() {
                   </div>
                   <div className="flex justify-between text-[10px] text-hs-text-light">
                     <span>Tax (estimated)</span>
-                    <span className="tabular-nums">{dollars(quoteTax)}</span>
+                    <span className="tabular-nums">{dollars(0)}</span>
                   </div>
                   <div className="flex justify-between text-[12px] font-bold text-hs-navy border-t border-hs-border pt-1">
                     <span>Total</span>
-                    <span className="tabular-nums">{dollars(q.total)}</span>
+                    <span className="tabular-nums">{dollars(selected.amount)}</span>
                   </div>
                 </div>
                 <div className="px-3 py-2 border-t border-hs-border bg-hs-canvas/40 flex items-center justify-between">

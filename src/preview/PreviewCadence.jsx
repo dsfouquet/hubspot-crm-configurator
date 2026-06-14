@@ -113,11 +113,12 @@ export default function PreviewCadence() {
   const meetings = cadence.meetings.filter((m) => m.enabled)
   const rules = cadence.rules
 
+  // Start every section collapsed — the page opens clean; detail is one tap away.
   const [open, setOpen] = useState({
-    why: true,
-    cadence: true,
-    rules: true,
-    notifications: true,
+    why: false,
+    cadence: false,
+    rules: false,
+    notifications: false,
   })
   const toggle = (key) => setOpen((o) => ({ ...o, [key]: !o[key] }))
 

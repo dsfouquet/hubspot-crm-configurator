@@ -43,12 +43,16 @@ import {
 
 const PHASE_ORDER = ['ATTRACT', 'CONVERT', 'CLOSE', 'DELIVER', 'RETAIN']
 
+// One calm palette across the whole board: navy phase labels, a single orange
+// accent for icons/active states. The phase NAMES carry the meaning, so we don't
+// need a different color per phase (that read as noisy/distracting).
+const ACCENT = '#FF7A59'
 const PHASE_COLORS = {
-  ATTRACT: '#FF7A59',
-  CONVERT: '#0091AE',
-  CLOSE: '#6A78D1',
-  DELIVER: '#00BDA5',
-  RETAIN: '#F5C26B',
+  ATTRACT: '#2D3E50',
+  CONVERT: '#2D3E50',
+  CLOSE: '#2D3E50',
+  DELIVER: '#2D3E50',
+  RETAIN: '#2D3E50',
 }
 
 // Plain-language sublabel under each colored phase chip — for first-time readers.
@@ -343,11 +347,13 @@ export default function HubJourney() {
   const visibleSteps = STEPS.filter((s) => journeyEnabled(session, s.id))
 
   const results = searchIntegrations(query)
+  // Picking a tool just HIGHLIGHTS the steps it plugs into — it does not open a
+  // card. The pronounced green ring shows where it fits; the user clicks a card
+  // themselves if they want the detail.
   const pickIntegration = (integ) => {
     setHighlight(integ.journeySteps)
     setQuery(integ.name)
-    const first = visibleSteps.find((s) => integ.journeySteps.includes(s.id))
-    if (first) openStepFrom(first.id)
+    setOpen(null)
   }
 
   // Group visible steps into phase columns, preserving phase order.
@@ -462,7 +468,7 @@ export default function HubJourney() {
                   <span className="block mt-1 text-[11px] text-hs-text-light leading-tight">
                     {PHASE_SUBLABELS[p.phase]}
                   </span>
-                  <span className="block mt-1.5 h-[2px] w-full rounded-full" style={{ backgroundColor: p.color }} />
+                  <span className="block mt-1.5 h-px w-full rounded-full bg-hs-border" />
                 </div>
 
                 {/* Stacked compact milestone cards */}
@@ -478,7 +484,7 @@ export default function HubJourney() {
                           <div className="mb-1">
                             <span
                               className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide text-white rounded-[3px] px-1.5 py-0.5"
-                              style={{ backgroundColor: p.color }}
+                              style={{ backgroundColor: ACCENT }}
                             >
                               Start here
                               <IconArrowRight width={9} height={9} className="shrink-0" />
@@ -492,14 +498,18 @@ export default function HubJourney() {
                               ? setOpen(null)
                               : openStepFrom(step.id, e.currentTarget.getBoundingClientRect())
                           }
-                          className={`w-full text-left flex items-center gap-2 bg-white rounded-[4px] border px-2.5 py-2 shadow-sm transition-all hover:shadow-md ${
-                            isHighlighted ? 'ring-2 ring-hs-green' : ''
+                          className={`w-full text-left flex items-center gap-2 rounded-[4px] border px-2.5 py-2 transition-all ${
+                            isHighlighted
+                              ? 'ring-[3px] ring-hs-green ring-offset-1 shadow-md bg-hs-green/10 relative z-10'
+                              : 'bg-white shadow-sm hover:shadow-md'
                           }`}
-                          style={{ borderColor: isOpen ? p.color : '#CBD6E2' }}
+                          style={{
+                            borderColor: isOpen ? ACCENT : isHighlighted ? '#00BDA5' : '#CBD6E2',
+                          }}
                         >
                           <span
                             className="shrink-0 w-6 h-6 rounded-[4px] flex items-center justify-center"
-                            style={{ backgroundColor: `${p.color}1A`, color: p.color }}
+                            style={{ backgroundColor: `${ACCENT}1A`, color: ACCENT }}
                           >
                             <step.icon width={14} height={14} />
                           </span>
@@ -531,7 +541,7 @@ export default function HubJourney() {
       {openStep && (
         <Spotlight
           originRect={open.rect}
-          accent={PHASE_COLORS[openStep.phase]}
+          accent={ACCENT}
           onClose={() => setOpen(null)}
         >
           <div className="px-6 py-5">
@@ -546,8 +556,8 @@ export default function HubJourney() {
               <span
                 className="shrink-0 w-11 h-11 rounded-lg flex items-center justify-center"
                 style={{
-                  backgroundColor: `${PHASE_COLORS[openStep.phase]}1A`,
-                  color: PHASE_COLORS[openStep.phase],
+                  backgroundColor: `${ACCENT}1A`,
+                  color: ACCENT,
                 }}
               >
                 <openStep.icon width={22} height={22} />

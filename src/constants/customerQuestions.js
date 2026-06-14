@@ -74,7 +74,7 @@ export const JOURNEY_STAGES = [
   { key: 'sales', label: 'Sales', caption: 'Working deals to the close' },
   { key: 'service', label: 'Service & Retention', caption: 'Keeping & growing customers' },
   { key: 'ops', label: 'Operations & Reporting', caption: 'The back office behind it all' },
-  { key: 'revops', label: 'RevOps — tie it all together', caption: 'Make every team run off one connected system' },
+  { key: 'revops', label: 'RevOps: tie it all together', caption: 'Make every team run off one connected system' },
   { key: 'ai', label: 'AI', caption: 'Put AI to work across your business' },
 ]
 
@@ -147,7 +147,7 @@ export const CUSTOMER_QUESTIONS = [
     key: 'annualRevenue',
     qid: 'annualRevenue',
     prompt: 'Roughly, what was your revenue last year?',
-    hint: 'We use this to size your build — never shared.',
+    hint: 'We use this to size your build. Never shared.',
     type: 'single',
     autoAdvance: true,
     options: ['Under $250K', '$250K – $1M', '$1M – $5M', '$5M+'],
@@ -189,7 +189,7 @@ export const CUSTOMER_QUESTIONS = [
     key: 'pains',
     qid: 'pains_customer',
     prompt: 'Where is it costing you money? This is your customer journey, start to finish.',
-    hint: 'Check all that apply — grouped the way a customer actually moves',
+    hint: 'Check all that apply, grouped the way a customer actually moves',
     type: 'pain-multi',
     // painIds + journey groups resolved at render time from wizard.industry
     dynamicPains: true,
@@ -212,7 +212,7 @@ export const CUSTOMER_QUESTIONS = [
     prompt: 'If we fix one thing in the next 30 days, what should it be?',
     type: 'textarea',
     optional: true,
-    placeholder: 'In your own words — this becomes the headline of your build plan.',
+    placeholder: 'In your own words. This becomes the headline of your build plan.',
     quickPicks: [
       'I want more leads',
       'I want to stop losing deals to slow follow-up',

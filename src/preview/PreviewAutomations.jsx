@@ -64,9 +64,10 @@ export default function PreviewAutomations() {
         <TierBadge tier={focused.tier} size="md" />
       </div>
 
-      {/* Diagram */}
+      {/* Diagram — keyed so switching workflows fully remounts it, letting
+          ReactFlow re-measure nodes (and capture handle bounds) from scratch. */}
       <div className="flex-1 min-h-0">
-        <WorkflowDiagram workflow={focused} />
+        <WorkflowDiagram key={focused.id} workflow={focused} />
       </div>
     </div>
   )

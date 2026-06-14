@@ -1,5 +1,11 @@
 import { useMemo, useState, useRef, useEffect } from 'react'
-import ReactFlow, { Background, Controls } from 'reactflow'
+import ReactFlow, {
+  Background,
+  Controls,
+  ReactFlowProvider,
+  useNodesState,
+  useEdgesState,
+} from 'reactflow'
 import 'reactflow/dist/style.css'
 import { nodeTypes } from './FlowNode'
 import { workflowToFlow } from '../utils/workflowToFlow'
@@ -40,15 +46,32 @@ const KIND_META = {
   },
 }
 
+// Public component: wrap in an explicit ReactFlowProvider so the flow store is
+// always present and initializes (the implicit wrapper intermittently failed to
+// process nodes here, leaving the diagram with no edges).
+export default function WorkflowDiagram({ workflow }) {
+  return (
+    <ReactFlowProvider>
+      <Diagram workflow={workflow} />
+    </ReactFlowProvider>
+  )
+}
+
 // Renders one workflow's ReactFlow diagram. Click a node to spotlight that stage.
 // Re-fits the view when its container resizes (e.g. dragging the split handle).
-export default function WorkflowDiagram({ workflow }) {
-  const { nodes, edges } = useMemo(() => workflowToFlow(workflow), [workflow])
+function Diagram({ workflow }) {
+  const flow = useMemo(() => workflowToFlow(workflow), [workflow])
+  // ReactFlow OWNS node/edge state via these hooks. The onNodesChange handler is
+  // what applies ReactFlow's internal dimension-measurement events — without it
+  // (plain controlled props) nodes never register dimensions/handleBounds, so
+  // edges never render and fitView no-ops. We do NOT re-seed via useEffect (that
+  // would wipe the measured dimensions on mount); the parent remounts this
+  // component with key={workflow.id} when the focused workflow changes.
+  const [nodes, , onNodesChange] = useNodesState(flow.nodes)
+  const [edges, , onEdgesChange] = useEdgesState(flow.edges)
   const [selected, setSelected] = useState(null) // { node, rect }
   const rfRef = useRef(null)
   const wrapRef = useRef(null)
-
-  const styledNodes = nodes.map((n) => ({ ...n, selected: n.id === selected?.node.id }))
 
   // Observe container size; re-fit the diagram on resize (rAF-debounced).
   useEffect(() => {
@@ -71,10 +94,15 @@ export default function WorkflowDiagram({ workflow }) {
   return (
     <div ref={wrapRef} className="relative w-full h-full">
       <ReactFlow
-        nodes={styledNodes}
+        nodes={nodes}
         edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
-        onInit={(inst) => (rfRef.current = inst)}
+        onInit={(inst) => {
+          rfRef.current = inst
+          requestAnimationFrame(() => inst.fitView({ padding: 0.2 }))
+        }}
         onNodeClick={(e, node) => {
           const el = e.target.closest('.react-flow__node')
           setSelected({ node, rect: el ? el.getBoundingClientRect() : null })

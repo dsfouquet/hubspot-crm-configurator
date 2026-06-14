@@ -90,28 +90,32 @@ export default function CustomerBuildPlan() {
           </div>
         )}
 
-        {/* What's in the build — visual tiles (icon + number + short label) */}
-        <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        {/* What's in the build — visual tiles (icon + count + what it is). Heading
+            gives them context so the numbers aren't a guessing game. */}
+        <div className="mt-6 mb-2 text-[11px] font-ui font-semibold uppercase tracking-wide text-hs-text-light">
+          What we set up in your CRM
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           {[
-            { icon: TileIcons.pipeline, value: stages.length, label: 'stage pipeline' },
-            { icon: TileIcons.bolt, value: workflowCount, label: workflowCount === 1 ? 'automation' : 'automations' },
-            { icon: TileIcons.chart, value: 1, label: 'owner dashboard' },
+            { icon: TileIcons.pipeline, value: stages.length, label: 'pipeline stages, set up for your deals' },
+            { icon: TileIcons.bolt, value: workflowCount, label: `${workflowCount === 1 ? 'automation' : 'automations'} doing the follow-up for you` },
+            { icon: TileIcons.chart, value: 1, label: 'owner dashboard with your key numbers' },
             customObj
-              ? { icon: TileIcons.database, value: customObj.plural || customObj.singular, label: 'tracker' }
-              : { icon: TileIcons.contacts, value: '✓', label: 'contacts imported' },
+              ? { icon: TileIcons.database, value: 1, label: `${customObj.singular || customObj.plural} tracker, built just for your business` }
+              : { icon: TileIcons.contacts, value: '✓', label: 'your contacts imported and organized' },
           ].map((t) => (
             <div
               key={t.label}
-              className="bg-white border border-hs-border rounded-lg px-3 py-2.5 flex items-center gap-2.5"
+              className="bg-white border border-hs-border rounded-lg px-3 py-3 flex items-start gap-2.5"
             >
               <span className="shrink-0 w-8 h-8 rounded-md bg-hs-orange/10 text-hs-orange flex items-center justify-center">
                 {t.icon}
               </span>
               <span className="min-w-0">
-                <span className="block font-ui font-bold text-hs-navy text-[16px] leading-none truncate">
+                <span className="block font-ui font-bold text-hs-navy text-[18px] leading-none">
                   {t.value}
                 </span>
-                <span className="block text-[11px] font-ui text-hs-text-light leading-tight mt-0.5">
+                <span className="block text-[11px] font-ui text-hs-text-light leading-snug mt-1">
                   {t.label}
                 </span>
               </span>
@@ -176,12 +180,7 @@ export default function CustomerBuildPlan() {
                         isOpen ? 'opacity-100' : 'opacity-0'
                       }`}
                     >
-                      {p.implication && (
-                        <p className="text-[13px] font-ui text-hs-red">
-                          <span className="font-semibold">The real cost:</span> {p.implication}
-                        </p>
-                      )}
-                      <p className="text-[13.5px] font-ui text-hs-text-dark mt-1.5">
+                      <p className="text-[13.5px] font-ui text-hs-text-dark">
                         {p.narrative}
                       </p>
                       <div className="mt-3">

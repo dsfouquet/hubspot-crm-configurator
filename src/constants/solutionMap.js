@@ -24,7 +24,7 @@ export const SOLUTION_MAP = {
   unknown_close_rate: {
     title: 'Close rate without the digging',
     narrative:
-      'Every deal gets logged with a stage and an outcome. Won vs. lost, by rep, by source — one dashboard, zero email archaeology.',
+      'Every deal gets logged with a stage and an outcome. Won vs. lost, by rep, by source. One dashboard, zero email archaeology.',
     workflows: [],
     viewIds: ['revenue_forecast'],
     widgets: ['won_vs_lost', 'deal_velocity', 'revenue_by_rep'],
@@ -56,7 +56,7 @@ export const SOLUTION_MAP = {
   pipeline_in_head: {
     title: 'One pipeline everyone can see',
     narrative:
-      'Your deal stages — the ones you just named — become a shared board. Anyone can see every deal, its stage, its value, and who owns it in five seconds.',
+      'Your deal stages, the ones you just named, become a shared board. Anyone can see every deal, its stage, its value, and who owns it in five seconds.',
     workflows: ['pipeline_stage_mover'],
     viewIds: ['pipeline_board'],
     widgets: ['pipeline_value_stage'],
@@ -112,7 +112,7 @@ export const SOLUTION_MAP = {
     tierFeatures: [{ feature: 'multi_touch_attribution', tier: 'enterprise' }],
     ccBuild: [
       'Lead-source tracking enforced on every new contact and deal',
-      'Source-to-revenue reporting (full multi-touch attribution requires Enterprise — we scope what tier you actually need)',
+      'Source-to-revenue reporting (full multi-touch attribution requires Enterprise, we scope what tier you actually need)',
       'Ad platform and website form connections so sources log themselves',
     ],
     keywords: ['marketing', 'ads', 'attribution', 'roi', 'spend', 'what works'],
@@ -121,7 +121,7 @@ export const SOLUTION_MAP = {
   admin_overload: {
     title: 'Admin work that does itself',
     narrative:
-      'Welcome emails, data entry, task creation, handoffs — automated. Your team sells; the system types.',
+      'Welcome emails, data entry, task creation, handoffs, all automated. Your team sells; the system types.',
     workflows: ['new_contact_welcome', 'closed_won_handoff'],
     viewIds: [],
     widgets: ['tasks_completed_overdue'],
@@ -202,7 +202,7 @@ export const SOLUTION_MAP = {
   landing_pages_gap: {
     title: 'A website that captures, not just sits there',
     narrative:
-      'Lead forms and landing pages wired straight into the CRM — every visitor who raises a hand becomes a routed, owned lead.',
+      'Lead forms and landing pages wired straight into the CRM. Every visitor who raises a hand becomes a routed, owned lead.',
     workflows: ['new_lead_assignment'],
     viewIds: [],
     widgets: [],
@@ -218,7 +218,7 @@ export const SOLUTION_MAP = {
   content_seo_gap: {
     title: 'Getting found online',
     narrative:
-      'Content and SEO are their own discipline — HubSpot Content Hub can host it, but the writing and strategy are a separate engagement we scope with you.',
+      'Content and SEO are their own discipline. HubSpot Content Hub can host it, but the writing and strategy are a separate engagement we scope with you.',
     workflows: [],
     viewIds: [],
     widgets: [],
@@ -265,7 +265,7 @@ export const SOLUTION_MAP = {
   surveys_nps_blind: {
     title: 'Hear unhappiness before the churn',
     narrative:
-      'Automatic satisfaction surveys after every closed ticket and milestone — unhappy scores alert you while there is still time to save the account.',
+      'Automatic satisfaction surveys after every closed ticket and milestone. Unhappy scores alert you while there is still time to save the account.',
     workflows: [],
     viewIds: [],
     widgets: ['avg_ticket_resolution'],
@@ -281,7 +281,7 @@ export const SOLUTION_MAP = {
   reporting_excel_pain: {
     title: 'Reports that build themselves',
     narrative:
-      'The numbers you wrangle in Excel become live dashboards — always current, zero exports.',
+      'The numbers you wrangle in Excel become live dashboards, always current, zero exports.',
     workflows: [],
     viewIds: ['revenue_forecast'],
     widgets: ['won_vs_lost', 'deal_velocity'],
@@ -297,7 +297,7 @@ export const SOLUTION_MAP = {
   ai_manual_drafting: {
     title: 'AI drafts it, your team approves it',
     narrative:
-      'Follow-up emails, call summaries, and record overviews drafted by AI inside HubSpot — your team reviews and sends instead of starting from blank.',
+      'Follow-up emails, call summaries, and record overviews drafted by AI inside HubSpot. Your team reviews and sends instead of starting from blank.',
     workflows: [],
     viewIds: [],
     widgets: [],
@@ -314,7 +314,7 @@ export const SOLUTION_MAP = {
   playbook_gap: {
     title: 'One sales process, written down and enforced',
     narrative:
-      'Your best rep\'s approach becomes the playbook every deal follows — stage requirements, scripts, and next steps built into the pipeline itself.',
+      'Your best rep\'s approach becomes the playbook every deal follows: stage requirements, scripts, and next steps built into the pipeline itself.',
     workflows: [],
     viewIds: ['pipeline_board'],
     widgets: [],
@@ -336,7 +336,7 @@ export const SOLUTION_MAP = {
     widgets: [],
     cadenceRules: {},
     ccBuild: [
-      'Integration map of your full tool stack — what syncs, what gets replaced',
+      'Integration map of your full tool stack: what syncs, what gets replaced',
       'Native + Zapier/Make connections built and tested',
       'One source of truth: no more "which system is right?"',
     ],
@@ -345,7 +345,7 @@ export const SOLUTION_MAP = {
   contact_context: {
     title: 'The whole relationship, on the record',
     narrative:
-      'What each person is working on, their pain points, their history with you — captured on the contact record automatically, so the knowledge survives vacations, turnover, and bad memories.',
+      'What each person is working on, their pain points, their history with you, captured on the contact record automatically, so the knowledge survives vacations, turnover, and bad memories.',
     workflows: [],
     viewIds: [],
     widgets: [],
@@ -360,7 +360,7 @@ export const SOLUTION_MAP = {
   company_picture: {
     title: 'One screen per company',
     narrative:
-      'Every company record shows who works there, every open deal and ticket, recent conversations, and even company news — the full account picture without opening five tabs.',
+      'Every company record shows who works there, every open deal and ticket, recent conversations, and even company news. The full account picture without opening five tabs.',
     workflows: [],
     viewIds: [],
     widgets: [],
@@ -375,7 +375,7 @@ export const SOLUTION_MAP = {
   focus_scatter: {
     title: 'Know exactly who deserves your time',
     narrative:
-      'When the data lives in one clean system, "who should I call today?" answers itself — who is hot, who has gone quiet, and who has never heard from you at all.',
+      'When the data lives in one clean system, "who should I call today?" answers itself: who is hot, who has gone quiet, and who has never heard from you at all.',
     workflows: ['deal_stale_alert'],
     viewIds: [],
     widgets: ['contacts_by_lifecycle'],
@@ -388,7 +388,7 @@ export const SOLUTION_MAP = {
     keywords: ['data is everywhere', 'who to call', 'heard from us', 'scattered', 'where to spend time'],
   },
   vip_segmentation: {
-    title: 'Customers, leads, and VIPs — obvious at a glance',
+    title: 'Customers, leads, and VIPs, obvious at a glance',
     narrative:
       'Lifecycle stages and tiers label every record automatically: lead vs. customer vs. your best relationships. Every list, view, and email targets exactly the right group.',
     workflows: [],
@@ -396,7 +396,7 @@ export const SOLUTION_MAP = {
     widgets: ['contacts_by_lifecycle'],
     cadenceRules: {},
     ccBuild: [
-      'Lifecycle stages configured to your definitions (lead → customer → VIP)',
+      'Lifecycle stages configured to your definitions (lead to customer to VIP)',
       'Contact tiering for your most valuable relationships',
       'Saved segments per group so targeting is one click',
     ],
@@ -405,13 +405,13 @@ export const SOLUTION_MAP = {
   relationship_gap: {
     title: 'Build the relationships that win the work',
     narrative:
-      'Consistent, personal touches with the right people — visit cadences, check-in reminders, and personal-detail tracking that make every interaction feel like you remembered everything.',
+      'Consistent, personal touches with the right people: visit cadences, check-in reminders, and personal-detail tracking that make every interaction feel like you remembered everything.',
     workflows: [],
     viewIds: ['site_visit_schedule'],
     widgets: ['meetings_booked'],
     cadenceRules: { requireNextStep: true },
     ccBuild: [
-      'Relationship cadences: who to visit, call, or take to lunch — and when',
+      'Relationship cadences: who to visit, call, or take to lunch, and when',
       'Personal-detail properties (interests, history, preferences) on key contacts',
       'Decision-maker mapping per account so you court the right people',
     ],
@@ -420,7 +420,7 @@ export const SOLUTION_MAP = {
   tasks_slip: {
     title: 'Nothing lives in memory anymore',
     narrative:
-      'Every commitment becomes a task tied to a contact or deal, with owners, due dates, and automatic reminders — visible by person and by week.',
+      'Every commitment becomes a task tied to a contact or deal, with owners, due dates, and automatic reminders, visible by person and by week.',
     workflows: ['deal_stale_alert'],
     viewIds: [],
     widgets: ['tasks_completed_overdue'],
@@ -437,7 +437,7 @@ export const SOLUTION_MAP = {
   key_person_risk: {
     title: "The business that doesn't walk out the door",
     narrative:
-      'Every relationship, deal, and next step lives in the CRM instead of one person\'s head. If your top rep leaves, the book of business stays — the new hire picks up exactly where they left off.',
+      'Every relationship, deal, and next step lives in the CRM instead of one person\'s head. If your top rep leaves, the book of business stays. The new hire picks up exactly where they left off.',
     workflows: ['new_lead_assignment'],
     viewIds: ['pipeline_board'],
     widgets: ['rep_activity', 'pipeline_value_stage'],
@@ -459,7 +459,7 @@ export const SOLUTION_MAP = {
     cadenceRules: { requireNextStep: true },
     ccBuild: [
       'Lead routing + lifecycle stages so marketing-qualified leads reach sales automatically',
-      'Closed-won → onboarding handoff workflow so delivery starts itself',
+      'Closed-won to onboarding handoff workflow so delivery starts itself',
       'A shared definition of "qualified" so nothing falls between marketing, sales, and ops',
     ],
     keywords: ['handoff', 'hand-off', 'falls through', 'between teams', 'lost in the gap', 'nobody owns', 'marketing and sales', 'disconnected teams'],
@@ -467,7 +467,7 @@ export const SOLUTION_MAP = {
   lead_gen_gap: {
     title: 'A marketing engine that fills the pipeline',
     narrative:
-      'Your site, content, and ads become a steady source of qualified leads — forms and landing pages capture them, campaigns are tracked to revenue, and every lead flows into the CRM ready to work instead of hoping referrals show up.',
+      'Your site, content, and ads become a steady source of qualified leads. Forms and landing pages capture them, campaigns are tracked to revenue, and every lead flows into the CRM ready to work instead of hoping referrals show up.',
     workflows: ['new_lead_assignment', 'new_contact_welcome'],
     viewIds: [],
     widgets: ['contacts_by_lifecycle'],
@@ -484,7 +484,7 @@ export const SOLUTION_MAP = {
   ai_followups: {
     title: 'AI writes the first draft of every follow-up',
     narrative:
-      'Breeze AI drafts follow-up emails and replies in your voice, ready to review and send — so chasing a quote or answering a prospect takes seconds, not a blank page.',
+      'Breeze AI drafts follow-up emails and replies in your voice, ready to review and send, so chasing a quote or answering a prospect takes seconds, not a blank page.',
     workflows: [],
     viewIds: [],
     widgets: [],
@@ -499,7 +499,7 @@ export const SOLUTION_MAP = {
   ai_summaries: {
     title: 'Every call and meeting summarizes itself',
     narrative:
-      'AI records, transcribes, and summarizes calls and meetings, then writes the next steps straight onto the contact — nobody types notes from memory again.',
+      'AI records, transcribes, and summarizes calls and meetings, then writes the next steps straight onto the contact, so nobody types notes from memory again.',
     workflows: [],
     viewIds: [],
     widgets: [],
@@ -514,7 +514,7 @@ export const SOLUTION_MAP = {
   ai_research: {
     title: 'AI researches the prospect before you call',
     narrative:
-      'Breeze enriches each contact and company and briefs the rep before outreach — size, role, recent news — so the first touch is personalized without an hour of digging.',
+      'Breeze enriches each contact and company and briefs the rep before outreach (size, role, recent news) so the first touch is personalized without an hour of digging.',
     workflows: [],
     viewIds: [],
     widgets: [],
@@ -529,7 +529,7 @@ export const SOLUTION_MAP = {
   ai_chatbot: {
     title: 'AI answers visitors the moment they land',
     narrative:
-      'An AI chat agent answers website questions, qualifies the visitor, and books a meeting or routes a hot lead to a rep — instantly, day or night.',
+      'An AI chat agent answers website questions, qualifies the visitor, and books a meeting or routes a hot lead to a rep, instantly, day or night.',
     workflows: ['new_lead_assignment'],
     viewIds: [],
     widgets: [],
@@ -554,11 +554,11 @@ const SPIN_EXTRAS = {
   },
   unknown_close_rate: {
     hub: 'Reporting',
-    implication: "If you can't measure close rate by rep, source, and service line, you don't know which to fix first — and fixing the wrong one isn't free.",
+    implication: "If you can't measure close rate by rep, source, and service line, you don't know which to fix first, and fixing the wrong one isn't free.",
   },
   leads_fall_through: {
     hub: 'Sales Hub',
-    implication: 'The competitor who called your last lead back in 5 minutes — what did that conversation cost you?',
+    implication: 'The competitor who called your last lead back in 5 minutes. What did that conversation cost you?',
   },
   pipeline_in_head: {
     hub: 'CRM',
@@ -566,7 +566,7 @@ const SPIN_EXTRAS = {
   },
   rep_workload_unproven: {
     hub: 'Reporting',
-    implication: 'If your #1 rep trains the next hire, how long before that hire is actually useful — and what does that gap cost?',
+    implication: 'If your #1 rep trains the next hire, how long before that hire is actually useful, and what does that gap cost?',
   },
   no_reengagement: {
     hub: 'CRM',
@@ -574,7 +574,7 @@ const SPIN_EXTRAS = {
   },
   marketing_attribution: {
     hub: 'Marketing Hub',
-    implication: "Spending $3K/month on ads with no closed deal tied to any campaign — how do you decide what to cut and what to scale?",
+    implication: "Spending $3K/month on ads with no closed deal tied to any campaign. How do you decide what to cut and what to scale?",
   },
   admin_overload: {
     hub: 'Operations',
@@ -582,11 +582,11 @@ const SPIN_EXTRAS = {
   },
   inconsistent_onboarding: {
     hub: 'Service Hub',
-    implication: 'Two clients getting two different experiences — what does that do to referrals and reviews?',
+    implication: 'Two clients getting two different experiences. What does that do to referrals and reviews?',
   },
   ticket_blindness: {
     hub: 'Service Hub',
-    implication: 'The issue that never gets resolved costs more than the slow one — it becomes a lost client. How many are open right now?',
+    implication: 'The issue that never gets resolved costs more than the slow one. It becomes a lost client. How many are open right now?',
   },
   ar_visibility: {
     hub: 'Commerce Hub',
@@ -598,7 +598,7 @@ const SPIN_EXTRAS = {
   },
   landing_pages_gap: {
     hub: 'Marketing Hub',
-    implication: '300 visitors a month and none fill out a form — every one is anonymous. What is it worth to identify even 5%?',
+    implication: '300 visitors a month and none fill out a form. Every one is anonymous. What is it worth to identify even 5%?',
   },
   content_seo_gap: {
     hub: 'Content Hub',
@@ -614,7 +614,7 @@ const SPIN_EXTRAS = {
   },
   surveys_nps_blind: {
     hub: 'Service Hub',
-    implication: 'A client who stays three years vs. one who leaves after year one — if slow service loses you two a year, what is that number?',
+    implication: 'A client who stays three years vs. one who leaves after year one. If slow service loses you two a year, what is that number?',
   },
   reporting_excel_pain: {
     hub: 'Reporting',
@@ -622,7 +622,7 @@ const SPIN_EXTRAS = {
   },
   ai_manual_drafting: {
     hub: 'AI',
-    implication: 'Twenty hand-written emails a day per rep that AI could draft — what is that in hours a month?',
+    implication: 'Twenty hand-written emails a day per rep that AI could draft. What is that in hours a month?',
   },
   playbook_gap: {
     hub: 'Sales Hub',
@@ -654,11 +654,11 @@ const SPIN_EXTRAS = {
   },
   tasks_slip: {
     hub: 'Operations',
-    implication: 'One dropped task in client delivery — what is the downstream cost in rework and client trust?',
+    implication: 'One dropped task in client delivery. What is the downstream cost in rework and client trust?',
   },
   key_person_risk: {
     hub: 'RevOps',
-    implication: 'If your top producer left tomorrow, would the book survive the quarter — or walk out with them?',
+    implication: 'If your top producer left tomorrow, would the book survive the quarter, or walk out with them?',
   },
   handoff_void: {
     hub: 'RevOps',
@@ -678,7 +678,7 @@ const SPIN_EXTRAS = {
   },
   ai_research: {
     hub: 'AI',
-    implication: 'An hour of manual research per deal, across every deal — what is that costing in reps not selling?',
+    implication: 'An hour of manual research per deal, across every deal. What is that costing in reps not selling?',
   },
   ai_chatbot: {
     hub: 'AI',
@@ -704,27 +704,27 @@ const PAIN_LABELS = {
   inconsistent_onboarding: { pain: 'Onboarding', painDesc: 'every client gets a different experience' },
   ticket_blindness: { pain: 'Tickets', painDesc: "can't see service issues without calling someone" },
   ar_visibility: { pain: 'Receivables', painDesc: "don't know what's owed without running a report" },
-  playbook_gap: { pain: 'Process', painDesc: 'nothing written down — every rep sells their own way' },
-  marketing_email_gap: { pain: 'Email', painDesc: 'we never send marketing emails to our list — no newsletter, no nurture' },
+  playbook_gap: { pain: 'Process', painDesc: 'nothing written down, every rep sells their own way' },
+  marketing_email_gap: { pain: 'Email', painDesc: 'we never send marketing emails to our list, no newsletter, no nurture' },
   landing_pages_gap: { pain: 'Capture', painDesc: "we aren't capturing leads anywhere we can easily follow up" },
-  content_seo_gap: { pain: 'Visibility', painDesc: 'nobody finds us online — no blog, SEO, or content' },
+  content_seo_gap: { pain: 'Visibility', painDesc: 'nobody finds us online, no blog, SEO, or content' },
   quotes_invoices_split: { pain: 'Billing', painDesc: "quoting and invoicing live in tools that don't talk" },
   kb_faq_repeat: { pain: 'FAQs', painDesc: 'we answer the same customer questions over and over' },
   surveys_nps_blind: { pain: 'Feedback', painDesc: "we don't know customers are unhappy until they're gone" },
-  reporting_excel_pain: { pain: 'Reports', painDesc: 'every report or dashboard wastes time on exports and spreadsheets — nothing’s automated' },
+  reporting_excel_pain: { pain: 'Reports', painDesc: 'every report or dashboard wastes time on exports and spreadsheets, nothing’s automated' },
   ai_manual_drafting: { pain: 'AI opportunity', painDesc: "we know there are processes AI could handle, we just haven't started yet" },
   ai_followups: { pain: 'AI follow-ups', painDesc: 'we write every follow-up and reply by hand' },
   ai_summaries: { pain: 'AI notes', painDesc: 'calls and meetings have no automatic summary or next steps' },
   ai_research: { pain: 'AI research', painDesc: 'we research every prospect and account by hand' },
   ai_chatbot: { pain: 'AI chat', painDesc: 'website visitors get no instant answers, day or night' },
   tools_dont_talk: { pain: 'Sync', painDesc: "our apps and programs don't talk, so the same data gets re-typed into multiple systems" },
-  tasks_slip: { pain: 'Tasks', painDesc: 'engaging the right customer at the right time slips — we can’t prioritize the best activities' },
-  contact_context: { pain: 'Context', painDesc: "what each person's working on, their pain points — it lives in reps' heads" },
+  tasks_slip: { pain: 'Tasks', painDesc: 'engaging the right customer at the right time slips, we can’t prioritize the best activities' },
+  contact_context: { pain: 'Context', painDesc: "what each person's working on, their pain points, it lives in reps' heads" },
   company_picture: { pain: 'Org picture', painDesc: "can't get a complete view of a customer's company, who works there, and what's happening, in one place" },
-  focus_scatter: { pain: 'Focus', painDesc: "data's everywhere — we don't know who to spend time on or who's heard from us" },
+  focus_scatter: { pain: 'Focus', painDesc: "data's everywhere, we don't know who to spend time on or who's heard from us" },
   vip_segmentation: { pain: 'VIPs', painDesc: "can't tell customers from leads from our best relationships at a glance" },
   relationship_gap: { pain: 'Relationships', painDesc: 'building deep enough relationships with the right people is slow and hard' },
-  key_person_risk: { pain: 'Key-person risk', painDesc: 'all contacts and opportunities live in one rep’s head — if they leave, so does the info' },
+  key_person_risk: { pain: 'Key-person risk', painDesc: 'all contacts and opportunities live in one rep’s head. If they leave, so does the info' },
   handoff_void: { pain: 'Handoffs', painDesc: 'we lose jobs and customers to slow handoffs and miscommunication between departments' },
 }
 
@@ -732,10 +732,10 @@ Object.entries(PAIN_LABELS).forEach(([id, labels]) => {
   if (SOLUTION_MAP[id]) Object.assign(SOLUTION_MAP[id], labels)
 })
 
-// Full display label for a pain id, e.g. "Quotes — follow-up goes silent...".
+// Full display label for a pain id, e.g. "Quotes: follow-up goes silent...".
 export function painLabel(id) {
   const s = SOLUTION_MAP[id]
-  return s ? `${s.pain} — ${s.painDesc}` : id
+  return s ? `${s.pain}: ${s.painDesc}` : id
 }
 
 // Match free text (the vent box) to leak ids by keyword. Local fallback that
