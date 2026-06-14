@@ -2,29 +2,26 @@
 // step toggles these; HubJourney renders only the enabled ones. Defaults derive
 // from discovery answers (no marketing signals -> journey starts at outreach),
 // and the user's explicit overrides (session.journey.overrides) win.
+//
+// Step set was consolidated (June 2026) from 21 milestones to 14 so the board
+// scans in seconds: the lead-source channels merged into find_online / outreach /
+// inbound, and the convert phase folded scoring + sales-nurture into nurture.
 
 export const JOURNEY_MILESTONES = [
-  { id: 'search', phase: 'ATTRACT', icon: '🔍', label: 'Website & search (SEO)' },
-  { id: 'ads', phase: 'ATTRACT', icon: '📢', label: 'Paid ads (Google / Meta / LinkedIn)' },
-  { id: 'social', phase: 'ATTRACT', icon: '💬', label: 'Social & content engagement' },
-  { id: 'cold_outreach', phase: 'ATTRACT', icon: '🧊', label: 'Cold outreach (sequences, calls, LinkedIn)' },
-  { id: 'warm_outreach', phase: 'ATTRACT', icon: '🔥', label: 'Warm outreach (past clients, referrals)' },
-  { id: 'direct', phase: 'ATTRACT', icon: '📞', label: 'Direct inbound calls & emails' },
-  { id: 'form', phase: 'ATTRACT', icon: '📝', label: 'Website forms' },
+  { id: 'find_online', phase: 'ATTRACT', icon: '🔍', label: 'They find you (search, ads, content)' },
+  { id: 'outreach', phase: 'ATTRACT', icon: '📣', label: 'Outreach runs in the background' },
+  { id: 'inbound', phase: 'ATTRACT', icon: '📥', label: 'Inbound calls, emails, and forms' },
   { id: 'route', phase: 'CONVERT', icon: '⚡', label: 'Instant lead routing (speed-to-lead)' },
-  { id: 'ai_prep', phase: 'CONVERT', icon: '🤖', label: 'AI prep & playbooks' },
-  { id: 'intel', phase: 'CONVERT', icon: '🗂', label: 'Detail capture for later' },
-  { id: 'nurture', phase: 'CONVERT', icon: '📧', label: 'Marketing email nurture' },
-  { id: 'score', phase: 'CONVERT', icon: '🎯', label: 'Lead scoring (MQL → SQL handoff)' },
-  { id: 'sales_nurture', phase: 'CONVERT', icon: '🤙', label: 'Sales nurture (calls, visits, lunches)' },
+  { id: 'nurture', phase: 'CONVERT', icon: '📧', label: 'Stay-warm nurture and sales alert' },
+  { id: 'ai_prep', phase: 'CONVERT', icon: '🤖', label: 'AI prep and playbooks' },
   { id: 'meeting', phase: 'CLOSE', icon: '📅', label: 'Self-booking appointments' },
   { id: 'stages', phase: 'CLOSE', icon: '📊', label: 'Deal stages with automation' },
-  { id: 'quote', phase: 'CLOSE', icon: '🧾', label: 'Quote → e-sign → deposit' },
+  { id: 'quote', phase: 'CLOSE', icon: '🧾', label: 'Quote, sign, deposit' },
   { id: 'handoff', phase: 'DELIVER', icon: '🤝', label: 'Closed-won handoff to ops' },
-  { id: 'fulfill', phase: 'DELIVER', icon: '📦', label: 'Fulfillment & invoicing sync' },
-  { id: 'support', phase: 'RETAIN', icon: '🛟', label: 'Service tickets & help desk' },
-  { id: 'feedback', phase: 'RETAIN', icon: '⭐', label: 'Surveys, reviews & alerts' },
-  { id: 'retain', phase: 'RETAIN', icon: '🔁', label: 'Renewals & re-engagement' },
+  { id: 'fulfill', phase: 'DELIVER', icon: '📦', label: 'Fulfillment and invoicing sync' },
+  { id: 'support', phase: 'RETAIN', icon: '🛟', label: 'Service tickets and help desk' },
+  { id: 'feedback', phase: 'RETAIN', icon: '⭐', label: 'Surveys, reviews, and alerts' },
+  { id: 'retain', phase: 'RETAIN', icon: '🔁', label: 'Renewals and re-engagement' },
 ]
 
 const arr = (v) => (Array.isArray(v) ? v : v ? [v] : [])
@@ -48,33 +45,22 @@ export function journeyDefaults(session) {
       (p) => pains.includes(p)
     )
 
-  const on = new Set()
-  // Core sales/ops/retain steps — always on by default.
-  ;['direct', 'route', 'ai_prep', 'intel', 'sales_nurture', 'meeting', 'stages', 'quote',
-    'handoff', 'fulfill', 'support', 'feedback', 'retain'].forEach((id) => on.add(id))
-
-  if (marketingSignal) {
-    on.add('search')
-    on.add('form')
-    on.add('social')
-    on.add('nurture')
-    on.add('score')
-  }
-  if (!answered || sources.includes('Paid ads') || pains.includes('marketing_attribution')) {
-    on.add('ads')
-  }
-  if (!answered || sources.includes('Cold outreach') || team.includes('B2B Sales (outbound focused)')) {
-    on.add('cold_outreach')
-  }
-  if (
+  const outreachSignal =
     !answered ||
+    sources.includes('Cold outreach') ||
     sources.includes('Referrals') ||
     sources.includes('Repeat clients') ||
     sources.includes('Brokers / partners') ||
+    team.includes('B2B Sales (outbound focused)') ||
     pains.includes('no_reengagement')
-  ) {
-    on.add('warm_outreach')
-  }
+
+  const on = new Set()
+  // Core convert/close/deliver/retain steps + inbound capture are always on.
+  ;['inbound', 'route', 'nurture', 'ai_prep', 'meeting', 'stages', 'quote',
+    'handoff', 'fulfill', 'support', 'feedback', 'retain'].forEach((id) => on.add(id))
+
+  if (marketingSignal) on.add('find_online')
+  if (outreachSignal) on.add('outreach')
   return on
 }
 

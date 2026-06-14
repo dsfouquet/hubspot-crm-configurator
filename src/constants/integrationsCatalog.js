@@ -3,6 +3,10 @@
 // Journey tab's integration nodes and the searchable picker.
 // journeySteps: which journey step ids each integration plugs into.
 
+// journeyStep ids reference the consolidated 14-step set (see journeyMilestones):
+// find_online / outreach / inbound (attract), route / nurture / ai_prep (convert),
+// meeting / stages / quote (close), handoff / fulfill (deliver),
+// support / feedback / retain (retain).
 export const INTEGRATIONS = [
   // Accounting & invoicing
   { name: 'QuickBooks Online', category: 'Accounting & invoicing', blurb: 'Two-way sync of invoices, payments, and contacts', hubspotBuilt: true, journeySteps: ['fulfill', 'quote'] },
@@ -23,13 +27,13 @@ export const INTEGRATIONS = [
   { name: 'Chargebee', category: 'Payments', blurb: 'Subscription billing synced to CRM deals', hubspotBuilt: false, journeySteps: ['retain'] },
 
   // Calling & SMS
-  { name: 'Aircall', category: 'Calling & SMS', blurb: 'Cloud calling with logging and recording in CRM', hubspotBuilt: false, journeySteps: ['direct', 'route', 'sales_nurture'] },
-  { name: 'JustCall', category: 'Calling & SMS', blurb: 'Calls and SMS logged automatically to contacts', hubspotBuilt: false, journeySteps: ['direct', 'feedback'] },
-  { name: 'CallRail', category: 'Calling & SMS', blurb: 'Call tracking and attribution synced to records', hubspotBuilt: false, journeySteps: ['direct', 'ads'] },
+  { name: 'Aircall', category: 'Calling & SMS', blurb: 'Cloud calling with logging and recording in CRM', hubspotBuilt: false, journeySteps: ['inbound', 'route'] },
+  { name: 'JustCall', category: 'Calling & SMS', blurb: 'Calls and SMS logged automatically to contacts', hubspotBuilt: false, journeySteps: ['inbound', 'feedback'] },
+  { name: 'CallRail', category: 'Calling & SMS', blurb: 'Call tracking and attribution synced to records', hubspotBuilt: false, journeySteps: ['inbound', 'find_online'] },
   { name: 'Twilio', category: 'Calling & SMS', blurb: 'Programmable SMS/voice triggered from workflows', hubspotBuilt: false, journeySteps: ['feedback'] },
-  { name: 'Sakari', category: 'Calling & SMS', blurb: 'Two-way business SMS inside HubSpot workflows', hubspotBuilt: false, journeySteps: ['feedback', 'retain', 'warm_outreach'] },
+  { name: 'Sakari', category: 'Calling & SMS', blurb: 'Two-way business SMS inside HubSpot workflows', hubspotBuilt: false, journeySteps: ['feedback', 'retain', 'outreach'] },
   { name: 'Salesmsg', category: 'Calling & SMS', blurb: 'Two-way texting and calling on contact records', hubspotBuilt: false, journeySteps: ['feedback'] },
-  { name: 'Kixie', category: 'Calling & SMS', blurb: 'Power dialer with auto call/SMS logging', hubspotBuilt: false, journeySteps: ['route', 'cold_outreach'] },
+  { name: 'Kixie', category: 'Calling & SMS', blurb: 'Power dialer with auto call/SMS logging', hubspotBuilt: false, journeySteps: ['route', 'outreach'] },
 
   // Meetings & scheduling
   { name: 'Google Calendar', category: 'Meetings & scheduling', blurb: 'Two-way calendar sync for the meetings tool', hubspotBuilt: true, journeySteps: ['meeting'] },
@@ -40,26 +44,26 @@ export const INTEGRATIONS = [
   { name: 'Google Meet', category: 'Meetings & scheduling', blurb: 'Meet links on meetings; recordings feed AI summaries', hubspotBuilt: true, journeySteps: ['meeting', 'ai_prep'] },
 
   // Email & communication
-  { name: 'Gmail', category: 'Email & communication', blurb: 'Send, track, and log emails from inbox to CRM', hubspotBuilt: true, journeySteps: ['direct', 'intel'] },
-  { name: 'Outlook', category: 'Email & communication', blurb: 'Email sync, tracking, and logging to records', hubspotBuilt: true, journeySteps: ['direct', 'intel'] },
+  { name: 'Gmail', category: 'Email & communication', blurb: 'Send, track, and log emails from inbox to CRM', hubspotBuilt: true, journeySteps: ['inbound', 'ai_prep'] },
+  { name: 'Outlook', category: 'Email & communication', blurb: 'Email sync, tracking, and logging to records', hubspotBuilt: true, journeySteps: ['inbound', 'ai_prep'] },
   { name: 'Slack', category: 'Email & communication', blurb: 'CRM notifications and deal alerts in channels', hubspotBuilt: true, journeySteps: ['stages', 'handoff'] },
-  { name: 'Front', category: 'Email & communication', blurb: 'CRM context inside a shared team inbox', hubspotBuilt: false, journeySteps: ['direct'] },
+  { name: 'Front', category: 'Email & communication', blurb: 'CRM context inside a shared team inbox', hubspotBuilt: false, journeySteps: ['inbound'] },
 
   // Marketing & ads
-  { name: 'Google Ads', category: 'Marketing & ads', blurb: 'Manage campaigns and sync ad leads to CRM', hubspotBuilt: true, journeySteps: ['ads'] },
-  { name: 'Facebook / Meta Ads', category: 'Marketing & ads', blurb: 'Lead ads with lead sync into HubSpot', hubspotBuilt: true, journeySteps: ['ads'] },
-  { name: 'LinkedIn Ads', category: 'Marketing & ads', blurb: 'Lead-gen ads with leads synced to CRM', hubspotBuilt: true, journeySteps: ['ads', 'social'] },
+  { name: 'Google Ads', category: 'Marketing & ads', blurb: 'Manage campaigns and sync ad leads to CRM', hubspotBuilt: true, journeySteps: ['find_online'] },
+  { name: 'Facebook / Meta Ads', category: 'Marketing & ads', blurb: 'Lead ads with lead sync into HubSpot', hubspotBuilt: true, journeySteps: ['find_online'] },
+  { name: 'LinkedIn Ads', category: 'Marketing & ads', blurb: 'Lead-gen ads with leads synced to CRM', hubspotBuilt: true, journeySteps: ['find_online'] },
   { name: 'Mailchimp', category: 'Marketing & ads', blurb: 'Sync subscribers and engagement to contacts', hubspotBuilt: false, journeySteps: ['nurture'] },
-  { name: 'Typeform', category: 'Marketing & ads', blurb: 'Push form responses into HubSpot as contacts', hubspotBuilt: false, journeySteps: ['form'] },
+  { name: 'Typeform', category: 'Marketing & ads', blurb: 'Push form responses into HubSpot as contacts', hubspotBuilt: false, journeySteps: ['inbound'] },
   { name: 'SurveyMonkey', category: 'Marketing & ads', blurb: 'Survey responses synced to contact records', hubspotBuilt: false, journeySteps: ['feedback'] },
-  { name: 'Unbounce', category: 'Marketing & ads', blurb: 'Landing-page leads into the CRM', hubspotBuilt: false, journeySteps: ['form', 'ads'] },
-  { name: 'WordPress', category: 'Marketing & ads', blurb: 'Forms and visitor tracking via HubSpot plugin', hubspotBuilt: true, journeySteps: ['search', 'form'] },
-  { name: 'Squarespace', category: 'Marketing & ads', blurb: 'HubSpot tracking + forms embedded on your Squarespace site', hubspotBuilt: false, journeySteps: ['search', 'form'] },
-  { name: 'Lead gen agency', category: 'Marketing & ads', blurb: 'Agency-sourced leads flow straight into the CRM with source tagging', hubspotBuilt: false, journeySteps: ['ads'] },
+  { name: 'Unbounce', category: 'Marketing & ads', blurb: 'Landing-page leads into the CRM', hubspotBuilt: false, journeySteps: ['inbound', 'find_online'] },
+  { name: 'WordPress', category: 'Marketing & ads', blurb: 'Forms and visitor tracking via HubSpot plugin', hubspotBuilt: true, journeySteps: ['find_online', 'inbound'] },
+  { name: 'Squarespace', category: 'Marketing & ads', blurb: 'HubSpot tracking + forms embedded on your Squarespace site', hubspotBuilt: false, journeySteps: ['find_online', 'inbound'] },
+  { name: 'Lead gen agency', category: 'Marketing & ads', blurb: 'Agency-sourced leads flow straight into the CRM with source tagging', hubspotBuilt: false, journeySteps: ['find_online'] },
 
   // Social & video
-  { name: 'LinkedIn Sales Navigator', category: 'Social & video', blurb: 'Sales Navigator insights on CRM records', hubspotBuilt: false, journeySteps: ['social', 'intel', 'sales_nurture', 'cold_outreach'] },
-  { name: 'Vidyard', category: 'Social & video', blurb: 'Embed and track sales videos in emails', hubspotBuilt: false, journeySteps: ['nurture', 'social', 'sales_nurture', 'cold_outreach', 'warm_outreach'] },
+  { name: 'LinkedIn Sales Navigator', category: 'Social & video', blurb: 'Sales Navigator insights on CRM records', hubspotBuilt: false, journeySteps: ['find_online', 'ai_prep', 'route', 'outreach'] },
+  { name: 'Vidyard', category: 'Social & video', blurb: 'Embed and track sales videos in emails', hubspotBuilt: false, journeySteps: ['nurture', 'find_online', 'route', 'outreach'] },
   { name: 'Loom', category: 'Social & video', blurb: 'Record and share videos logged to CRM', hubspotBuilt: false, journeySteps: ['nurture'] },
 
   // Project management & ops
@@ -74,7 +78,7 @@ export const INTEGRATIONS = [
   { name: 'Zapier', category: 'Data sync & automation', blurb: 'Connect HubSpot to thousands of apps, no code', hubspotBuilt: false, journeySteps: ['handoff', 'fulfill'] },
   { name: 'Make', category: 'Data sync & automation', blurb: 'Advanced multi-step automations across apps', hubspotBuilt: false, journeySteps: ['handoff'] },
   { name: 'Operations Hub Data Sync', category: 'Data sync & automation', blurb: 'Native two-way sync with dozens of apps', hubspotBuilt: true, journeySteps: ['handoff', 'fulfill'] },
-  { name: 'Supermetrics', category: 'Data sync & automation', blurb: 'HubSpot marketing data into BI/reporting', hubspotBuilt: false, journeySteps: ['ads'] },
+  { name: 'Supermetrics', category: 'Data sync & automation', blurb: 'HubSpot marketing data into BI/reporting', hubspotBuilt: false, journeySteps: ['find_online'] },
 
   // E-commerce
   { name: 'Shopify', category: 'E-commerce', blurb: 'Sync orders, products, and customers into CRM', hubspotBuilt: true, journeySteps: ['fulfill', 'retain'] },
@@ -83,7 +87,7 @@ export const INTEGRATIONS = [
 
   // Customer support
   { name: 'Zendesk', category: 'Customer support', blurb: 'Sync support tickets to contact profiles', hubspotBuilt: false, journeySteps: ['support'] },
-  { name: 'Intercom', category: 'Customer support', blurb: 'Chat conversations and contacts to CRM', hubspotBuilt: false, journeySteps: ['support', 'form'] },
+  { name: 'Intercom', category: 'Customer support', blurb: 'Chat conversations and contacts to CRM', hubspotBuilt: false, journeySteps: ['support', 'inbound'] },
   { name: 'Help Scout', category: 'Customer support', blurb: 'Support conversations on the contact timeline', hubspotBuilt: false, journeySteps: ['support'] },
   { name: 'Jira Service Management', category: 'Customer support', blurb: 'Service tickets linked to HubSpot records', hubspotBuilt: false, journeySteps: ['support'] },
 
