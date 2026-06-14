@@ -464,6 +464,21 @@ export const SOLUTION_MAP = {
     ],
     keywords: ['handoff', 'hand-off', 'falls through', 'between teams', 'lost in the gap', 'nobody owns', 'marketing and sales', 'disconnected teams'],
   },
+  lead_gen_gap: {
+    title: 'A marketing engine that fills the pipeline',
+    narrative:
+      'Your site, content, and ads become a steady source of qualified leads — forms and landing pages capture them, campaigns are tracked to revenue, and every lead flows into the CRM ready to work instead of hoping referrals show up.',
+    workflows: ['new_lead_assignment', 'new_contact_welcome'],
+    viewIds: [],
+    widgets: ['contacts_by_lifecycle'],
+    cadenceRules: {},
+    ccBuild: [
+      'Lead-capture forms and landing pages wired straight into the CRM',
+      'Lead-source tracking so you know which channels actually produce',
+      'A nurture campaign that warms up the "not yet ready" leads over time',
+    ],
+    keywords: ['not enough leads', 'more leads', 'lead generation', 'lead gen', 'qualified leads', 'need leads', 'empty pipeline', 'slow month'],
+  },
 }
 
 // SPIN layer (sales/discovery-questions/Discovery-Questions-By-Hub.md):
@@ -587,6 +602,10 @@ const SPIN_EXTRAS = {
     hub: 'RevOps',
     implication: 'A lead that dies in the gap between marketing and sales never shows up in a report. How many did last month?',
   },
+  lead_gen_gap: {
+    hub: 'Marketing Hub',
+    implication: 'If marketing produced 10 more qualified leads a month at your close rate, what would that add to revenue this year?',
+  },
 }
 
 Object.entries(SPIN_EXTRAS).forEach(([id, extra]) => {
@@ -595,12 +614,13 @@ Object.entries(SPIN_EXTRAS).forEach(([id, extra]) => {
 
 // Checklist display labels: one-word pain (bold in UI) + short description.
 const PAIN_LABELS = {
-  quotes_no_followup: { pain: 'Quotes', painDesc: 'follow-up goes silent after we send them' },
-  unknown_close_rate: { pain: 'Close rate', painDesc: 'unknown without digging through emails' },
-  leads_fall_through: { pain: 'Leads', painDesc: 'fall through the cracks before anyone responds' },
-  pipeline_in_head: { pain: 'Pipeline', painDesc: 'lives in one head or a spreadsheet, not a shared system' },
-  rep_workload_unproven: { pain: 'Reps', painDesc: "everyone performs differently and we can't see anyone's activity" },
-  no_reengagement: { pain: 'Re-engagement', painDesc: 'past clients never hear from us again' },
+  quotes_no_followup: { pain: 'Quote follow-up', painDesc: 'after we send a quote, follow-up isn’t consistent' },
+  unknown_close_rate: { pain: 'Close rate', painDesc: 'we don’t know why we win or lose deals, so we don’t know where to improve' },
+  lead_gen_gap: { pain: 'Lead generation', painDesc: 'not enough qualified leads coming from marketing' },
+  leads_fall_through: { pain: 'Leads', painDesc: 'sales takes too long to engage the ones who fill a form or reach out' },
+  pipeline_in_head: { pain: 'Pipeline', painDesc: "we can't see every open deal, where it stands, and what's been followed up on" },
+  rep_workload_unproven: { pain: 'Reps', painDesc: 'we have reps but can’t see how their activity impacts revenue' },
+  no_reengagement: { pain: 'Re-engagement', painDesc: 'past clients don’t hear from us enough for new opportunities' },
   marketing_attribution: { pain: 'Attribution', painDesc: 'marketing spend has no clear tie to closed revenue' },
   admin_overload: { pain: 'Admin', painDesc: 'data entry and manual emails eat selling time' },
   inconsistent_onboarding: { pain: 'Onboarding', painDesc: 'every client gets a different experience' },
@@ -608,22 +628,22 @@ const PAIN_LABELS = {
   ar_visibility: { pain: 'Receivables', painDesc: "don't know what's owed without running a report" },
   playbook_gap: { pain: 'Process', painDesc: 'nothing written down — every rep sells their own way' },
   marketing_email_gap: { pain: 'Email', painDesc: 'we never email our list — no newsletter, no nurture' },
-  landing_pages_gap: { pain: 'Capture', painDesc: "our website doesn't turn visitors into leads" },
+  landing_pages_gap: { pain: 'Capture', painDesc: "we aren't capturing leads anywhere we can easily follow up" },
   content_seo_gap: { pain: 'Visibility', painDesc: 'nobody finds us online — no blog, SEO, or content' },
   quotes_invoices_split: { pain: 'Billing', painDesc: "quoting and invoicing live in tools that don't talk" },
   kb_faq_repeat: { pain: 'FAQs', painDesc: 'we answer the same customer questions over and over' },
   surveys_nps_blind: { pain: 'Feedback', painDesc: "we don't know customers are unhappy until they're gone" },
-  reporting_excel_pain: { pain: 'Reports', painDesc: 'every report means hours of exports and Excel' },
+  reporting_excel_pain: { pain: 'Reports', painDesc: 'every report or dashboard wastes time on exports and spreadsheets — nothing’s automated' },
   ai_manual_drafting: { pain: 'AI', painDesc: 'team hand-writes everything AI could draft' },
   tools_dont_talk: { pain: 'Sync', painDesc: 'same data re-typed into multiple systems daily' },
-  tasks_slip: { pain: 'Tasks', painDesc: 'live in memory and chat messages, and things slip' },
+  tasks_slip: { pain: 'Tasks', painDesc: 'engaging the right customer at the right time slips — we can’t prioritize the best activities' },
   contact_context: { pain: 'Context', painDesc: "what each person's working on, their pain points — it lives in reps' heads" },
   company_picture: { pain: 'Org picture', painDesc: "can't see a company, who works there, and what's happening in one view" },
   focus_scatter: { pain: 'Focus', painDesc: "data's everywhere — we don't know who to spend time on or who's heard from us" },
   vip_segmentation: { pain: 'VIPs', painDesc: "can't tell customers from leads from our best relationships at a glance" },
   relationship_gap: { pain: 'Relationships', painDesc: "we haven't built deep enough relationships with the right people yet" },
-  key_person_risk: { pain: 'Key-person risk', painDesc: 'the pipeline lives in one rep\'s head — if they leave, the book walks too' },
-  handoff_void: { pain: 'Handoffs', painDesc: 'leads die in the gap between marketing, sales, and ops' },
+  key_person_risk: { pain: 'Key-person risk', painDesc: 'all contacts and opportunities live in one rep’s head — if they leave, so does the info' },
+  handoff_void: { pain: 'Handoffs', painDesc: 'we lose jobs and customers to slow handoffs and miscommunication between departments' },
 }
 
 Object.entries(PAIN_LABELS).forEach(([id, labels]) => {

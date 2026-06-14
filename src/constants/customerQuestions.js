@@ -10,39 +10,38 @@ import { AVATARS, AVATAR_NAMES } from './avatars'
 // Grounded in Daniel's documented 12-pain library (P1-P12), the avatar hooks, and
 // the RevOps positioning brief. Order within a stage = priority. The RevOps stage
 // is the climax: "tie it all together." Each id maps to a SOLUTION_MAP entry.
+// Curated Q6 set, copy and order locked with Daniel (June 2026). 12 pains across
+// the 5 journey stages, in the order he wants them shown.
 export const JOURNEY_PAIN_SET = [
   // Marketing — get found & capture leads
-  'leads_fall_through', // P4 speed-to-lead
-  'marketing_attribution', // P8 can't measure spend
-  'landing_pages_gap', // site doesn't capture
+  'leads_fall_through', // slow to engage inbound leads
+  'lead_gen_gap', // not enough qualified leads from marketing
+  'landing_pages_gap', // not capturing leads to follow up
   // Sales — work the deal to the close
-  'quotes_no_followup', // P1 quotes go silent
-  'pipeline_in_head', // P2 owner visibility
-  'tasks_slip', // follow-ups slip
-  'rep_workload_unproven', // P7/P12 rep visibility
-  'key_person_risk', // P5 bus factor
+  'quotes_no_followup', // quote follow-up isn't consistent
+  'pipeline_in_head', // can't see open deals / status
+  'tasks_slip', // right activity at the right time slips
+  'rep_workload_unproven', // can't tie rep activity to revenue
+  'key_person_risk', // it all lives in one rep's head
   // Service & Retention — keep & grow customers
-  'no_reengagement', // P3/P6 past clients ignored
-  'inconsistent_onboarding', // P10
-  'surveys_nps_blind', // silent churn
+  'no_reengagement', // past clients don't hear from us
   // Operations — the back office
-  'admin_overload', // P9 admin eats selling time
-  'reporting_excel_pain', // reports = hours of Excel
-  'ar_visibility', // cash / receivables blind
+  'reporting_excel_pain', // reporting is manual exports
   // RevOps — tie it all together
-  'tools_dont_talk', // disconnected systems
-  'handoff_void', // leads die between teams
-  'unknown_close_rate', // numbers a mystery
+  'handoff_void', // lose jobs to slow handoffs
+  'unknown_close_rate', // don't know why we win or lose
 ]
 
 // Back-compat alias (was the universal core before the journey set).
 export const CORE_PAINS = JOURNEY_PAIN_SET
 
-// Avatar-weighted pains: the market's top pains pinned first, then the full
-// curated journey set. No hard cap — it's grouped by stage so the length reads
-// as ~3-4 short rows per section, not a wall.
+// The curated set, with the avatar's most-relevant pains pinned to the front of
+// their stage. Avatar pains that aren't in the curated set are ignored, so Q6
+// always shows exactly the locked 12 — the avatar only reorders, never adds.
 export function customerPainIds(industry) {
-  const avatarPains = AVATARS[industry]?.topPains || []
+  const avatarPains = (AVATARS[industry]?.topPains || []).filter((id) =>
+    JOURNEY_PAIN_SET.includes(id)
+  )
   return [...new Set([...avatarPains, ...JOURNEY_PAIN_SET])]
 }
 
@@ -63,6 +62,7 @@ export const JOURNEY_STAGES = [
 export const PAIN_STAGE = {
   // Marketing — attract & capture
   leads_fall_through: 'marketing',
+  lead_gen_gap: 'marketing',
   marketing_email_gap: 'marketing',
   landing_pages_gap: 'marketing',
   content_seo_gap: 'marketing',
