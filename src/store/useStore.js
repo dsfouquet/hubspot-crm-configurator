@@ -168,6 +168,25 @@ export const useStore = create((set, get) => ({
     set({ session, gatePassed: true, currentStep: 0, restored: false })
   },
 
+  // Back to the landing screen (the gate) so the user can re-pick customer vs
+  // presenter mode without opening a new tab. Starts a fresh async session.
+  resetToHome() {
+    const session = buildInitialSession('async')
+    saveSession(session)
+    syncUrlSession(session.sessionId)
+    set({
+      session,
+      gatePassed: false,
+      presenterMode: false,
+      advisorOpen: false,
+      currentStep: 0,
+      restored: false,
+      focusedWorkflowId: null,
+      focusedProblemId: null,
+      previewZoom: 1,
+    })
+  },
+
   // Begin async session after the name+email gate.
   beginAsyncSession(name, email) {
     const { session } = get()

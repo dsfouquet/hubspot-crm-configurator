@@ -122,15 +122,52 @@ export default function PreviewCadence() {
   })
   const toggle = (key) => setOpen((o) => ({ ...o, [key]: !o[key] }))
 
+  // Sales rules come from the configured cadence; the rest are the standard
+  // cross-hub rules we set up so the CRM nudges every team, not just sales.
   const activeRules = []
   if (rules.flagNoActivityEnabled)
-    activeRules.push(`Flag deals idle > ${rules.flagNoActivityDays} days`)
+    activeRules.push(`Flag deals idle over ${rules.flagNoActivityDays} days`)
   if (rules.requireNextStep) activeRules.push('Next step required on open deals')
   if (rules.autoRemindEnabled)
-    activeRules.push(`Remind on tasks overdue > ${rules.autoRemindOverdueDays} days`)
+    activeRules.push(`Remind on tasks overdue past ${rules.autoRemindOverdueDays} days`)
   if (rules.requireCloseDateEnabled)
     activeRules.push(`Close date required past ${rules.requireCloseDatePastStage}`)
-  if (rules.minCallsEnabled) activeRules.push(`Min ${rules.minCallsPerWeek} calls/week`)
+  if (rules.minCallsEnabled) activeRules.push(`Minimum ${rules.minCallsPerWeek} calls per week`)
+
+  const ruleGroups = [
+    {
+      hub: 'Sales',
+      rules: [
+        ...activeRules,
+        'Rotate untouched leads back to the team queue after 30 days',
+      ],
+    },
+    {
+      hub: 'Marketing',
+      rules: [
+        'Alert sales the moment a lead re-engages (revisits pricing or opens 3+ emails)',
+        'Flag any form submission with no follow-up within one business day',
+        'Stop emailing contacts who unsubscribed or hard-bounced',
+      ],
+    },
+    {
+      hub: 'Service',
+      rules: [
+        'Escalate any ticket that breaches its SLA to a manager',
+        'Alert the account owner on any survey score below 7',
+        'Open a renewal task automatically 60 days before a contract ends',
+      ],
+    },
+    {
+      hub: 'Operations',
+      rules: [
+        'Flag any deal or company with no owner assigned',
+        'Require a company and amount before a deal can reach Proposal',
+        'Run a weekly duplicate and data-health check',
+      ],
+    },
+  ].filter((g) => g.rules.length)
+  const totalRules = ruleGroups.reduce((n, g) => n + g.rules.length, 0)
 
   const channels = cadence.notifications.channels
 
@@ -191,31 +228,19 @@ export default function PreviewCadence() {
             </span>
           </p>
 
-          {/* Adoption → ROI mini timeline */}
-          <div className="mt-4 flex flex-col sm:flex-row sm:items-stretch gap-3 sm:gap-0">
+          {/* Adoption → ROI mini timeline — number on top, label + body beneath. */}
+          <div className="mt-4 grid grid-cols-3 gap-3">
             {ADOPTION_STEPS.map((step, i) => (
-              <div
-                key={step.title}
-                className="flex sm:flex-1 items-start sm:items-stretch gap-3 sm:gap-0"
-              >
-                <div className="flex sm:flex-col sm:items-center sm:text-center shrink-0">
-                  <div className="flex items-center">
-                    <span className="flex items-center justify-center w-7 h-7 rounded-full bg-hs-orange text-white text-[12px] font-preview font-semibold shrink-0">
-                      {i + 1}
-                    </span>
-                    {i < ADOPTION_STEPS.length - 1 && (
-                      <span className="hidden sm:block h-0.5 flex-1 bg-hs-orange/30 mx-1" />
-                    )}
-                  </div>
-                </div>
-                <div className="sm:px-2 sm:pt-2 sm:text-center">
-                  <p className="text-[12px] font-preview font-semibold text-hs-navy leading-tight">
-                    {step.title}
-                  </p>
-                  <p className="text-[11px] font-preview text-hs-text-light leading-snug mt-0.5">
-                    {step.body}
-                  </p>
-                </div>
+              <div key={step.title} className="text-center">
+                <span className="mx-auto flex items-center justify-center w-8 h-8 rounded-full bg-hs-orange text-white text-[13px] font-preview font-semibold">
+                  {i + 1}
+                </span>
+                <p className="text-[12px] font-preview font-semibold text-hs-navy leading-tight mt-2">
+                  {step.title}
+                </p>
+                <p className="text-[11px] font-preview text-hs-text-light leading-snug mt-0.5">
+                  {step.body}
+                </p>
               </div>
             ))}
           </div>
@@ -260,11 +285,11 @@ export default function PreviewCadence() {
             <ul className="space-y-2">
               {meetings.map((m) => (
                 <li key={m.key} className="flex items-start gap-3">
-                  <div className="shrink-0 w-12 text-center">
-                    <div className="text-[11px] font-preview font-semibold text-hs-orange">
-                      {m.day.length > 8 ? m.day.slice(0, 8) : m.day}
+                  <div className="shrink-0 w-20 text-center">
+                    <div className="text-[11px] font-preview font-semibold text-hs-orange leading-tight">
+                      {m.day}
                     </div>
-                    <div className="text-[10px] font-preview text-hs-text-light">{m.time}</div>
+                    <div className="text-[10px] font-preview text-hs-text-light mt-0.5">{m.time}</div>
                   </div>
                   <div className="flex-1 border-l-2 border-hs-orange/40 pl-3">
                     <p className="text-[13px] font-preview font-medium text-hs-navy">{m.label}</p>
@@ -283,22 +308,28 @@ export default function PreviewCadence() {
       <Section
         icon={IconCheck}
         title="Accountability Rules"
-        summary={`${activeRules.length} active`}
+        summary={`${totalRules} active`}
         open={open.rules}
         onToggle={() => toggle('rules')}
       >
-        <div className="p-4">
-          {activeRules.length === 0 ? (
-            <p className="text-[13px] font-preview text-hs-text-light">No rules enabled.</p>
-          ) : (
-            <ul className="space-y-1.5">
-              {activeRules.map((r) => (
-                <li key={r} className="text-[13px] font-preview text-hs-text-dark flex items-center gap-2">
-                  <IconCheck width={12} height={12} className="text-hs-green shrink-0" /> {r}
-                </li>
-              ))}
-            </ul>
-          )}
+        <div className="p-4 space-y-3.5">
+          {ruleGroups.map((g) => (
+            <div key={g.hub}>
+              <p className="text-[10px] font-preview font-semibold uppercase tracking-wide text-hs-text-light mb-1.5 pb-1 border-b border-hs-greatwhite">
+                {g.hub}
+              </p>
+              <ul className="space-y-1.5">
+                {g.rules.map((r) => (
+                  <li
+                    key={r}
+                    className="text-[13px] font-preview text-hs-text-dark flex items-start gap-2"
+                  >
+                    <IconCheck width={12} height={12} className="text-hs-green shrink-0 mt-0.5" /> {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </Section>
 

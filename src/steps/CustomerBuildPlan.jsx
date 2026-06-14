@@ -2,29 +2,9 @@ import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import { painParts } from '../constants/discoveryQuestions'
 
-// Small inline icons for the "what's in the build" tiles.
-const svg = { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true }
-const TileIcons = {
-  pipeline: (
-    <svg {...svg}><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="14" y2="12" /><line x1="4" y1="18" x2="9" y2="18" /></svg>
-  ),
-  bolt: (
-    <svg {...svg}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
-  ),
-  chart: (
-    <svg {...svg}><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /><line x1="3" y1="20" x2="21" y2="20" /></svg>
-  ),
-  database: (
-    <svg {...svg}><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5v14a9 3 0 0 0 18 0V5" /><path d="M3 12a9 3 0 0 0 18 0" /></svg>
-  ),
-  contacts: (
-    <svg {...svg}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
-  ),
-}
-
 // Customer-mode Step 2: a single-column, guided build plan. One idea per card:
-// "you said X is leaking money → here's exactly what we build to plug it."
-// No split panes, no diagrams, no offer matrix — that depth lives in the
+// "you said X is leaking money, here's exactly what we build to plug it."
+// No split panes, no diagrams, no offer matrix; that depth lives in the
 // presenter flow. One clear next action: see it live.
 export default function CustomerBuildPlan() {
   const session = useStore((s) => s.session)
@@ -33,9 +13,6 @@ export default function CustomerBuildPlan() {
 
   const fixPlan = session.fixPlan
   const problems = fixPlan?.problems || []
-  const stages = session.deals?.pipelineStages || []
-  const workflowCount = (session.workflows || []).length
-  const customObj = (session.customObjects || [])[0]
 
   // Cards collapsed by default — the page opens clean and the detail is one tap away.
   const [openId, setOpenId] = useState(null)
@@ -90,37 +67,20 @@ export default function CustomerBuildPlan() {
           </div>
         )}
 
-        {/* What's in the build — visual tiles (icon + count + what it is). Heading
-            gives them context so the numbers aren't a guessing game. */}
-        <div className="mt-6 mb-2 text-[11px] font-ui font-semibold uppercase tracking-wide text-hs-text-light">
-          What we set up in your CRM
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          {[
-            { icon: TileIcons.pipeline, value: stages.length, label: 'pipeline stages, set up for your deals' },
-            { icon: TileIcons.bolt, value: workflowCount, label: `${workflowCount === 1 ? 'automation' : 'automations'} doing the follow-up for you` },
-            { icon: TileIcons.chart, value: 1, label: 'owner dashboard with your key numbers' },
-            customObj
-              ? { icon: TileIcons.database, value: 1, label: `${customObj.singular || customObj.plural} tracker, built just for your business` }
-              : { icon: TileIcons.contacts, value: '✓', label: 'your contacts imported and organized' },
-          ].map((t) => (
-            <div
-              key={t.label}
-              className="bg-white border border-hs-border rounded-lg px-3 py-3 flex items-start gap-2.5"
-            >
-              <span className="shrink-0 w-8 h-8 rounded-md bg-hs-orange/10 text-hs-orange flex items-center justify-center">
-                {t.icon}
-              </span>
-              <span className="min-w-0">
-                <span className="block font-ui font-bold text-hs-navy text-[18px] leading-none">
-                  {t.value}
-                </span>
-                <span className="block text-[11px] font-ui text-hs-text-light leading-snug mt-1">
-                  {t.label}
-                </span>
-              </span>
-            </div>
-          ))}
+        {/* Link out to the full site for everything else we build beyond this plan. */}
+        <div className="mt-4">
+          <a
+            href="https://www.crescentconnectla.com"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 text-[13px] font-ui font-semibold text-hs-orange hover:text-hs-sorbet"
+          >
+            Want to see what else we build?
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a>
         </div>
 
         {/* One card per leak */}

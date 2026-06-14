@@ -2,6 +2,26 @@ import Logo from '../components/Logo'
 import { useStore } from '../store/useStore'
 import DownloadPdfButton from '../components/DownloadPdfButton'
 
+// Back to the landing screen (mode picker). Present on every page so the user
+// can switch between customer and presenter mode without opening a new tab.
+function HomeButton() {
+  const resetToHome = useStore((s) => s.resetToHome)
+  return (
+    <button
+      onClick={resetToHome}
+      title="Back to home"
+      aria-label="Back to home"
+      className="flex items-center gap-1.5 text-[13px] font-ui font-medium text-hs-text-light hover:text-hs-navy px-2.5 py-1.5 rounded-[3px] border border-hs-border hover:border-hs-text-light shrink-0"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M3 11l9-8 9 8" />
+        <path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10" />
+      </svg>
+      <span className="hidden sm:inline">Home</span>
+    </button>
+  )
+}
+
 // Top header bar. Two looks: normal mode (full chrome) vs. presenter mode (simplified).
 export default function Header() {
   const presenterMode = useStore((s) => s.presenterMode)
@@ -24,6 +44,7 @@ export default function Header() {
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <HomeButton />
           {currentStep > 0 && (
             <button
               onClick={() => goToStep(0)}
@@ -41,7 +62,10 @@ export default function Header() {
   if (presenterMode) {
     return (
       <header className="flex items-center justify-between h-14 px-5 bg-white border-b border-hs-border shrink-0">
-        <Logo />
+        <div className="flex items-center gap-3">
+          <Logo />
+          <HomeButton />
+        </div>
         <h1 className="font-ui font-semibold text-hs-navy text-lg">
           {name ? `${name}'s` : 'Your'} HubSpot Blueprint
         </h1>
@@ -59,6 +83,7 @@ export default function Header() {
     <header className="flex items-center justify-between h-14 px-5 bg-white border-b border-hs-border shrink-0">
       <div className="flex items-center gap-3">
         <Logo />
+        <HomeButton />
         <span className="text-hs-border">|</span>
         <span className="font-ui font-semibold text-hs-navy text-[15px]">
           HubSpot CRM Configurator
