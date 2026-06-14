@@ -26,7 +26,6 @@ import {
   IconGear,
   IconBell,
   IconHelp,
-  Sprocket,
 } from '../preview/hubIcons'
 
 // HubSpot-light demo: left rail mirrors HubSpot's real hub navigation; each hub
@@ -59,9 +58,12 @@ function TopBar() {
 
   return (
     <div className="shrink-0 h-12 bg-hs-navy flex items-center gap-3 px-3 font-preview">
-      <span className="text-hs-orange flex items-center" aria-hidden>
-        <Sprocket size={24} />
-      </span>
+      <img
+        src="/cc-mark-white.png"
+        alt="Crescent Connect"
+        className="h-7 w-auto shrink-0"
+        aria-hidden
+      />
       {/* Search pill */}
       <div className="flex-1 max-w-xs">
         <div className="flex items-center gap-2 h-8 px-3 rounded bg-white/10 border border-white/20 text-white/50 text-[12.5px]">

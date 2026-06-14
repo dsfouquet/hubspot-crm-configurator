@@ -423,20 +423,41 @@ export default function HubJourney() {
         </p>
       </div>
 
-      {/* 3) THE BOARD — horizontal phase columns */}
-      <div className="flex-1 min-h-0 overflow-x-auto hs-scroll bg-hs-canvas">
-        <div className="h-full flex items-stretch gap-0 px-4 py-4">
-          {phases.map((p, pi) => (
-            <div key={p.phase} className="flex items-stretch">
-              <div className="min-w-[200px] flex-1 flex flex-col">
-                {/* Phase header chip + plain-language sublabel + underline */}
+      {/* 3) THE BOARD — responsive phase grid. Auto-fits as many phases per row
+          as the width allows and wraps the rest to the next line, so it never
+          scrolls sideways. Department handoffs sit inline in the phase header
+          (the phase a handoff feeds into), so they travel with the column. */}
+      <div className="flex-1 min-h-0 overflow-y-auto hs-scroll bg-hs-canvas">
+        <div
+          className="grid gap-x-3 gap-y-5 px-4 py-4 items-start"
+          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}
+        >
+          {phases.map((p, pi) => {
+            // Handoffs that feed INTO this phase = those that follow the prior phase.
+            const incoming = pi > 0 ? BOUNDARY_HANDOFFS[phases[pi - 1].phase] || [] : []
+            return (
+              <div key={p.phase} className="flex flex-col min-w-0">
+                {/* Phase header: chip + inline incoming handoff(s), sublabel, rule */}
                 <div className="mb-2.5">
-                  <span
-                    className="inline-block text-[10px] font-bold uppercase tracking-wide text-white rounded-[3px] px-2 py-0.5"
-                    style={{ backgroundColor: p.color }}
-                  >
-                    {p.phase}
-                  </span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span
+                      className="inline-block text-[10px] font-bold uppercase tracking-wide text-white rounded-[3px] px-2 py-0.5"
+                      style={{ backgroundColor: p.color }}
+                    >
+                      {p.phase}
+                    </span>
+                    {incoming.map((h) => (
+                      <span
+                        key={`${h.from}-${h.to}`}
+                        className="inline-flex items-center gap-1 text-[9px] font-semibold font-preview bg-white border border-hs-orange/40 rounded-full px-1.5 py-0.5 text-hs-text-dark whitespace-nowrap shadow-sm"
+                        title={`Automatic handoff: ${h.from} → ${h.to}`}
+                      >
+                        {h.from}
+                        <IconArrowRight width={9} height={9} className="text-hs-orange shrink-0" />
+                        {h.to}
+                      </span>
+                    ))}
+                  </div>
                   <span className="block mt-1 text-[11px] text-hs-text-light leading-tight">
                     {PHASE_SUBLABELS[p.phase]}
                   </span>
@@ -499,30 +520,8 @@ export default function HubJourney() {
                   })}
                 </div>
               </div>
-
-              {/* Flow connector between phases — always-visible department handoffs */}
-              {pi < phases.length - 1 && (
-                <div className="flex flex-col items-center justify-center px-1.5 self-stretch min-w-[92px]">
-                  {(BOUNDARY_HANDOFFS[p.phase] || []).length > 0 && (
-                    <div className="flex flex-col gap-1 mb-1.5">
-                      {BOUNDARY_HANDOFFS[p.phase].map((h) => (
-                        <span
-                          key={`${h.from}-${h.to}`}
-                          className="inline-flex items-center gap-1 text-[9px] font-semibold font-preview bg-white border border-hs-orange/40 rounded-full px-2 py-0.5 text-hs-text-dark whitespace-nowrap shadow-sm"
-                          title={`Automatic handoff: ${h.from} → ${h.to}`}
-                        >
-                          {h.from}
-                          <IconArrowRight width={9} height={9} className="text-hs-orange shrink-0" />
-                          {h.to}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  <IconChevronRight width={16} height={16} className="text-hs-border" />
-                </div>
-              )}
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
 
