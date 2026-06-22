@@ -137,6 +137,7 @@ export default function StepCTA() {
   const offers = scopeOffers(session)
   const name = session.gate?.name?.split(' ')[0]
   const isMachine = offers.recommended === 'machine'
+  const isDiy = offers.recommended === 'diy'
 
   const w = session.wizard || {}
   const stages = session.deals?.pipelineStages || []
@@ -154,24 +155,31 @@ export default function StepCTA() {
   ].filter(Boolean)
 
   // Best-fit card: the Machine shows the WHOLE build (free foundation + extras);
-  // the Free shows its 7-day scope. Grouped for scannability.
-  const bestOffer = isMachine ? OFFERS.machine : OFFERS.free
-  const bestItems = isMachine ? [...offers.free, ...offers.machine] : offers.free
+  // the Free shows its 7-day scope; the DIY shows the self-serve kit. Grouped.
+  const bestOffer = isDiy ? OFFERS.diy : isMachine ? OFFERS.machine : OFFERS.free
+  const bestItems = isDiy ? offers.diy : isMachine ? [...offers.free, ...offers.machine] : offers.free
   const groups = categorize(bestItems)
-  const guarantee = isMachine
-    ? 'Every deliverable shipped by day 30, or we work free until it is.'
-    : 'Done for you in 7 days, free for qualified Louisiana businesses.'
+  const guarantee = isDiy
+    ? 'Follow it step by step, and your $497 credits toward a done-for-you build later.'
+    : isMachine
+      ? 'Every deliverable shipped by day 30, or we work free until it is.'
+      : 'Done for you in 7 days, free for qualified Louisiana businesses.'
 
   // The other two rungs of the ladder, shown compact.
-  const secondary = isMachine
+  const secondary = isDiy
     ? [
-        { offer: OFFERS.free, summary: 'The 7-day starter: one pipeline, one automation, one dashboard. Free for qualified businesses.' },
-        { offer: OFFERS.retainer, summary: 'After launch we run the outreach and keep the pipeline moving. Optional, monthly.' },
+        { offer: OFFERS.free, summary: 'When you grow into it: a done-for-you 7-day setup, free for qualifying Louisiana businesses.' },
+        { offer: OFFERS.machine, summary: 'The full build when you are ready: every hub automated, integrated, and dashboarded in 30 days.' },
       ]
-    : [
-        { offer: OFFERS.machine, summary: 'When you outgrow the starter: every hub automated, integrated, and dashboarded in 30 days.' },
-        { offer: OFFERS.retainer, summary: 'After launch we run the outreach and keep the pipeline moving. Optional, monthly.' },
-      ]
+    : isMachine
+      ? [
+          { offer: OFFERS.free, summary: 'The 7-day starter: one pipeline, one automation, one dashboard. Free for qualified businesses.' },
+          { offer: OFFERS.retainer, summary: 'After launch we run the outreach and keep the pipeline moving. Optional, monthly.' },
+        ]
+      : [
+          { offer: OFFERS.machine, summary: 'When you outgrow the starter: every hub automated, integrated, and dashboarded in 30 days.' },
+          { offer: OFFERS.retainer, summary: 'After launch we run the outreach and keep the pipeline moving. Optional, monthly.' },
+        ]
 
   return (
     <div className="flex-1 w-full h-full overflow-y-auto hs-scroll bg-hs-canvas">
@@ -187,14 +195,14 @@ export default function StepCTA() {
           {name ? `${name}, here's` : "Here's"} how we get this built for you.
         </h1>
         <p className="mt-2 text-[15px] font-ui text-hs-text-dark">
-          Everything you previewed is real. Here's the Crescent Connect build that fits the
-          plan you just designed.
+          Everything you previewed is real. Here's the Crescent Connect build we put together
+          based on the answers you gave us.
         </p>
 
         {/* Selection overview */}
         <div className="mt-5 rounded-lg bg-hs-navydeep px-4 py-3">
           <div className="text-[10px] font-ui font-semibold uppercase tracking-wide text-hs-orange">
-            What you designed
+            What we built for you
           </div>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {recap.map((r) => (
@@ -220,25 +228,49 @@ export default function StepCTA() {
           />
         </div>
 
-        {/* Primary CTA is always to book time. DIY is the small fallback below. */}
+        {/* Primary CTA. For qualified prospects it's booking a call; for unqualified
+            it's the self-serve DIY Guide, with a call as the small fallback. */}
         <div className="mt-6 bg-white border border-hs-border rounded-lg px-5 py-6 text-center">
           <h2 className="font-ui font-bold text-hs-navy text-xl">
-            {isMachine ? 'Book your build call' : "Claim one of this month's free setups"}
+            {isDiy
+              ? 'Get your DIY CRM Build Guide'
+              : isMachine
+                ? 'Book your build call'
+                : "Claim one of this month's free setups"}
           </h2>
           <p className="mt-1.5 text-[14px] font-ui text-hs-text-dark">
-            15 minutes. We confirm scope, show you the plan, and map the fastest path to live.
+            {isDiy
+              ? 'Everything we would build, in a step-by-step guide you can follow this weekend. Your $497 credits toward a done-for-you build when you are ready.'
+              : '15 minutes. We confirm scope, show you the plan, and map the fastest path to live.'}
           </p>
-          <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="hs-btn-primary mt-4 !px-8 !py-3 !text-[15px]">
-            Book Your Free CRM Setup Call →
-          </a>
+          {isDiy ? (
+            <a href={DIY_GUIDE_URL} target="_blank" rel="noreferrer" className="hs-btn-primary mt-4 !px-8 !py-3 !text-[15px]">
+              Get the DIY CRM Build Guide →
+            </a>
+          ) : (
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="hs-btn-primary mt-4 !px-8 !py-3 !text-[15px]">
+              Book Your Free CRM Setup Call →
+            </a>
+          )}
           <div className="mt-3">
             <DownloadPdfButton variant="secondary" label="Download your build plan (PDF)" />
           </div>
           <p className="mt-4 text-[12px] font-ui text-hs-text-light">
-            Prefer to do it yourself?{' '}
-            <a href={DIY_GUIDE_URL} target="_blank" rel="noreferrer" className="hs-link">
-              Get the DIY CRM Build Guide
-            </a>
+            {isDiy ? (
+              <>
+                Questions first?{' '}
+                <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="hs-link">
+                  Book a 15-minute call
+                </a>
+              </>
+            ) : (
+              <>
+                Prefer to do it yourself?{' '}
+                <a href={DIY_GUIDE_URL} target="_blank" rel="noreferrer" className="hs-link">
+                  Get the DIY CRM Build Guide
+                </a>
+              </>
+            )}
           </p>
         </div>
 

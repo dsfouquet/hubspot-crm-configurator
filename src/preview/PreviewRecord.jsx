@@ -20,47 +20,103 @@ import {
 } from './uiIcons'
 import { CONTACTS, COMPANIES, TICKETS } from './demoData'
 
-// Compact example index table per record type (shown under the record preview
-// on the configurator steps, mirroring the final demo's list views).
-const INDEX_TABLES = {
+// Example list view per record type (shown under the record preview on the
+// configurator steps, mirroring the final demo's index pages). Columns are NOT
+// hardcoded — they're driven by whichever properties are enabled on the left, so
+// checking a property adds it both to the record card AND to this list view.
+const LIFECYCLE_COLORS = { Lead: 'blue', MQL: 'purple', Customer: 'green', Evangelist: 'orange', Target: 'blue', 'Past client': 'gray' }
+const TIER_COLORS = { 'Tier 1': 'green', 'Tier 2': 'blue', 'Tier 3': 'gray' }
+const PRIORITY_COLORS = { High: 'red', Medium: 'orange', Low: 'gray' }
+const STATUS_COLORS = { New: 'blue', 'In Progress': 'orange', Resolved: 'green', Closed: 'gray', 'Waiting on Customer': 'purple' }
+
+// Per-slice: the pinned identity column, property keys covered by it (skipped as
+// their own columns), the demo rows, and a resolver mapping a property key to the
+// matching demo-row field. Anything without per-row demo data falls back to the
+// single-record SAMPLE value, then an em-dash.
+const LIST_CONFIG = {
   contacts: {
     title: 'Example list view — Contacts',
-    columns: [
-      { key: 'name', label: 'Name', render: (v, r) => (
+    rows: () => CONTACTS.slice(0, 7),
+    skip: ['first_name', 'last_name'],
+    identity: {
+      key: 'name',
+      label: 'Name',
+      render: (r) => (
         <span>
-          <span className="hs-link font-semibold">{v}</span>
+          <span className="hs-link font-semibold">{r.name}</span>
           <span className="block text-[10px] text-hs-text-light">{r.title}</span>
         </span>
-      ) },
-      { key: 'company', label: 'Company' },
-      { key: 'lifecycle', label: 'Lifecycle', render: (v) => <Tag color={{ Lead: 'blue', MQL: 'purple', Customer: 'green', Evangelist: 'orange' }[v] || 'gray'}>{v}</Tag> },
-      { key: 'owner', label: 'Owner' },
-      { key: 'lastActivity', label: 'Last Activity', render: (v) => <span className="text-hs-text-light">{v}</span> },
-    ],
-    rows: () => CONTACTS.slice(0, 6),
+      ),
+    },
+    cell: {
+      email: (r) => r.email,
+      phone: (r) => r.phone,
+      job_title: (r) => r.title,
+      contact_owner: (r) => r.owner,
+      last_activity_date: (r) => <span className="text-hs-text-light">{r.lastActivity}</span>,
+      lifecycle_stage: (r) => <Tag color={LIFECYCLE_COLORS[r.lifecycle] || 'gray'}>{r.lifecycle}</Tag>,
+    },
   },
   companies: {
     title: 'Example list view — Companies',
-    columns: [
-      { key: 'name', label: 'Company', render: (v) => <span className="hs-link font-semibold">{v}</span> },
-      { key: 'city', label: 'City' },
-      { key: 'industry', label: 'Industry' },
-      { key: 'tier', label: 'Tier', render: (v) => <Tag color={{ 'Tier 1': 'green', 'Tier 2': 'blue' }[v] || 'gray'}>{v}</Tag> },
-      { key: 'lifecycle', label: 'Lifecycle', render: (v) => <Tag color={{ Customer: 'green', Target: 'blue' }[v] || 'gray'}>{v}</Tag> },
-    ],
-    rows: () => COMPANIES.slice(0, 6),
+    rows: () => COMPANIES.slice(0, 7),
+    skip: ['company_name', 'domain'],
+    identity: {
+      key: 'name',
+      label: 'Company',
+      render: (r) => <span className="hs-link font-semibold">{r.name}</span>,
+    },
+    cell: {
+      city_state: (r) => r.city,
+      lifecycle_stage: (r) => <Tag color={LIFECYCLE_COLORS[r.lifecycle] || 'gray'}>{r.lifecycle}</Tag>,
+      customer_tier: (r) => <Tag color={TIER_COLORS[r.tier] || 'gray'}>{r.tier}</Tag>,
+    },
   },
   tickets: {
     title: 'Example list view — Tickets',
-    columns: [
-      { key: 'name', label: 'Ticket', render: (v) => <span className="hs-link font-semibold">{v}</span> },
-      { key: 'company', label: 'Company' },
-      { key: 'priority', label: 'Priority', render: (v) => <Tag color={{ High: 'red', Medium: 'orange' }[v] || 'gray'}>{v}</Tag> },
-      { key: 'status', label: 'Status', render: (v) => <Tag color={{ New: 'blue', 'In Progress': 'orange', Resolved: 'green' }[v] || 'purple'}>{v}</Tag> },
-      { key: 'owner', label: 'Owner' },
-    ],
-    rows: () => TICKETS.slice(0, 6),
+    rows: () => TICKETS.slice(0, 7),
+    skip: ['ticket_name', 'pipeline'],
+    identity: {
+      key: 'name',
+      label: 'Ticket',
+      render: (r) => <span className="hs-link font-semibold">{r.name}</span>,
+    },
+    cell: {
+      status: (r) => <Tag color={STATUS_COLORS[r.status] || 'purple'}>{r.status}</Tag>,
+      priority: (r) => <Tag color={PRIORITY_COLORS[r.priority] || 'gray'}>{r.priority}</Tag>,
+    },
   },
+}
+
+// Build the list columns from the enabled properties, honoring saved column order.
+function buildListColumns(slice, enabledProps, columnOrder, sample) {
+  const cfg = LIST_CONFIG[slice]
+  if (!cfg) return null
+  let props = enabledProps.filter((p) => !cfg.skip.includes(p.key))
+  if (columnOrder && columnOrder.length) {
+    const rank = (k) => {
+      const i = columnOrder.indexOf(k)
+      return i < 0 ? 999 : i
+    }
+    props = props.slice().sort((a, b) => rank(a.key) - rank(b.key))
+  }
+  const cols = props.map((p) => {
+    const resolve = cfg.cell[p.key]
+    return {
+      key: p.key,
+      label: p.label,
+      render: (_v, r) => {
+        const out = resolve ? resolve(r) : undefined
+        if (out !== undefined && out !== null && out !== '') return out
+        const fb = sample?.values?.[p.key]
+        return fb != null && fb !== '' ? fb : <span className="text-hs-text-light">—</span>
+      },
+    }
+  })
+  return [
+    { key: cfg.identity.key, label: cfg.identity.label, render: (_v, r) => cfg.identity.render(r) },
+    ...cols,
+  ]
 }
 
 const ACCENT = {
@@ -188,11 +244,15 @@ function SectionContent({ label, record }) {
 // showIndexTable appends the example list view (used on configurator steps, not in popups).
 export default function PreviewRecord({ slice, showIndexTable = false }) {
   const record = useStore((s) => s.session[slice])
+  const reorderColumn = useStore((s) => s.reorderColumn)
   const sample = SAMPLE[slice]
   const accent = ACCENT[slice] || '#0091AE'
 
   const enabledProps = record.properties.filter((p) => p.enabled)
   const enabledSections = record.sections.filter((s) => s.enabled)
+
+  const listCfg = LIST_CONFIG[slice]
+  const listColumns = buildListColumns(slice, enabledProps, record.columnOrder, sample)
 
   const [activeKey, setActiveKey] = useState(enabledSections[0]?.key)
 
@@ -283,16 +343,23 @@ export default function PreviewRecord({ slice, showIndexTable = false }) {
         </div>
       </div>
 
-      {/* Example list view (mirrors the final demo's index pages) */}
-      {showIndexTable && INDEX_TABLES[slice] && (
+      {/* Example list view (mirrors the final demo's index pages). Columns track
+          the enabled properties; drag a header to reorder. */}
+      {showIndexTable && listCfg && listColumns && (
         <div className="mt-4 bg-white rounded-lg border border-hs-border p-4">
-          <h3 className="text-[12px] font-preview font-semibold uppercase tracking-wide text-hs-text-light mb-2">
-            {INDEX_TABLES[slice].title}
-          </h3>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <h3 className="text-[12px] font-preview font-semibold uppercase tracking-wide text-hs-text-light">
+              {listCfg.title}
+            </h3>
+            <span className="text-[10px] font-preview text-hs-text-light">
+              Drag a column to reorder
+            </span>
+          </div>
           <DataTable
-            columns={INDEX_TABLES[slice].columns}
-            rows={INDEX_TABLES[slice].rows()}
+            columns={listColumns}
+            rows={listCfg.rows()}
             compact
+            onReorder={(from, to) => reorderColumn(slice, from, to)}
           />
         </div>
       )}

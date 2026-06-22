@@ -104,6 +104,7 @@ const RULES = [
     when: (c) =>
       c.teamSize === 'Mid-size team (6–20)' ||
       c.teamSize === 'Large team (20+)' ||
+      c.teamSize === 'Enterprise (100+)' ||
       c.leaks.includes('rep_workload_unproven'),
   },
   // Workflow-driven views

@@ -261,18 +261,37 @@ export function DonutChart({ data, centerLabel, centerValue, size = 110 }) {
 
 // ---- HubSpot-style data table ----
 // columns: [{key, label, align?, render?}] ; rows: objects
-export function DataTable({ columns, rows, compact = false, onRowClick }) {
+// onReorder(fromKey, toKey): when provided, column headers become draggable so
+// the user can reorder columns (mirrors HubSpot's list-view column editor).
+export function DataTable({ columns, rows, compact = false, onRowClick, onReorder }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full" style={{ fontFamily: 'Lexend Deca' }}>
+    // Cells are nowrap so a wide column set overflows and scrolls horizontally
+    // instead of cramming; the wrapper owns the scroll.
+    <div className="overflow-x-auto hs-scroll">
+      <table className="min-w-full w-max" style={{ fontFamily: 'Lexend Deca' }}>
         <thead>
           <tr className="border-b border-hs-border">
             {columns.map((c) => (
               <th
                 key={c.key}
-                className={`text-[10px] font-semibold uppercase tracking-wide text-hs-text-light py-1.5 px-2 ${
+                draggable={Boolean(onReorder)}
+                onDragStart={
+                  onReorder ? (e) => e.dataTransfer.setData('text/col', c.key) : undefined
+                }
+                onDragOver={onReorder ? (e) => e.preventDefault() : undefined}
+                onDrop={
+                  onReorder
+                    ? (e) => {
+                        e.preventDefault()
+                        const from = e.dataTransfer.getData('text/col')
+                        if (from && from !== c.key) onReorder(from, c.key)
+                      }
+                    : undefined
+                }
+                title={onReorder ? 'Drag to reorder columns' : undefined}
+                className={`whitespace-nowrap text-[10px] font-semibold uppercase tracking-wide text-hs-text-light py-1.5 px-2 ${
                   c.align === 'right' ? 'text-right' : 'text-left'
-                }`}
+                } ${onReorder ? 'cursor-grab select-none hover:text-hs-navy' : ''}`}
               >
                 {c.label}
               </th>
@@ -291,7 +310,7 @@ export function DataTable({ columns, rows, compact = false, onRowClick }) {
               {columns.map((c) => (
                 <td
                   key={c.key}
-                  className={`text-[11px] text-hs-text-dark ${compact ? 'py-1' : 'py-1.5'} px-2 ${
+                  className={`whitespace-nowrap text-[11px] text-hs-text-dark ${compact ? 'py-1' : 'py-1.5'} px-2 ${
                     c.align === 'right' ? 'text-right' : 'text-left'
                   }`}
                 >

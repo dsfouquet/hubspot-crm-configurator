@@ -4,9 +4,11 @@ import {
   WIDGET_CATEGORIES,
   AUTOMATION_HEALTH_WIDGETS,
   WIDGET_LABELS,
+  widgetMeta,
 } from '../constants/defaultWidgets'
 import { BarChart, LineChart, HBarChart, DonutChart, DataTable } from './charts'
 import { IconBolt } from './uiIcons'
+import Spotlight from './Spotlight'
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
 
@@ -209,9 +211,14 @@ function WidgetBody({ id, label }) {
   return customBody(label)
 }
 
-function WidgetCard({ id, label }) {
+function WidgetCard({ id, label, onOpen }) {
   return (
-    <div className="bg-white rounded-lg border border-hs-border p-3">
+    <button
+      type="button"
+      onClick={(e) => onOpen(id, label, e.currentTarget.getBoundingClientRect())}
+      className="text-left bg-white rounded-lg border border-hs-border p-3 hover:border-hs-orange hover:shadow-md transition-all cursor-pointer"
+      title="Click to see what powers this report"
+    >
       <p className="text-[12px] font-preview font-semibold text-hs-navy mb-0.5 leading-tight">
         {label}
       </p>
@@ -219,7 +226,7 @@ function WidgetCard({ id, label }) {
         Last 6 months
       </p>
       <WidgetBody id={id} label={label} />
-    </div>
+    </button>
   )
 }
 
@@ -233,6 +240,8 @@ export default function PreviewDashboard() {
   const customWidgets = dashboards.customWidgets || []
 
   const [filter, setFilter] = useState(ALL_FILTER)
+  const [open, setOpen] = useState(null) // { id, label, rect }
+  const onOpen = (id, label, rect) => setOpen({ id, label, rect })
 
   // Enabled standard widgets, grouped by their category.
   const enabledByCategory = WIDGET_CATEGORIES.map((c) => ({
@@ -311,10 +320,10 @@ export default function PreviewDashboard() {
                 {(standardToShow.length > 0 || customToShow.length > 0) && (
                   <div className="grid grid-cols-2 gap-2">
                     {standardToShow.map((w) => (
-                      <WidgetCard key={w.id} id={w.id} label={WIDGET_LABELS[w.id]} />
+                      <WidgetCard key={w.id} id={w.id} label={WIDGET_LABELS[w.id]} onOpen={onOpen} />
                     ))}
                     {customToShow.map((w) => (
-                      <WidgetCard key={w.id} id={w.id} label={w.label} />
+                      <WidgetCard key={w.id} id={w.id} label={w.label} onOpen={onOpen} />
                     ))}
                   </div>
                 )}
@@ -327,7 +336,7 @@ export default function PreviewDashboard() {
                     </p>
                     <div className="grid grid-cols-2 gap-2">
                       {automationToShow.map((w) => (
-                        <WidgetCard key={w.id} id={w.id} label={WIDGET_LABELS[w.id]} />
+                        <WidgetCard key={w.id} id={w.id} label={WIDGET_LABELS[w.id]} onOpen={onOpen} />
                       ))}
                     </div>
                   </div>
@@ -337,6 +346,43 @@ export default function PreviewDashboard() {
           </>
         )}
       </div>
+
+      {/* Click-through detail: what the card shows + exactly what HubSpot data
+          generates it, with the live chart re-rendered at full size. */}
+      {open && (() => {
+        const meta = widgetMeta(open.id)
+        return (
+          <Spotlight originRect={open.rect} accent="#FF7A59" onClose={() => setOpen(null)}>
+            <div className="px-6 py-5">
+              <span className="inline-block text-[10px] font-bold uppercase tracking-wide text-white rounded-[3px] px-2 py-0.5 bg-hs-orange">
+                Dashboard report
+              </span>
+              <h3 className="text-[18px] font-semibold text-hs-navy leading-snug mt-3">
+                {open.label}
+              </h3>
+              <p className="text-[13px] text-hs-text-dark leading-relaxed mt-2">{meta.blurb}</p>
+
+              <div className="mt-4 rounded-md border border-hs-border bg-white p-3">
+                <WidgetBody id={open.id} label={open.label} />
+              </div>
+
+              <div className="mt-4">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-hs-text-light mb-1.5">
+                  What powers this report
+                </p>
+                <ul className="space-y-1">
+                  {meta.sources.map((s) => (
+                    <li key={s} className="text-[12.5px] text-hs-text-dark flex gap-1.5">
+                      <span className="text-hs-orange shrink-0">›</span>
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </Spotlight>
+        )
+      })()}
     </div>
   )
 }

@@ -4,7 +4,15 @@
 // Scope boundaries mirror offers/0-free-crm-setup and offers/1-30-day-revenue-machine.
 // NO PRICING here by design — pricing is never public (Daniel, 2026-06-10).
 
+import { qualify } from './qualification'
+
 export const OFFERS = {
+  diy: {
+    key: 'diy',
+    name: 'DIY CRM Build Guide',
+    tagline: 'Build it yourself, the right way, with our exact playbook.',
+    color: '#7C5CFC',
+  },
   free: {
     key: 'free',
     name: 'Free CRM Setup',
@@ -33,6 +41,20 @@ export function scopeOffers(session) {
   const free = []
   const machine = []
   const retainer = []
+
+  // ---------- DIY CRM Build Guide (self-serve, for unqualified prospects) ----------
+  // Same outcome, their hands. Mirrors offers/2-diy-guide-$497.
+  const diy = [
+    '8-video step-by-step HubSpot setup course',
+    '30-page written build guide you follow at your own pace',
+    `Importable pipeline & workflow templates for your industry${
+      w.industry ? ` (${w.industry})` : ''
+    }`,
+    'Contact, company & deal property templates to import',
+    '100 cold email templates + 50 subject lines by industry',
+    'The exact dashboard layout we build, recreated by you',
+    '$497 credit toward a done-for-you build when you are ready',
+  ]
 
   // ---------- Free CRM Setup (the 7-day scope, capped) ----------
   const stages = session.deals?.pipelineStages || []
@@ -129,14 +151,27 @@ export function scopeOffers(session) {
   retainer.push('Monthly optimization: one new automation, view, or fix every month')
 
   // ---------- Recommendation ----------
-  // Routing rule (Discovery-Questions-By-Hub.md): if 2+ HubSpot hubs fire,
-  // that's a Core Offer (30-Day Revenue Machine) conversation, not a Free Setup.
+  // BANT gate first: an unqualified prospect (under the revenue / tenure / team
+  // floor for the Free Setup) is routed to the self-serve DIY Guide, never to a
+  // Free Setup or a Core Offer pitch. Matches the funnel spec in crescent CLAUDE.md.
+  // Only THEN, for qualified prospects: 2+ hubs firing = Core Offer conversation.
   const hubsFiring = [
     ...new Set((session.fixPlan?.problems || []).map((p) => p.hub).filter(Boolean)),
   ]
-  const recommended = hubsFiring.length >= 2 || machine.length >= 3 ? 'machine' : 'free'
+  // Only the customer funnel collects BANT (revenue / tenure / team), so only it
+  // can fail qualification. Presenter mode has no annualRevenue field and must keep
+  // its free-vs-machine logic untouched.
+  const bantEvaluated = Boolean(session.qualification) || Boolean(w.annualRevenue)
+  const verdict = session.qualification || qualify(w)
+  const qualified = bantEvaluated ? verdict.qualified : true
+  const recommended =
+    bantEvaluated && !qualified
+      ? 'diy'
+      : hubsFiring.length >= 2 || machine.length >= 3
+        ? 'machine'
+        : 'free'
   const diyNote =
-    w.teamSize === 'Just me (1)'
+    qualified && w.teamSize === 'Just me (1)'
       ? 'Solo operator? There is also a self-paced DIY CRM Build Guide if you would rather build it yourself.'
       : null
 
@@ -168,5 +203,5 @@ export function scopeOffers(session) {
   if (['50–100', '100+'].includes(w.monthlyVolume))
     freeBlockers.push(`High lead volume (${w.monthlyVolume}/mo) needs routing + scoring beyond the free scope`)
 
-  return { free, machine, retainer, recommended, diyNote, hubsFiring, freeBlockers }
+  return { free, machine, retainer, diy, recommended, qualified, diyNote, hubsFiring, freeBlockers }
 }

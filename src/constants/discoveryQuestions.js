@@ -45,13 +45,13 @@ export const PAINS_BY_SECTION = {
     'marketing_attribution',
   ],
   service: ['ticket_blindness', 'kb_faq_repeat', 'surveys_nps_blind', 'inconsistent_onboarding'],
-  commerce: ['quotes_invoices_split', 'ar_visibility'],
+  commerce: ['quotes_invoices_split', 'ar_visibility', 'payment_automation'],
   ops: ['tools_dont_talk', 'reporting_excel_pain', 'unknown_close_rate', 'ai_manual_drafting'],
 }
 
-// Every diagnostic section is answered as POSITIVE habit statements on an
-// Always / Sometimes / Never scale. "Never" and "Sometimes" both fire the
-// mapped pain id into wizard.pains; "Always" clears it. (setHabit in
+// Every diagnostic section is answered as POSITIVE habit statements on a
+// Yes / No / Not sure scale. "No" and "Not sure" both fire the mapped pain id
+// into wizard.pains; "Yes" (true for us) clears it. (setHabit in
 // shared/QuestionControl.jsx does the syncing.) Each statement's `id` is the
 // SOLUTION_MAP pain id, so the fix plan, topLeak picker, and preview all keep
 // working unchanged. Order matches PAINS_BY_SECTION.
@@ -88,6 +88,7 @@ export const HABITS_BY_SECTION = {
   commerce: [
     { id: 'quotes_invoices_split', statement: 'Quoting and invoicing work together, not in disconnected tools' },
     { id: 'ar_visibility', statement: 'We can see what is owed and overdue without running a special report' },
+    { id: 'payment_automation', statement: 'Getting paid is automated — deposits, online payment, and overdue invoices chase themselves' },
   ],
   ops: [
     { id: 'tools_dont_talk', statement: 'Our tools share data automatically — we do not re-type the same info' },
@@ -117,15 +118,17 @@ export const CLASSIC_LEAKS = [
 export const ALL_PAIN_IDS = Object.values(PAINS_BY_SECTION).flat()
 
 // Each section's diagnostic is a positive-statement habit matrix. Per-section
-// answer key (e.g. crmHabits) holds {painId: 'always'|'sometimes'|'never'};
+// answer key (e.g. crmHabits) holds {painId: 'yes'|'no'|'not sure'};
 // the shared wizard.pains array is kept in sync by setHabit.
 const habitQuestion = (section, prompt) => ({
   key: `${section}Habits`,
   qid: `habits_${section}`,
   section,
   prompt,
+  // Summary card shows a clean label instead of the full diagnostic question.
+  summaryLabel: 'Areas for improvement',
   type: 'habit-matrix',
-  hint: 'Be honest — Always, Sometimes, or Never',
+  hint: 'For each, is this true for you? Yes, No, or Not sure',
   statements: HABITS_BY_SECTION[section],
 })
 
@@ -136,6 +139,7 @@ export const DISCOVERY_QUESTIONS = [
     qid: 'topGoal',
     section: 'business',
     prompt: "What's the #1 thing you want to fix or improve in the next 30 days?",
+    summaryLabel: 'Top goal (next 30 days)',
     type: 'textarea',
     placeholder: 'In your own words — this becomes the headline of your fix plan.',
     quickPicks: [
@@ -151,6 +155,7 @@ export const DISCOVERY_QUESTIONS = [
     qid: 'businessDescription',
     section: 'business',
     prompt: 'What does your business do, and who do you sell to?',
+    summaryLabel: 'What the business does',
     type: 'textarea',
     placeholder: 'e.g. "Commercial HVAC install and service for hospitals and schools."',
   },
@@ -193,7 +198,14 @@ export const DISCOVERY_QUESTIONS = [
     section: 'business',
     prompt: 'How many people are on your team, including you?',
     type: 'single',
-    options: ['Just me (1)', 'Small team (2–5)', 'Mid-size team (6–20)', 'Large team (20+)'],
+    summaryLabel: 'Team size',
+    options: [
+      'Just me (1)',
+      'Small team (2–5)',
+      'Mid-size team (6–20)',
+      'Large team (20+)',
+      'Enterprise (100+)',
+    ],
   },
   {
     key: 'monthlyVolume',
@@ -245,7 +257,7 @@ export const DISCOVERY_QUESTIONS = [
       'No existing list',
     ],
   },
-  habitQuestion('crm', 'How is your CRM and contact data holding up? Be honest.'),
+  habitQuestion('crm', 'How is your CRM and contact data holding up?'),
 
   // ---------- Sales ----------
   {
@@ -253,6 +265,7 @@ export const DISCOVERY_QUESTIONS = [
     qid: 'dealStages',
     section: 'sales',
     prompt: 'Name the stages a deal goes through, in order, in your own words.',
+    summaryLabel: 'Your deal stages',
     type: 'textarea',
     hint: 'One per line or commas — we build your pipeline from this',
     placeholder: 'Lead, Site Visit, Quote Sent, Negotiation, Won',
@@ -290,13 +303,63 @@ export const DISCOVERY_QUESTIONS = [
     type: 'single',
     options: ['Days', 'A few weeks', '1–3 months', '3–12 months', 'Over a year'],
   },
-  habitQuestion('sales', 'How is your sales process actually running? Be honest.'),
+  habitQuestion('sales', 'How is your sales process actually running?'),
 
   // ---------- Marketing ----------
-  habitQuestion('marketing', 'How is marketing actually going? Be honest.'),
+  {
+    key: 'runningAds',
+    qid: 'runningAds',
+    section: 'marketing',
+    prompt: 'Are you running paid ads? Which platforms?',
+    type: 'multi',
+    hint: 'Select all that apply',
+    summaryLabel: 'Paid ads',
+    options: [
+      'Google Search / PPC',
+      'Meta (Facebook / Instagram)',
+      'LinkedIn',
+      'YouTube / video',
+      'Not running paid ads',
+    ],
+  },
+  {
+    key: 'leadGenMethods',
+    qid: 'leadGenMethods',
+    section: 'marketing',
+    prompt: 'How do you generate new leads today?',
+    type: 'multi',
+    hint: 'Select all that apply',
+    summaryLabel: 'Lead generation',
+    options: [
+      'Referrals / word of mouth',
+      'Inbound (SEO, content, website)',
+      'Paid ads',
+      'Cold outreach',
+      'Events / trade shows',
+      'Purchased lists',
+      'Not actively generating leads',
+    ],
+  },
+  {
+    key: 'marketingOwner',
+    qid: 'marketingOwner',
+    section: 'marketing',
+    prompt: 'Who runs your marketing?',
+    type: 'single',
+    allowOther: true,
+    summaryLabel: 'Marketing ownership',
+    options: [
+      'I do it myself',
+      'An in-house person / team',
+      'An outside agency',
+      'A freelancer / contractor',
+      'Nobody right now',
+    ],
+  },
+  habitQuestion('marketing', 'How is your marketing actually going?'),
 
   // ---------- Service ----------
-  habitQuestion('service', 'How is everything after the sale? Be honest.'),
+  habitQuestion('service', 'How is everything after the sale?'),
 
   // ---------- Commerce ----------
   {
@@ -319,7 +382,24 @@ export const DISCOVERY_QUESTIONS = [
       'None',
     ],
   },
-  habitQuestion('commerce', 'How is the money side — quoting to getting paid? Be honest.'),
+  {
+    key: 'getPaidBy',
+    qid: 'getPaidBy',
+    section: 'commerce',
+    prompt: 'How do you typically get paid?',
+    type: 'multi',
+    hint: 'Select all that apply',
+    summaryLabel: 'How you get paid',
+    options: [
+      'PO / Purchase Order',
+      'Invoice on completion',
+      'Net terms (Net 30 / 60)',
+      'Deposit upfront + balance',
+      'Card / pay on the spot',
+      'Retainer / recurring billing',
+    ],
+  },
+  habitQuestion('commerce', 'How is the money side, from quoting to getting paid?'),
 
   // ---------- Ops & Reporting ----------
   {
@@ -391,7 +471,7 @@ export const DISCOVERY_QUESTIONS = [
       'Facebook / Instagram ads',
     ],
   },
-  habitQuestion('ops', 'How do your systems and numbers feel day to day? Be honest.'),
+  habitQuestion('ops', 'How do your systems and numbers feel day to day?'),
 
   // ---------- Priorities ----------
   {
@@ -411,6 +491,7 @@ export const DISCOVERY_QUESTIONS = [
     qid: 'mondayScreen',
     section: 'priorities',
     prompt: "What's the one screen or report you'd open every Monday morning if it existed?",
+    summaryLabel: 'Your Monday-morning screen',
     type: 'textarea',
     placeholder: 'e.g. "Every open quote, who owns it, and how long it\'s been sitting."',
   },
@@ -419,6 +500,7 @@ export const DISCOVERY_QUESTIONS = [
     qid: 'ventBox',
     section: 'priorities',
     prompt: 'Anything else broken? Describe it in your own words.',
+    summaryLabel: 'Anything else broken',
     type: 'textarea',
     optional: true,
     placeholder: "Type it like you'd vent to a colleague. We'll match it to fixes.",

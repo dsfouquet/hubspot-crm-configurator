@@ -14,9 +14,14 @@ export default function PreviewPane() {
   const render = PREVIEW_COMPONENTS[stepKey]
   if (!render) return null
 
-  // The full hub preview (Step11) zooms its own demo region internally; every
-  // other per-step preview gets the in-panel ZoomFrame here.
-  const selfZooms = stepKey === 'preview'
+  // The full hub preview (Step11) zooms its own demo region internally. The two
+  // ReactFlow surfaces (Fix Plan story diagram + Automations flowchart) must NOT
+  // sit inside a CSS transform:scale ancestor — ReactFlow measures node/edge
+  // geometry off the live DOM, and a scaled ancestor distorts it (edges drop,
+  // the diagram clips off the bottom). They carry ReactFlow's own zoom controls,
+  // which already zoom out past 50%/25%, so they self-manage. Everything else
+  // gets the in-panel ZoomFrame (25%–250%).
+  const selfZooms = stepKey === 'preview' || stepKey === 'fixPlan' || stepKey === 'workflows'
 
   return (
     <section

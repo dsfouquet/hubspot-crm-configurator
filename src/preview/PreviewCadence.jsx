@@ -11,6 +11,7 @@ import {
   IconDollar,
   IconCalendar,
 } from './uiIcons'
+import { OS_EOS, EOS_HUBSPOT_MAPPING } from '../constants/defaultCadence'
 
 // Chevron used in every section header — rotates when the section is open.
 function Chevron({ open }) {
@@ -209,8 +210,31 @@ export default function PreviewCadence() {
     },
   ]
 
+  const isEos = cadence.operatingSystem === OS_EOS
+
   return (
     <div className="p-5 space-y-4">
+      {/* EOS framing — only when an operating system is selected. */}
+      {isEos && (
+        <div className="rounded-lg border border-hs-orange/30 bg-hs-orange/5 p-4">
+          <p className="text-[11px] font-preview font-semibold uppercase tracking-wide text-hs-orange mb-1">
+            Your EOS rhythm, running in HubSpot
+          </p>
+          <p className="text-[12.5px] font-preview text-hs-text-dark leading-snug mb-2.5">
+            The Level 10 and quarterly Rocks aren&rsquo;t a separate spreadsheet anymore. Every part
+            of EOS lives on the records, dashboards, and tasks your team already works.
+          </p>
+          <dl className="space-y-1">
+            {EOS_HUBSPOT_MAPPING.map((m) => (
+              <div key={m.eos} className="flex gap-2 text-[12px] font-preview">
+                <dt className="font-semibold text-hs-navy shrink-0 w-32">{m.eos}</dt>
+                <dd className="text-hs-text-light">{m.hs}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
+
       {/* Why accountability matters: adoption → ROI */}
       <Section
         icon={IconDollar}

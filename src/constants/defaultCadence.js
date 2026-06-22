@@ -2,6 +2,7 @@
 
 export function defaultCadence() {
   return {
+    operatingSystem: OS_CUSTOM,
     meetings: [
       {
         key: 'daily_standup',
@@ -94,6 +95,57 @@ export function defaultCadence() {
     },
   }
 }
+
+// ---- Business operating systems ----
+// A prospect on a named operating system (EOS, etc.) gets its standard meeting
+// rhythm pre-loaded, mapped onto the HubSpot objects that actually run it. EOS
+// is the one most LA small businesses run; room to add Scaling Up / 4DX later.
+export const OS_CUSTOM = 'Custom / none'
+export const OS_EOS = 'EOS (Entrepreneurial Operating System)'
+export const OPERATING_SYSTEMS = [OS_CUSTOM, OS_EOS]
+
+// EOS meetings (tagged eos:true so they can be added/removed cleanly when the
+// operating system is switched). The Weekly Level 10 follows its fixed agenda.
+export const EOS_MEETINGS = [
+  {
+    key: 'eos_l10',
+    label: 'Weekly Level 10 Meeting',
+    enabled: true,
+    eos: true,
+    day: 'Monday',
+    time: '9:00 AM',
+    agenda:
+      'Segue · Scorecard · Rock review · Headlines · To-Do list · IDS (Identify, Discuss, Solve) · Conclude — same 90 minutes, every week',
+  },
+  {
+    key: 'eos_quarterly',
+    label: 'Quarterly Pulsing (Rock-setting)',
+    enabled: true,
+    eos: true,
+    day: 'Quarterly',
+    time: '9:00 AM',
+    agenda: 'Review last quarter’s Rocks, set 3–7 company and individual Rocks for the next 90 days',
+  },
+  {
+    key: 'eos_annual',
+    label: 'Annual Planning (2-day)',
+    enabled: false,
+    eos: true,
+    day: 'Quarterly',
+    time: '9:00 AM',
+    agenda: 'V/TO review, one-year plan, next-quarter Rocks, and team health',
+  },
+]
+
+// How each EOS component lives inside HubSpot (shown in the preview so it’s clear
+// EOS runs IN the CRM, not in a separate spreadsheet).
+export const EOS_HUBSPOT_MAPPING = [
+  { eos: 'Scorecard', hs: 'A weekly KPI dashboard, 5–15 measurables, one owner per row' },
+  { eos: 'Rocks', hs: 'Quarterly priorities tracked as HubSpot Goals and a Rocks task list' },
+  { eos: 'To-Do List', hs: 'HubSpot tasks due within 7 days, each owned and dated' },
+  { eos: 'Issues (IDS)', hs: 'An Issues list worked top-down in the Level 10 each week' },
+  { eos: 'Accountability Chart', hs: 'Every seat is a real owner on records, dashboards, and tasks' },
+]
 
 export const NOTIFICATION_CHANNELS = [
   'In-app',

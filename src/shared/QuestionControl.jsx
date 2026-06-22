@@ -27,15 +27,16 @@ export default function QuestionControl({ question, size = 'compact' }) {
   const isMulti = question.type === 'multi' || isPainMulti
   const isText = question.type === 'textarea'
 
-  // Habit matrix (Always / Sometimes / Never): stores wizard[key] = {id: state}
-  // and syncs the mapped pain into wizard.pains (always clears it).
+  // Habit matrix (Yes / No / Not sure): stores wizard[key] = {id: state} and syncs
+  // the mapped pain into wizard.pains. Statements are positively framed, so "Yes"
+  // (this is true for us) clears the pain; "No" / "Not sure" fire it.
   const setHabit = (id, state) => {
     const live = useStore.getState().session.wizard
     const habits = { ...(live[question.key] || {}), [id]: state }
     setWizardAnswer(question.key, habits)
     const pains = Array.isArray(live.pains) ? live.pains : []
     const without = pains.filter((p) => p !== id)
-    setWizardAnswer('pains', state === 'always' ? without : [...without, id])
+    setWizardAnswer('pains', state === 'yes' ? without : [...without, id])
   }
 
   const options = isPainMulti
@@ -169,11 +170,11 @@ export default function QuestionControl({ question, size = 'compact' }) {
                   {s.statement}
                 </span>
                 <span className="inline-flex rounded-full border border-hs-border bg-hs-canvas p-0.5 shrink-0">
-                  {['always', 'sometimes', 'never'].map((opt) => {
+                  {['yes', 'no', 'not sure'].map((opt) => {
                     const colors = {
-                      always: 'bg-hs-green text-white',
-                      sometimes: 'bg-hs-orange text-white',
-                      never: 'bg-hs-red text-white',
+                      yes: 'bg-hs-green text-white',
+                      no: 'bg-hs-red text-white',
+                      'not sure': 'bg-hs-orange text-white',
                     }
                     return (
                       <button

@@ -4,6 +4,9 @@ import {
   NOTIFICATION_CHANNELS,
   NOTIFICATION_FREQUENCIES,
   DAYS,
+  OPERATING_SYSTEMS,
+  OS_EOS,
+  EOS_HUBSPOT_MAPPING,
 } from '../constants/defaultCadence'
 
 function MeetingRow({ meeting }) {
@@ -99,8 +102,12 @@ function NumberInput({ field, width = 'w-14' }) {
 export default function Step10_Cadence({ index }) {
   const cadence = useStore((s) => s.session.cadence)
   const setRule = useStore((s) => s.setRule)
+  const setOperatingSystem = useStore((s) => s.setOperatingSystem)
   const toggleNotificationChannel = useStore((s) => s.toggleNotificationChannel)
   const setNotificationFrequency = useStore((s) => s.setNotificationFrequency)
+
+  const os = cadence.operatingSystem
+  const isEos = os === OS_EOS
 
   return (
     <StepBody>
@@ -108,6 +115,36 @@ export default function Step10_Cadence({ index }) {
         index={index}
         intro="Set the rhythm and rules that keep your team accountable."
       />
+
+      <ConfigSection title="Business Operating System">
+        <p className="text-[12px] font-ui text-hs-text-light mb-2">
+          Run a framework like EOS? Pull its standard meetings and accountability into HubSpot.
+        </p>
+        <select
+          value={os || OPERATING_SYSTEMS[0]}
+          onChange={(e) => setOperatingSystem(e.target.value)}
+          className="w-full rounded border border-hs-border px-2.5 py-1.5 text-[13px] font-ui focus:outline-none focus:border-hs-blue"
+        >
+          {OPERATING_SYSTEMS.map((o) => (
+            <option key={o}>{o}</option>
+          ))}
+        </select>
+        {isEos && (
+          <div className="mt-3 rounded-lg border border-hs-orange/30 bg-hs-orange/5 p-3">
+            <p className="text-[11px] font-ui font-semibold uppercase tracking-wide text-hs-orange mb-1.5">
+              Your EOS components, running in HubSpot
+            </p>
+            <dl className="space-y-1">
+              {EOS_HUBSPOT_MAPPING.map((m) => (
+                <div key={m.eos} className="flex gap-2 text-[12px] font-ui">
+                  <dt className="font-semibold text-hs-navy shrink-0 w-28">{m.eos}</dt>
+                  <dd className="text-hs-text-dark">{m.hs}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
+      </ConfigSection>
 
       <ConfigSection title="Meeting Cadence">
         <div className="space-y-2">

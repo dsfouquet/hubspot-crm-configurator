@@ -38,7 +38,10 @@ const PHASE_SUBLABELS = {
 // Department handoffs render at the boundary ENTERING each stage (keyed by the
 // stage the handoff FOLLOWS). The baton passes automatically, nothing re-typed.
 const BOUNDARY_HANDOFFS = {
-  GENERATE: [{ from: 'Marketing', to: 'Sales' }], // shows entering QUALIFY
+  // Marketing → Sales only makes sense when there's an actual marketing motion on
+  // the board (the "Get found" step). A pure outbound/referral shop has no
+  // marketing team to hand off from, so we gate it on gen_find being enabled.
+  GENERATE: [{ from: 'Marketing', to: 'Sales', requiresStep: 'gen_find' }], // shows entering QUALIFY
   WIN: [{ from: 'Sales', to: 'Operations' }], // shows entering DELIVER
   DELIVER: [{ from: 'Operations', to: 'Service' }], // shows entering KEEP
 }
@@ -91,7 +94,25 @@ export default function HubJourney() {
       summary: 'Search, paid ads, and your posts all run from one place and feed the same CRM.',
       detail:
         'SEO pages, Google and Meta ads, and social posts publish from one calendar and track every visitor from the first click. Ad reporting goes past clicks to real cost-per-lead and closed revenue per campaign, so you finally know which spend works.',
-      tools: ['Website tracking', 'Ads management', 'Social publishing', 'Source attribution'],
+      tools: ['Website tracking', 'SEO / content', 'Social publishing', 'Source attribution'],
+    },
+    {
+      id: 'gen_ads',
+      phase: 'GENERATE',
+      title: 'Ads that pay for themselves, tracked to closed revenue',
+      summary: 'Google and Meta ads run from the CRM, and reporting goes past clicks to real cost-per-lead and revenue per campaign.',
+      detail:
+        'Ad audiences sync from your CRM lists, leads flow straight onto a contact record with their source attached, and reporting ties every dollar of spend to pipeline and closed revenue, not just clicks and impressions. You finally know which campaigns make money and which to cut.',
+      tools: ['Ads management', 'Audience sync', 'Cost-per-lead', 'Revenue attribution'],
+    },
+    {
+      id: 'gen_referral',
+      phase: 'GENERATE',
+      title: 'Referrals get captured and worked, not left to memory',
+      summary: 'Every referral and repeat customer is tracked to who sent it, and the thank-you and ask run on their own.',
+      detail:
+        'Referrals are your best leads and the easiest to drop. A referral form and source field tag every new lead to the partner or customer who sent it, so you see who actually drives business. Past clients and referral partners sit on lists that get worked: an automatic thank-you to the referrer, a check-in when an account goes quiet, and a prompt to ask happy customers for the next name. You finally know your referral engine instead of guessing.',
+      tools: ['Referral source tracking', 'Partner / referrer lists', 'Thank-you automation', 'Referral attribution'],
     },
     {
       id: 'gen_outreach',
@@ -101,6 +122,15 @@ export default function HubJourney() {
       detail:
         'Build a list and the sequence sends emails, queues call tasks, and prompts LinkedIn touches on schedule. The same engine works past clients you have not touched in months and referral partners due for a check-in. A reply pauses the sequence and pings the rep.',
       tools: ['Sales sequences', 'Segments & lists', 'Breeze prospecting', 'Reply tracking'],
+    },
+    {
+      id: 'gen_events',
+      phase: 'GENERATE',
+      title: 'Events feed the CRM, not a shoebox of business cards',
+      summary: 'Badge scans and event forms drop straight onto contact records, and follow-up fires before you leave the booth.',
+      detail:
+        'A QR or event form captures every lead at the trade show right onto a contact with the event tagged as the source. An automatic follow-up sequence starts that day while you are still memorable, and you can measure exactly which shows produced pipeline and which were a waste of a booth fee.',
+      tools: ['Event forms', 'Lead capture', 'Follow-up sequences', 'Event ROI'],
     },
     {
       id: 'gen_phone',
@@ -159,6 +189,15 @@ export default function HubJourney() {
       detail:
         'Company size, industry, and role fill in automatically, and AI summarizes the whole timeline of calls, texts, and emails. The rep opens a playbook with the questions to ask for this kind of deal. Six months later anyone can pick it up where it left off, even if the original rep is gone.',
       tools: ['Breeze Intelligence', 'AI deal summaries', 'Playbooks'],
+    },
+    {
+      id: 'win_pitch',
+      phase: 'WIN',
+      title: 'Every rep runs the same proven pitch, not winging it',
+      summary: 'A playbook on the deal walks the rep through pain, value, proof, and the close, so your best sales conversation happens every time.',
+      detail:
+        'HubSpot Playbooks put your winning sales conversation right on the deal record and walk the rep through it in order: confirm the pain and what it is costing, paint the dream outcome, show how you deliver it, bring the proof, stack the value, present the guarantee, then the price, then real urgency, then ask for the sale. Objection answers are one click away, and the rep\'s responses save to the record as structured notes instead of a memory. Your best closer\'s approach becomes every rep\'s approach, and a new hire ramps in weeks, not quarters.',
+      tools: ['Playbooks', 'Guided selling', 'Stage requirements', 'Objection scripts'],
     },
     {
       id: 'stages',
@@ -227,6 +266,15 @@ export default function HubJourney() {
       tools: ['NPS / CSAT surveys', 'Review requests', 'Text / SMS', 'Low-score alerts'],
     },
     {
+      id: 'keep_expand',
+      phase: 'KEEP',
+      title: 'The next offer pitches itself at the right moment',
+      summary: 'When the work lands and the client is happy, the CRM opens the upsell, the cross-sell, or the retainer on its own.',
+      detail:
+        'A finished delivery and a high satisfaction score trigger the next move automatically: a task and a templated pitch for the upsell, the cross-sell, or the monthly retainer, timed to when the client is happiest instead of whenever someone remembers. The expansion lands back in a pipeline so it is forecast like any other deal, recurring billing picks up from your accounting sync, and value reviews stay on the calendar. Most of your next year of revenue is hiding in the customers you already have. This is what makes sure you actually ask for it.',
+      tools: ['Upsell workflows', 'Expansion deals', 'Playbooks', 'Recurring billing'],
+    },
+    {
       id: 'retain',
       phase: 'KEEP',
       title: 'Win-backs and renewals fire on their own',
@@ -237,11 +285,19 @@ export default function HubJourney() {
     },
   ]
 
-  // Only the steps this business actually uses (config step + discovery defaults).
-  const visibleSteps = STEPS.filter((s) => journeyEnabled(session, s.id))
-  // Presenter-added custom steps: always shown, grouped into their chosen stage,
-  // so the process can match anything the template did not capture.
-  const customSteps = (session.journey?.customSteps || []).map((c) => ({ ...c, isCustom: true }))
+  // Every step always renders, in every phase. The ones this business doesn't use
+  // show greyed ("Not using"), so the prospect sees the whole process and
+  // exactly which pieces they're missing — an upsell built into the map. Each card
+  // carries an `active` flag driving solid vs greyed.
+  const tagged = STEPS.map((s) => ({ ...s, active: journeyEnabled(session, s.id) }))
+  const visibleSteps = tagged
+  // Presenter-added custom steps: always shown (and always active), grouped into
+  // their chosen stage, so the process can match anything the template missed.
+  const customSteps = (session.journey?.customSteps || []).map((c) => ({
+    ...c,
+    isCustom: true,
+    active: true,
+  }))
   const allSteps = [...visibleSteps, ...customSteps]
 
   const results = searchIntegrations(query)
@@ -254,8 +310,18 @@ export default function HubJourney() {
   const phases = PHASE_ORDER.map((phase) => ({
     phase,
     color: PHASE_COLORS[phase],
-    steps: allSteps.filter((s) => s.phase === phase),
+    // Active cards first, the greyed "Not using" ones sink to the bottom of the
+    // column (stable, so within each group the original order holds).
+    steps: allSteps
+      .filter((s) => s.phase === phase)
+      .sort((a, b) => (a.active === b.active ? 0 : a.active ? -1 : 1)),
   })).filter((p) => p.steps.length > 0)
+
+  // Handoffs key off ACTIVE steps only (a greyed "Get found" the business doesn't
+  // use shouldn't imply a Marketing → Sales baton).
+  const activeIds = new Set(allSteps.filter((s) => s.active).map((s) => s.id))
+  // First active card in the very first phase gets the "Start here" badge.
+  const firstActiveId = allSteps.find((s) => s.active)?.id
 
   const openStep = allSteps.find((s) => s.id === open?.id) || null
   const openIntegs = openStep ? integrationsForStep(openStep.id) : []
@@ -332,7 +398,9 @@ export default function HubJourney() {
           style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))' }}
         >
           {phases.map((p, pi) => {
-            const incoming = pi > 0 ? BOUNDARY_HANDOFFS[phases[pi - 1].phase] || [] : []
+            const incoming = (pi > 0 ? BOUNDARY_HANDOFFS[phases[pi - 1].phase] || [] : []).filter(
+              (h) => !h.requiresStep || activeIds.has(h.requiresStep)
+            )
             return (
               <div key={p.phase} className="flex flex-col min-w-0">
                 {/* Stage header: flow arrow + chip + inline handoff(s), sublabel, rule */}
@@ -372,11 +440,12 @@ export default function HubJourney() {
 
                 {/* Stacked copy-only step cards */}
                 <div className="flex flex-col gap-2">
-                  {p.steps.map((step, si) => {
+                  {p.steps.map((step) => {
                     const isHighlighted = highlight.includes(step.id)
                     const isOpen = open?.id === step.id
                     const integs = integrationsForStep(step.id)
-                    const isStart = pi === 0 && si === 0
+                    const isStart = step.id === firstActiveId
+                    const muted = !step.active
                     return (
                       <div key={step.id}>
                         {isStart && (
@@ -400,19 +469,29 @@ export default function HubJourney() {
                           className={`w-full text-left flex items-start gap-2 rounded-[4px] border px-2.5 py-2.5 transition-all ${
                             isHighlighted
                               ? 'ring-[3px] ring-hs-green ring-offset-1 shadow-md bg-hs-green/10 relative z-10'
-                              : 'bg-white shadow-sm hover:shadow-md'
+                              : muted
+                                ? 'bg-hs-canvas hover:shadow-sm hover:opacity-100 opacity-70'
+                                : 'bg-white shadow-sm hover:shadow-md'
                           }`}
                           style={{
                             borderColor: isOpen ? ACCENT : isHighlighted ? '#00BDA5' : '#CBD6E2',
-                            borderStyle: step.isCustom ? 'dashed' : 'solid',
+                            borderStyle: step.isCustom || muted ? 'dashed' : 'solid',
                           }}
                         >
-                          <span className="flex-1 text-[12.5px] font-semibold text-hs-navy leading-snug">
+                          <span
+                            className={`flex-1 text-[12.5px] font-semibold leading-snug ${
+                              muted ? 'text-hs-text-light' : 'text-hs-navy'
+                            }`}
+                          >
                             {step.title}
                           </span>
                           {step.isCustom ? (
                             <span className="shrink-0 mt-0.5 text-[9px] font-semibold uppercase tracking-wide text-hs-text-light bg-hs-canvas border border-hs-border rounded-[3px] px-1.5 py-0.5">
                               Custom
+                            </span>
+                          ) : muted ? (
+                            <span className="shrink-0 mt-0.5 text-[9px] font-semibold uppercase tracking-wide text-hs-text-light bg-white border border-hs-border rounded-[3px] px-1.5 py-0.5 whitespace-nowrap">
+                              Not using
                             </span>
                           ) : (
                             integs.length > 0 && (
@@ -450,6 +529,15 @@ export default function HubJourney() {
             <h3 className="text-[18px] font-semibold text-hs-navy leading-snug mt-3">
               {openStep.title}
             </h3>
+
+            {!openStep.isCustom && openStep.active === false && (
+              <div className="mt-2.5 rounded-md bg-hs-orange/10 border border-hs-orange/30 px-3 py-2">
+                <p className="text-[12.5px] text-hs-text-dark leading-snug">
+                  <span className="font-semibold text-hs-orange">You're not using this part of your process.</span>{' '}
+                  Here's what it would do for you once it's wired into the CRM.
+                </p>
+              </div>
+            )}
 
             {openStep.isCustom ? (
               <p className="text-[13px] text-hs-text-dark leading-relaxed mt-2.5">

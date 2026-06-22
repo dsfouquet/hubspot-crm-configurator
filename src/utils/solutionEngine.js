@@ -181,6 +181,13 @@ export function collectLeakIds(wizard) {
   ) {
     inferred.push('reporting_excel_pain')
   }
+  // No real lead-gen engine (or relying only on referrals/word of mouth) = lead-gen gap.
+  const leadGen = Array.isArray(wizard.leadGenMethods) ? wizard.leadGenMethods : []
+  const onlyReferrals =
+    leadGen.length > 0 && leadGen.every((m) => m === 'Referrals / word of mouth')
+  if (leadGen.includes('Not actively generating leads') || onlyReferrals) {
+    inferred.push('lead_gen_gap')
+  }
 
   return [...new Set([...fromChecklist, ...fromVent, ...inferred])]
 }
@@ -249,6 +256,22 @@ export function buildGlobalScope(wizard) {
 
   if (arr(wizard.recurringRevenue).some((r) => r !== 'No recurring revenue' && r))
     items.push('Renewal and contract tracking modeled on your recurring revenue terms')
+
+  // Marketing answers (ads, who runs it).
+  const ads = arr(wizard.runningAds).filter((a) => a && a !== 'Not running paid ads')
+  if (ads.length)
+    items.push(`Ad platform connection (${ads.join(', ')}) with source-to-revenue tracking`)
+  if (wizard.marketingOwner === 'An outside agency')
+    items.push('Lead handoff and shared reporting set up with your marketing agency')
+
+  // Commerce: how they get paid drives the billing build.
+  const paid = arr(wizard.getPaidBy)
+  if (paid.includes('Deposit upfront + balance'))
+    items.push('Deposit collection built onto your quotes (pay link on the quote)')
+  if (paid.includes('Card / pay on the spot'))
+    items.push('HubSpot Payments enabled so customers can pay by card on the spot')
+  if (paid.some((p) => p === 'PO / Purchase Order' || p === 'Net terms (Net 30 / 60)'))
+    items.push('PO and net-terms fields with AR aging and automatic overdue-invoice reminders')
 
   items.push('Team training and a 30-day adoption check-in so this actually gets used')
   return items

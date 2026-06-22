@@ -16,7 +16,7 @@ import {
   defaultTickets,
 } from '../constants/defaultProperties'
 import { defaultWidgets } from '../constants/defaultWidgets'
-import { defaultCadence } from '../constants/defaultCadence'
+import { defaultCadence, EOS_MEETINGS, OS_EOS } from '../constants/defaultCadence'
 
 const nowIso = () => new Date().toISOString()
 
@@ -308,6 +308,21 @@ export const useStore = create((set, get) => ({
       ),
     }))
   },
+  // Example list-view column order (drag-to-reorder). Stored as an array of
+  // property keys; PreviewRecord falls back to enabled-property order when unset.
+  reorderColumn(slice, fromKey, toKey) {
+    get().patchSlice(slice, (s) => {
+      const order = (s.columnOrder && s.columnOrder.length
+        ? s.columnOrder
+        : s.properties.filter((p) => p.enabled).map((p) => p.key)
+      ).slice()
+      const from = order.indexOf(fromKey)
+      const to = order.indexOf(toKey)
+      if (from < 0 || to < 0 || from === to) return {}
+      order.splice(to, 0, order.splice(from, 1)[0])
+      return { columnOrder: order }
+    })
+  },
 
   // ---- Pipeline stage helpers (Deals / Tickets) ----
   addStage(slice, label) {
@@ -516,6 +531,17 @@ export const useStore = create((set, get) => ({
   },
 
   // ---- Accountability Cadence (Step 10) ----
+  // Selecting a business operating system pre-loads its meeting rhythm. EOS
+  // meetings are tagged eos:true so switching back to Custom removes just those,
+  // leaving the user's own meeting toggles intact.
+  setOperatingSystem(os) {
+    get().patchSlice('cadence', (c) => {
+      const base = (c.meetings || []).filter((m) => !m.eos)
+      const meetings =
+        os === OS_EOS ? [...EOS_MEETINGS.map((m) => ({ ...m })), ...base] : base
+      return { operatingSystem: os, meetings }
+    })
+  },
   toggleMeeting(key) {
     get().patchSlice('cadence', (c) => ({
       meetings: c.meetings.map((m) =>

@@ -20,9 +20,9 @@ export default function PreviewDiscovery() {
     if (q.type === 'single-from-pains') return a ? [painParts(a).pain] : null
     if (q.type === 'habit-matrix') {
       if (!a || typeof a !== 'object') return null
-      // Surface the statements flagged as a problem (Never / Sometimes).
+      // Surface the statements flagged as a problem (No / Not sure).
       const flagged = (q.statements || []).filter(
-        (st) => a[st.id] && a[st.id] !== 'always'
+        (st) => a[st.id] && a[st.id] !== 'yes'
       )
       return flagged.length ? flagged.map((st) => painParts(st.id).pain) : null
     }
@@ -63,7 +63,7 @@ export default function PreviewDiscovery() {
                       if (!a) return null
                       return (
                         <div key={q.qid}>
-                          <p className="text-[10px] font-preview text-hs-text-light">{q.prompt}</p>
+                          <p className="text-[10px] font-preview text-hs-text-light">{q.summaryLabel || q.prompt}</p>
                           {Array.isArray(a) ? (
                             <div className="flex flex-wrap gap-1 mt-0.5">
                               {a.map((item) => (

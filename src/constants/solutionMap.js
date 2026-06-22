@@ -182,6 +182,23 @@ export const SOLUTION_MAP = {
     keywords: ['receivable', 'invoice', 'ar ', 'owed', 'payment', 'quickbooks', 'unpaid'],
   },
 
+  payment_automation: {
+    title: 'Getting paid runs itself',
+    narrative:
+      'Deposits get collected on the quote, customers pay online from the invoice, and overdue invoices chase themselves on a schedule. The cash comes in without anyone playing collections.',
+    workflows: [],
+    viewIds: ['quotes_awaiting'],
+    widgets: [],
+    cadenceRules: {},
+    tierFeatures: [{ feature: 'quotes_payments', tier: 'starter' }],
+    ccBuild: [
+      'Pay link and deposit collection built onto your quotes',
+      'Online payment from the invoice connected to your accounting software',
+      'Automatic overdue-invoice reminder sequence so you stop chasing checks',
+    ],
+    keywords: ['get paid', 'getting paid', 'deposit', 'pay online', 'payment link', 'overdue', 'chase payment', 'collections', 'net 30', 'net terms'],
+  },
+
   // ---------------- BEYOND SALES: other HubSpot hubs ----------------
   marketing_email_gap: {
     title: 'Your list finally hears from you',
@@ -608,6 +625,10 @@ const SPIN_EXTRAS = {
     hub: 'Commerce Hub',
     implication: 'If your process adds 7 days from proposal to payment across 50 deals a year, what is the cumulative cash-flow hit?',
   },
+  payment_automation: {
+    hub: 'Commerce Hub',
+    implication: 'Every week a payment sits uncollected is a week you are financing your customer for free. How many invoices are past due right now?',
+  },
   kb_faq_repeat: {
     hub: 'Service Hub',
     implication: '30 minutes a day answering repeat questions is 10+ hours a month of payroll spent on answers a page could give.',
@@ -709,6 +730,7 @@ const PAIN_LABELS = {
   landing_pages_gap: { pain: 'Capture', painDesc: "we aren't capturing leads anywhere we can easily follow up" },
   content_seo_gap: { pain: 'Visibility', painDesc: 'nobody finds us online, no blog, SEO, or content' },
   quotes_invoices_split: { pain: 'Billing', painDesc: "quoting and invoicing live in tools that don't talk" },
+  payment_automation: { pain: 'Getting paid', painDesc: 'collecting deposits and chasing overdue invoices is all manual' },
   kb_faq_repeat: { pain: 'FAQs', painDesc: 'we answer the same customer questions over and over' },
   surveys_nps_blind: { pain: 'Feedback', painDesc: "we don't know customers are unhappy until they're gone" },
   reporting_excel_pain: { pain: 'Reports', painDesc: 'every report or dashboard wastes time on exports and spreadsheets, nothing’s automated' },
