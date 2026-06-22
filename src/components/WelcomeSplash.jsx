@@ -4,7 +4,7 @@ import { useStore } from '../store/useStore'
 // Brief full-screen welcome shown right after the gate is passed.
 // Async: "Welcome, {name} — let's customize your build. Time to plug the leaks."
 // Live:  "Let's begin your HubSpot demo. Watch your sales process run itself."
-// Auto-dismisses after ~2.8s; any click skips.
+// Auto-dismisses after ~4.4s; any click skips.
 export default function WelcomeSplash({ onDone }) {
   const name = useStore((s) => s.session.gate.name)
   const isLive = useStore((s) => s.session.mode === 'live')
@@ -14,8 +14,8 @@ export default function WelcomeSplash({ onDone }) {
 
   useEffect(() => {
     const t1 = setTimeout(() => setStage(1), 900)
-    const t2 = setTimeout(() => setStage(2), 2300)
-    const t3 = setTimeout(onDone, 2900)
+    const t2 = setTimeout(() => setStage(2), 3800)
+    const t3 = setTimeout(onDone, 4400)
     return () => [t1, t2, t3].forEach(clearTimeout)
   }, [onDone])
 

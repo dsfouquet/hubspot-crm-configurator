@@ -35,7 +35,7 @@ export default function ZoomFrame({ children }) {
       <div className="absolute bottom-3 left-3 z-20 inline-flex items-center rounded-md bg-white/95 border border-hs-border shadow-sm overflow-hidden font-ui backdrop-blur-sm">
         <button
           onClick={zoomOut}
-          disabled={zoom <= 1}
+          disabled={zoom <= 0.25}
           aria-label="Zoom out"
           className="w-8 h-8 flex items-center justify-center text-hs-text-dark hover:bg-hs-canvas disabled:opacity-30 border-r border-hs-border"
         >

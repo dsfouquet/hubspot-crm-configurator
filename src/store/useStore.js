@@ -228,12 +228,12 @@ export const useStore = create((set, get) => ({
   },
 
   // ---- Demo zoom (in-panel magnify of the preview; UI state only) ----
-  // Min 1 so the demo always fills the panel; magnify + scroll above that.
+  // Floor 0.25 so the whole board can be fit into view; magnify + scroll above 1.
   zoomIn() {
     set((s) => ({ previewZoom: Math.min(2.5, Math.round((s.previewZoom + 0.25) * 100) / 100) }))
   },
   zoomOut() {
-    set((s) => ({ previewZoom: Math.max(1, Math.round((s.previewZoom - 0.25) * 100) / 100) }))
+    set((s) => ({ previewZoom: Math.max(0.25, Math.round((s.previewZoom - 0.25) * 100) / 100) }))
   },
   resetZoom() {
     set({ previewZoom: 1 })

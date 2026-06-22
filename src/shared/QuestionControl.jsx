@@ -16,7 +16,9 @@ export default function QuestionControl({ question, size = 'compact' }) {
   // Which journey-stage dropdowns are expanded (grouped pain-multi). All
   // collapsed by default so the long list isn't a wall of scroll.
   const [openGroups, setOpenGroups] = useState({})
-  const toggleGroup = (key) => setOpenGroups((g) => ({ ...g, [key]: !g[key] }))
+  // Single-open accordion: opening a topic collapses any other; clicking the
+  // open one collapses it.
+  const toggleGroup = (key) => setOpenGroups((g) => (g[key] ? {} : { [key]: true }))
 
   const isPainMulti = question.type === 'pain-multi'
   const isPainSingle = question.type === 'single-from-pains'
@@ -334,8 +336,10 @@ export default function QuestionControl({ question, size = 'compact' }) {
       )}
 
       {question.optionalText && (
-        <div className="mt-2">
-          <label className="block text-[11px] font-ui text-hs-text-light mb-0.5">
+        <div className="mt-3">
+          <label
+            className={`block font-ui text-hs-text-light mb-1.5 ${large ? 'text-sm' : 'text-[12px]'}`}
+          >
             {question.optionalText.label}
           </label>
           <OptionalTextInput optionalText={question.optionalText} large={large} />
@@ -353,7 +357,7 @@ function OptionalTextInput({ optionalText, large }) {
       value={value}
       onChange={(e) => setWizardAnswer(optionalText.key, e.target.value)}
       placeholder={optionalText.placeholder}
-      className={`hs-input w-full font-ui ${large ? 'text-[14px] px-3.5 py-2' : 'text-[13px] px-2.5 py-1.5'}`}
+      className={`hs-input w-full font-ui ${large ? 'text-[16px] px-4 py-3' : 'text-[13px] px-2.5 py-1.5'}`}
     />
   )
 }

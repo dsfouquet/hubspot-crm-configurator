@@ -107,9 +107,15 @@ export default function CustomerBuildPlan() {
                     <span className="block font-ui font-semibold text-hs-navy text-[15px] leading-snug">
                       {p.title}
                     </span>
-                    <span className="block text-[12px] font-ui text-hs-text-light truncate">
-                      You said: "{pain}"
-                    </span>
+                    {p.isTop && fixPlan.topLeakCost ? (
+                      <span className="block text-[12px] font-ui font-semibold text-hs-red leading-snug">
+                        You said {pain} is costing you: {fixPlan.topLeakCost}
+                      </span>
+                    ) : (
+                      <span className="block text-[12px] font-ui text-hs-text-light truncate">
+                        You said: "{pain}"
+                      </span>
+                    )}
                   </span>
                   {p.isTop && (
                     <span className="text-[9px] font-ui font-bold uppercase tracking-wide text-white bg-hs-red rounded px-1.5 py-0.5 shrink-0">
