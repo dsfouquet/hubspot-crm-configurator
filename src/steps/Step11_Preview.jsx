@@ -55,7 +55,15 @@ function TopBar() {
       .join('')
       .slice(0, 2)
       .toUpperCase() || 'YO'
-  const company = gate?.email?.split('@')[1]?.split('.')[0]
+  // Prefer an explicit business name (captured at share time); otherwise derive
+  // from the email domain. An explicit name is shown verbatim; a derived one is
+  // capitalized.
+  const domain = gate?.email?.split('@')[1]?.split('.')[0]
+  const company = gate?.company?.trim()
+    ? gate.company.trim()
+    : domain
+      ? `${domain[0].toUpperCase()}${domain.slice(1)}`
+      : ''
 
   return (
     <div className="shrink-0 h-12 bg-hs-navy flex items-center gap-3 px-3 font-preview">

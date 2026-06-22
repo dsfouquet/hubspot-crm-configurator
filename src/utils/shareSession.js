@@ -16,7 +16,8 @@ export function deriveMeta(session) {
   const name = session?.gate?.name || ''
   const domain = session?.gate?.email?.split('@')[1]?.split('.')[0] || ''
   const fromDomain = domain ? domain[0].toUpperCase() + domain.slice(1) : ''
-  const company = session?.wizard?.companyName || fromDomain || ''
+  // Prefer the business name captured in Discovery; fall back to email domain.
+  const company = session?.gate?.company?.trim() || fromDomain || ''
   return { company, prospectName: name }
 }
 

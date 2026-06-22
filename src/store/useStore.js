@@ -30,7 +30,7 @@ function buildInitialSession(mode = 'async') {
     mode,
     createdAt: nowIso(),
     lastUpdated: nowIso(),
-    gate: { name: '', email: '' },
+    gate: { name: '', email: '', company: '' },
     wizard: {},
     contacts: defaultContacts(),
     companies: defaultCompanies(),
@@ -208,6 +208,12 @@ export const useStore = create((set, get) => ({
   // Advisor private notes (never in prospect-facing output).
   setAdvisorNotes(text) {
     get().patchSession({ advisorNotes: text })
+  },
+
+  // Set the prospect's identity (name / business / email) without flipping the
+  // gate. Captured in Discovery so it personalizes the preview + shared link.
+  setGateInfo(patch) {
+    get().patchSession((s) => ({ gate: { ...s.gate, ...patch } }))
   },
 
   // Load a restored session (from code/link). Skips the gate when appropriate.

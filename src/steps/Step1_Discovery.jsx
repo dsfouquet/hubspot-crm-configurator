@@ -34,6 +34,41 @@ function hasAnswer(wizard, q) {
   return Boolean(a && String(a).trim())
 }
 
+// Prospect identity — captured under "Your Business" so it personalizes the CRM
+// preview header (and labels the shared preview link in the admin library).
+function ProspectIdentity() {
+  const gate = useStore((s) => s.session.gate)
+  const setGateInfo = useStore((s) => s.setGateInfo)
+  const fields = [
+    { key: 'name', label: 'Their name', placeholder: 'e.g. John Boudreaux' },
+    { key: 'company', label: 'Business name', placeholder: 'e.g. Acme Chemical' },
+    { key: 'email', label: 'Work email', placeholder: 'e.g. john@acmechemical.com' },
+  ]
+  return (
+    <div className="mb-3 rounded-lg border border-hs-border bg-white p-4">
+      <h3 className="font-ui font-semibold text-hs-navy text-[13px]">Who is this for?</h3>
+      <p className="text-[10px] font-ui text-hs-text-light mt-0.5 mb-2.5">
+        Personalizes the live preview and the link you send them. Optional.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        {fields.map((f) => (
+          <div key={f.key}>
+            <label className="block text-[10px] font-ui font-medium text-hs-text-light mb-1">
+              {f.label}
+            </label>
+            <input
+              value={gate?.[f.key] || ''}
+              onChange={(e) => setGateInfo({ [f.key]: e.target.value })}
+              placeholder={f.placeholder}
+              className="hs-input w-full px-2.5 py-1.5 text-[12.5px] font-ui"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function Step1_Discovery({ index }) {
   const wizard = useStore((s) => s.session.wizard)
   const applyFixPlan = useStore((s) => s.applyFixPlan)
@@ -186,6 +221,9 @@ export default function Step1_Discovery({ index }) {
       </div>
 
       <SectionNav className="mb-3" />
+
+      {/* Prospect identity lives at the top of the first ("Your Business") section */}
+      {section.key === 'business' && <ProspectIdentity />}
 
       {/* One card per section; questions as compact rows */}
       <div className="rounded-lg border border-hs-border bg-white px-4 divide-y divide-hs-canvas">
