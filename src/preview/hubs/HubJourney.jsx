@@ -90,6 +90,7 @@ export default function HubJourney() {
     {
       id: 'gen_find',
       phase: 'GENERATE',
+      header: 'Found online',
       title: 'People find you through search, ads, and content',
       summary: 'Search, paid ads, and your posts all run from one place and feed the same CRM.',
       detail:
@@ -99,6 +100,7 @@ export default function HubJourney() {
     {
       id: 'gen_ads',
       phase: 'GENERATE',
+      header: 'Ads with ROI',
       title: 'Ads that pay for themselves, tracked to closed revenue',
       summary: 'Google and Meta ads run from the CRM, and reporting goes past clicks to real cost-per-lead and revenue per campaign.',
       detail:
@@ -108,6 +110,7 @@ export default function HubJourney() {
     {
       id: 'gen_referral',
       phase: 'GENERATE',
+      header: 'Referral capture',
       title: 'Referrals get captured and worked, not left to memory',
       summary: 'Every referral and repeat customer is tracked to who sent it, and the thank-you and ask run on their own.',
       detail:
@@ -117,6 +120,7 @@ export default function HubJourney() {
     {
       id: 'gen_outreach',
       phase: 'GENERATE',
+      header: 'Auto outreach',
       title: 'Outreach runs in the background while you sell',
       summary: 'Sequences work new targets and your back book of past clients without you remembering to.',
       detail:
@@ -126,6 +130,7 @@ export default function HubJourney() {
     {
       id: 'gen_events',
       phase: 'GENERATE',
+      header: 'Event capture',
       title: 'Events feed the CRM, not a shoebox of business cards',
       summary: 'Badge scans and event forms drop straight onto contact records, and follow-up fires before you leave the booth.',
       detail:
@@ -135,6 +140,7 @@ export default function HubJourney() {
     {
       id: 'gen_phone',
       phase: 'GENERATE',
+      header: 'Calls & texts',
       title: 'You call and text from one place, every touch logs itself',
       summary: 'Calls and texts go out from the CRM, on your office line or your cell, and write themselves to the record.',
       detail:
@@ -146,6 +152,7 @@ export default function HubJourney() {
     {
       id: 'capture',
       phase: 'QUALIFY',
+      header: 'One record',
       title: 'However they reach you, it all lands on one record',
       summary: 'A call, a text, an email, or a form: every channel threads onto one contact record.',
       detail:
@@ -155,6 +162,7 @@ export default function HubJourney() {
     {
       id: 'route_score',
       phase: 'QUALIFY',
+      header: 'Score & route',
       title: 'Hot leads get scored and routed to a rep in seconds',
       summary: 'The system scores each lead and assigns the right rep automatically, so you call the hot ones first.',
       detail:
@@ -164,6 +172,7 @@ export default function HubJourney() {
     {
       id: 'warm',
       phase: 'QUALIFY',
+      header: 'Lead nurture',
       title: 'Not ready yet? They stay warm, and you get pinged when they heat up',
       summary: 'A not-ready lead drops into nurture, and the rep gets the hand-raise the moment their interest crosses the line.',
       detail:
@@ -175,6 +184,7 @@ export default function HubJourney() {
     {
       id: 'meeting',
       phase: 'WIN',
+      header: 'Self-booking',
       title: 'Appointments book themselves, and a text cuts the no-shows',
       summary: 'A calendar link kills the back-and-forth, and an automatic text reminder keeps the slot.',
       detail:
@@ -184,6 +194,7 @@ export default function HubJourney() {
     {
       id: 'ai_prep',
       phase: 'WIN',
+      header: 'AI prep',
       title: 'AI sums up the history before you pick up the phone',
       summary: 'Breeze enriches the contact and writes a summary of every touch, so the call sounds like the fifth, not the first.',
       detail:
@@ -193,6 +204,7 @@ export default function HubJourney() {
     {
       id: 'win_pitch',
       phase: 'WIN',
+      header: 'Guided pitch',
       title: 'Every rep runs the same proven pitch, not winging it',
       summary: 'A playbook on the deal walks the rep through pain, value, proof, and the close, so your best sales conversation happens every time.',
       detail:
@@ -202,6 +214,7 @@ export default function HubJourney() {
     {
       id: 'stages',
       phase: 'WIN',
+      header: 'Deal board',
       title: 'Deals move across one board, with a nudge when they stall',
       summary: stageStr,
       detail:
@@ -211,6 +224,7 @@ export default function HubJourney() {
     {
       id: 'quote',
       phase: 'WIN',
+      header: 'Quote & sign',
       title: 'Quote, sign, and deposit in one link',
       summary: 'The quote builds from the deal. They sign and pay the deposit through the same link, and the follow-up chases itself.',
       detail:
@@ -222,6 +236,7 @@ export default function HubJourney() {
     {
       id: 'handoff',
       phase: 'DELIVER',
+      header: 'Auto handoff',
       title: 'Closed won kicks off the work, nothing re-typed',
       summary: 'The moment a deal is won, operations gets the order off the same record, with the signed quote attached.',
       detail:
@@ -231,6 +246,7 @@ export default function HubJourney() {
     {
       id: 'team_record',
       phase: 'DELIVER',
+      header: 'Shared record',
       title: 'The team works off the same record you sold from',
       summary: 'Whoever delivers the work sees exactly what was sold and promised, so the customer never repeats themselves.',
       detail:
@@ -240,6 +256,7 @@ export default function HubJourney() {
     {
       id: 'invoicing',
       phase: 'DELIVER',
+      header: 'Invoicing',
       title: 'Invoicing and your books stay in sync',
       summary: `Invoices fire from the deal and sync to ${accounting}, so payment status shows on the record.`,
       detail: `The deal becomes an invoice and syncs to ${accounting}, with payment status back on the record so anyone can answer "did they pay?" without calling bookkeeping. HubSpot connects to your books, it does not replace them.`,
@@ -250,6 +267,7 @@ export default function HubJourney() {
     {
       id: 'support',
       phase: 'KEEP',
+      header: 'Support tickets',
       title: 'Support tickets land on the same customer record',
       summary: 'A problem becomes a ticket with an owner and an SLA, and service sees the whole sales history.',
       detail:
@@ -259,6 +277,7 @@ export default function HubJourney() {
     {
       id: 'feedback',
       phase: 'KEEP',
+      header: 'Feedback & reviews',
       title: 'A text and email ask how it went, and happy clients get pointed to a review',
       summary: 'Surveys go out after the job; high scores ask for a Google review, low scores alert the owner before they churn.',
       detail:
@@ -268,6 +287,7 @@ export default function HubJourney() {
     {
       id: 'keep_expand',
       phase: 'KEEP',
+      header: 'Auto upsell',
       title: 'The next offer pitches itself at the right moment',
       summary: 'When the work lands and the client is happy, the CRM opens the upsell, the cross-sell, or the retainer on its own.',
       detail:
@@ -277,6 +297,7 @@ export default function HubJourney() {
     {
       id: 'retain',
       phase: 'KEEP',
+      header: 'Renewals',
       title: 'Win-backs and renewals fire on their own',
       summary: 'Renewal dates and quiet accounts trigger their own sequences, so lifetime value climbs without you tracking it.',
       detail:
@@ -483,7 +504,7 @@ export default function HubJourney() {
                               muted ? 'text-hs-text-light' : 'text-hs-navy'
                             }`}
                           >
-                            {step.title}
+                            {step.header || step.title}
                           </span>
                           {step.isCustom ? (
                             <span className="shrink-0 mt-0.5 text-[9px] font-semibold uppercase tracking-wide text-hs-text-light bg-hs-canvas border border-hs-border rounded-[3px] px-1.5 py-0.5">
