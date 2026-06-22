@@ -50,6 +50,17 @@ export function loadSessionByCode(code) {
   return null
 }
 
+// Parse the path for the read-only share routes: /p/<code> and /admin.
+// Returns { route: 'preview'|'admin'|'app', code? }. The SPA catch-all rewrite
+// serves index.html for these paths, so we read pathname here on load.
+export function readUrlRoute() {
+  const path = window.location.pathname
+  const preview = path.match(/^\/p\/([A-Za-z0-9]+)\/?$/)
+  if (preview) return { route: 'preview', code: preview[1].toUpperCase() }
+  if (/^\/admin\/?$/.test(path)) return { route: 'admin' }
+  return { route: 'app' }
+}
+
 // Read ?session= / ?code= from the URL on load.
 export function readUrlSession() {
   const params = new URLSearchParams(window.location.search)

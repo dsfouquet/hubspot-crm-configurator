@@ -14,9 +14,12 @@ import CustomerIntake from './steps/CustomerIntake'
 import CustomerBuildPlan from './steps/CustomerBuildPlan'
 import StepCTA from './steps/StepCTA'
 import BlueprintDocument from './components/BlueprintDocument'
+import SharedPreview from './preview/SharedPreview'
+import PreviewLibrary from './admin/PreviewLibrary'
 import { stepsForMode } from './constants/steps'
 
 export default function App() {
+  const viewMode = useStore((s) => s.viewMode)
   const gatePassed = useStore((s) => s.gatePassed)
   const presenterMode = useStore((s) => s.presenterMode)
   const toggleAdvisor = useStore((s) => s.toggleAdvisor)
@@ -47,6 +50,12 @@ export default function App() {
       document.removeEventListener('visibilitychange', flush)
     }
   }, [saveNow])
+
+  // Read-only share routes render their own surface, bypassing the gate and the
+  // whole configurator shell. (All App hooks above run first — these returns sit
+  // below them to keep hook order stable.)
+  if (viewMode === 'admin') return <PreviewLibrary />
+  if (viewMode === 'preview') return <SharedPreview />
 
   // Landing gate blocks the app until name+email (async) or Start Live Session.
   if (!gatePassed) return <EmailGateModal />

@@ -6,6 +6,7 @@ import {
   loadSessionByUuid,
   loadSessionByCode,
   readUrlSession,
+  readUrlRoute,
   syncUrlSession,
 } from '../utils/sessionId'
 import { stepsForMode } from '../constants/steps'
@@ -67,6 +68,9 @@ function resolveInitialSession() {
 }
 
 const { session: initialSession, restored } = resolveInitialSession()
+// Read-only share routes (/p/<code>, /admin) render their own surfaces and never
+// write back to storage. App.jsx branches on this before the normal flow.
+const initialRoute = readUrlRoute().route
 
 // Resume a restored session at its first incomplete step (last step if all done).
 function resumeStepIndex(session) {
@@ -88,6 +92,11 @@ export const useStore = create((set, get) => ({
   session: initialSession,
   restored,
 
+  // Render surface: 'app' (normal configurator), 'preview' (read-only shared
+  // link), or 'admin' (passcode-gated library). In 'preview' mode persistence is
+  // inert so a prospect's view never writes back to storage.
+  viewMode: initialRoute,
+
   // ---- UI state (not persisted) ----
   currentStep: restored ? resumeStepIndex(initialSession) : 0, // index into the mode's step list
   presenterMode: false,
@@ -108,7 +117,8 @@ export const useStore = create((set, get) => ({
           ? { ...state.session, ...patch(state.session) }
           : { ...state.session, ...patch }
       next.lastUpdated = nowIso()
-      scheduleSave(next)
+      // Never persist in read-only share mode — the shared link must stay clean.
+      if (state.viewMode !== 'preview') scheduleSave(next)
       return { session: next }
     })
   },
@@ -215,6 +225,17 @@ export const useStore = create((set, get) => ({
   // Force an immediate (non-debounced) save — used on tab close.
   saveNow() {
     saveSession(get().session)
+  },
+
+  // Load a fetched shared session into a read-only preview surface. No save, no
+  // URL sync — the prospect's view is ephemeral and never mutates storage.
+  hydrateSharedPreview(sharedSession) {
+    set({
+      session: sharedSession,
+      viewMode: 'preview',
+      gatePassed: true,
+      presenterMode: false,
+    })
   },
 
   // Unlock the final preview (after email gate in async, or immediately in live).

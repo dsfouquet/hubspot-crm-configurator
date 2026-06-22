@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import DownloadPdfButton from '../components/DownloadPdfButton'
+import { createShareLink } from '../utils/shareSession'
 
 import HubJourney from '../preview/hubs/HubJourney'
 import HubCRM from '../preview/hubs/HubCRM'
@@ -147,11 +148,52 @@ const BOOKING_URL =
   import.meta.env.VITE_BOOKING_URL ||
   'https://meetings-na2.hubspot.com/crescent/crm-demo-call'
 
-function ActionBar() {
+// Presenter-only: mint a read-only share link for the current session and copy
+// it to the clipboard so Daniel can text/email it to the prospect.
+function CopyPreviewLinkButton() {
+  const session = useStore((s) => s.session)
+  const [state, setState] = useState('idle') // idle | working | done | error
+
+  const onClick = async () => {
+    setState('working')
+    try {
+      const { url } = await createShareLink(session)
+      try {
+        await navigator.clipboard.writeText(url)
+      } catch {
+        window.prompt('Copy this preview link:', url)
+      }
+      setState('done')
+    } catch {
+      setState('error')
+    }
+    setTimeout(() => setState('idle'), 2800)
+  }
+
+  const label = {
+    idle: 'Copy Preview Link',
+    working: 'Creating link…',
+    done: 'Link copied ✓',
+    error: 'Failed — retry',
+  }[state]
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={state === 'working'}
+      className="text-[13px] font-ui font-medium text-hs-navy bg-white border border-hs-border hover:border-hs-navy px-4 py-2 rounded-[3px] disabled:opacity-60"
+      title="Create a read-only link to send the prospect"
+    >
+      {label}
+    </button>
+  )
+}
+
+function ActionBar({ readOnly = false }) {
   const isCustomer = useStore((s) => s.session.mode) !== 'live'
   const goToStep = useStore((s) => s.goToStep)
 
-  if (isCustomer) {
+  if (isCustomer && !readOnly) {
     // Customer funnel: the routed CTA lives on the Next Steps screen.
     return (
       <div className="shrink-0 border-t border-hs-border bg-white px-5 py-3 flex items-center gap-3 flex-wrap">
@@ -173,6 +215,9 @@ function ActionBar() {
     )
   }
 
+  // Presenter (live) and shared read-only views share this minimal bar:
+  // Download PDF + Book a Call. The Copy Preview Link button shows for the
+  // presenter only — never on the prospect's shared link.
   return (
     <div className="shrink-0 border-t border-hs-border bg-white px-5 py-3 flex items-center gap-2 flex-wrap">
       <DownloadPdfButton variant="primary" label="Download PDF Summary" />
@@ -184,19 +229,22 @@ function ActionBar() {
       >
         Book a Call with Daniel
       </a>
+      {!readOnly && <CopyPreviewLinkButton />}
     </div>
   )
 }
 
-export default function Step11_Preview() {
+export default function Step11_Preview({ readOnly = false }) {
   const session = useStore((s) => s.session)
   const unlockPreview = useStore((s) => s.unlockPreview)
   const beginAsyncSession = useStore((s) => s.beginAsyncSession)
   const [hub, setHub] = useState('journey')
 
   const isLive = session.mode === 'live'
-  // Email is already captured at the front gate — don't ask twice.
-  const unlocked = isLive || session.previewUnlocked || Boolean(session.gate?.email)
+  // Read-only shared links skip the gate entirely (the prospect is the intended
+  // viewer). Otherwise: email is already captured at the front gate.
+  const unlocked =
+    readOnly || isLive || session.previewUnlocked || Boolean(session.gate?.email)
 
   const handleUnlock = ({ name, email }) => {
     beginAsyncSession(name, email)
@@ -253,7 +301,7 @@ export default function Step11_Preview() {
         </div>
       </div>
 
-      <ActionBar />
+      <ActionBar readOnly={readOnly} />
     </div>
   )
 }
