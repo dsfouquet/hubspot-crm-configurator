@@ -163,9 +163,13 @@ export function scopeOffers(session) {
   // its free-vs-machine logic untouched.
   const bantEvaluated = Boolean(session.qualification) || Boolean(w.annualRevenue)
   const verdict = session.qualification || qualify(w)
-  const qualified = bantEvaluated ? verdict.qualified : true
-  const recommended =
-    bantEvaluated && !qualified
+  // A 100+ person team is always a full-build (Core Offer) + retainer fit. It
+  // never routes to the Free Setup or DIY guide, regardless of other signals.
+  const isEnterprise = w.teamSize === 'Enterprise (100+)'
+  const qualified = isEnterprise ? true : bantEvaluated ? verdict.qualified : true
+  const recommended = isEnterprise
+    ? 'machine'
+    : bantEvaluated && !qualified
       ? 'diy'
       : hubsFiring.length >= 2 || machine.length >= 3
         ? 'machine'
@@ -202,6 +206,8 @@ export function scopeOffers(session) {
     freeBlockers.push('A messy, scattered list to rescue. The Free Setup covers a clean import up to 5,000 contacts')
   if (['50–100', '100+'].includes(w.monthlyVolume))
     freeBlockers.push(`High lead volume (${w.monthlyVolume}/mo) needs routing + scoring beyond the free scope`)
+  if (isEnterprise)
+    freeBlockers.push('A 100+ person team needs multi-user roles, permissions, and routing well beyond the Free Setup’s single-workspace scope')
 
   return { free, machine, retainer, diy, recommended, qualified, diyNote, hubsFiring, freeBlockers }
 }

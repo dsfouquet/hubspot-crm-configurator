@@ -166,7 +166,7 @@ export const CUSTOMER_QUESTIONS = [
     prompt: 'How many people are on your team, including you?',
     type: 'single',
     autoAdvance: true,
-    options: ['Just me (1)', 'Small team (2–5)', 'Mid-size team (6–20)', 'Large team (20+)'],
+    options: ['Just me (1)', 'Small team (2–5)', 'Mid-size team (6–20)', 'Large team (20+)', 'Enterprise (100+)'],
   },
   {
     key: 'currentTracking',
