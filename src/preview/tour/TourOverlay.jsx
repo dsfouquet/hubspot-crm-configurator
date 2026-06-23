@@ -112,7 +112,9 @@ export default function TourOverlay({ step, index, total, onNext, onDismiss, onF
     return () => window.removeEventListener('keydown', onKey)
   }, [onDismiss])
 
-  const advance = step?.isFinish ? onFinish : onNext
+  const isLast = index >= total - 1
+  const advance = isLast ? onFinish : onNext
+  const primaryLabel = isLast ? step?.finishLabel || 'Done' : 'Next'
   const ring = pos?.ring
   const card = pos?.card || { top: -9999, left: -9999 }
 
@@ -124,7 +126,9 @@ export default function TourOverlay({ step, index, total, onNext, onDismiss, onF
       <div
         className="absolute inset-0"
         style={{
-          pointerEvents: 'auto',
+          // The explore hand-off step lets the viewer click the rail straight
+          // through to launch a hub tour, so it doesn't capture clicks.
+          pointerEvents: step?.interactiveRail ? 'none' : 'auto',
           background: ring ? 'transparent' : 'rgba(45,62,80,0.55)',
         }}
         onClick={(e) => e.stopPropagation()}
@@ -185,9 +189,11 @@ export default function TourOverlay({ step, index, total, onNext, onDismiss, onF
         }}
       >
         <div className="px-5 pt-3.5 pb-4">
-          <div className="text-[10.5px] font-semibold uppercase tracking-wide text-hs-text-light mb-1">
-            {index + 1} of {total}
-          </div>
+          {total > 1 && (
+            <div className="text-[10.5px] font-semibold uppercase tracking-wide text-hs-text-light mb-1">
+              {index + 1} of {total}
+            </div>
+          )}
           <h3 className="text-[15px] font-semibold text-hs-navy leading-snug">{step?.title}</h3>
           <p className="text-[12.5px] text-hs-text-dark leading-snug mt-1.5">{step?.body}</p>
           <div className="flex items-center justify-between gap-3 mt-4">
@@ -204,7 +210,7 @@ export default function TourOverlay({ step, index, total, onNext, onDismiss, onF
               className="hs-btn-primary shrink-0"
               style={{ padding: '7px 18px', fontSize: 13 }}
             >
-              {step?.isFinish ? 'Finish' : 'Next'}
+              {primaryLabel}
             </button>
           </div>
         </div>

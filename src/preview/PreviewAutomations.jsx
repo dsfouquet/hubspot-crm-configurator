@@ -31,7 +31,7 @@ export default function PreviewAutomations() {
   return (
     <div className="h-full flex flex-col">
       {/* Workflow selector chips */}
-      <div className="shrink-0 px-4 py-3 border-b border-hs-border bg-white">
+      <div data-tour="automations-chips" className="shrink-0 px-4 py-3 border-b border-hs-border bg-white">
         <div className="flex flex-wrap gap-1.5">
           {workflows.map((w) => {
             const active = w.id === focused.id

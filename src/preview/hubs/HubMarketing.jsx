@@ -30,7 +30,7 @@ export default function HubMarketing() {
   return (
     <div className="h-full flex flex-col font-preview">
       {/* Sub-tab bar */}
-      <div className="border-b border-hs-border bg-white flex items-center px-2 shrink-0">
+      <div data-tour="marketing-tabs" className="border-b border-hs-border bg-white flex items-center px-2 shrink-0">
         {TABS.map((t) => {
           const active = t === tab
           return (

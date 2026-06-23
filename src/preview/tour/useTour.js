@@ -1,9 +1,12 @@
-import { useCallback, useState } from 'react'
-import { TOUR_STEPS } from './tourSteps'
+import { useCallback, useRef, useState } from 'react'
+import { INTRO_STEPS, HUB_TOURS } from './tourSteps'
 
-// Per-browser "done" flag — set on dismiss or finish so the auto-prompt doesn't
-// nag on return visits. The TopBar Help button can still relaunch the tour.
+// Per-browser flags:
+//   DONE_KEY — global kill switch ("Don't show me any more"); nothing auto-shows.
+//   SEEN_KEY — JSON array of track ids already played ('intro' + hub keys), so
+//              the intro prompt and each per-hub tour only fire once.
 const DONE_KEY = 'cc_crm_tour_v1_done'
+const SEEN_KEY = 'cc_crm_tour_v1_seen'
 
 export function tourDone() {
   try {
@@ -12,64 +15,141 @@ export function tourDone() {
     return false
   }
 }
-
 function markDone() {
   try {
     localStorage.setItem(DONE_KEY, '1')
   } catch {
-    /* private mode / storage disabled — tour just won't be remembered */
+    /* storage disabled — just won't be remembered */
+  }
+}
+function readSeen() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]'))
+  } catch {
+    return new Set()
+  }
+}
+function persistSeen(set) {
+  try {
+    localStorage.setItem(SEEN_KEY, JSON.stringify([...set]))
+  } catch {
+    /* storage disabled */
   }
 }
 
-// Tour controller. `setHub` lets start()/next() drive the preview's active hub
-// so the right page is showing behind each step's spotlight.
+// Track-based tour controller. One "track" plays at a time: the intro, or a
+// single hub's mini-tour. `setHub` lets the controller switch the preview to the
+// right screen when a track starts.
 export function useTour(setHub) {
-  const [active, setActive] = useState(false)
+  const [trackId, setTrackId] = useState(null) // 'intro' | hub key | null
+  const [steps, setSteps] = useState([])
   const [index, setIndex] = useState(0)
-  const total = TOUR_STEPS.length
+  const seenRef = useRef(readSeen())
 
-  const applyHub = useCallback(
-    (i) => {
-      const h = TOUR_STEPS[i]?.hub
-      if (h && setHub) setHub(h)
+  const active = trackId !== null
+
+  const markSeen = useCallback((id) => {
+    seenRef.current.add(id)
+    persistSeen(seenRef.current)
+  }, [])
+
+  const close = useCallback(() => {
+    setTrackId(null)
+    setSteps([])
+    setIndex(0)
+  }, [])
+
+  const startIntro = useCallback(() => {
+    if (setHub) setHub('journey')
+    setTrackId('intro')
+    setSteps(INTRO_STEPS)
+    setIndex(0)
+  }, [setHub])
+
+  // Returns false when the hub has no mini-tour (e.g. Sales Process / journey).
+  const startHub = useCallback(
+    (key) => {
+      const list = HUB_TOURS[key]
+      if (!list || !list.length) return false
+      if (setHub) setHub(key)
+      setTrackId(key)
+      setSteps(list)
+      setIndex(0)
+      return true
     },
     [setHub]
   )
 
-  const start = useCallback(() => {
-    setIndex(0)
-    applyHub(0)
-    setActive(true)
-  }, [applyHub])
-
   const next = useCallback(() => {
-    setIndex((i) => {
-      const n = i + 1
-      if (n >= total) {
-        markDone()
-        setActive(false)
-        return i
-      }
-      applyHub(n)
-      return n
-    })
-  }, [applyHub, total])
+    setIndex((i) => Math.min(i + 1, steps.length - 1))
+  }, [steps.length])
 
-  // Both the faint "Don't show me any more" link and the final "Finish" button
-  // end the tour and remember it as done.
+  // Last-step button / track complete: remember this track, then close.
+  const finish = useCallback(() => {
+    if (trackId) markSeen(trackId)
+    close()
+  }, [trackId, markSeen, close])
+
+  // "Don't show me any more": global kill switch.
   const dismiss = useCallback(() => {
     markDone()
-    setActive(false)
-  }, [])
+    close()
+  }, [close])
+
+  // Initial prompt = run the intro. Help button = wipe flags and run it fresh.
+  const start = startIntro
+  const restart = useCallback(() => {
+    try {
+      localStorage.removeItem(DONE_KEY)
+      localStorage.removeItem(SEEN_KEY)
+    } catch {
+      /* storage disabled */
+    }
+    seenRef.current = new Set()
+    startIntro()
+  }, [startIntro])
+
+  // "No thanks" on the prompt: skip the intro but leave per-hub tours armed.
+  const skipIntro = useCallback(() => {
+    markSeen('intro')
+    close()
+  }, [markSeen, close])
+
+  // Called when a rail item is clicked. Drives the per-hub tours.
+  const onHubSelected = useCallback(
+    (key) => {
+      if (tourDone()) return
+      if (trackId === 'intro') {
+        const cur = INTRO_STEPS[index]
+        if (!cur || !cur.isExplore) return // mid-intro: ignore stray rail clicks
+        markSeen('intro') // on the explore step: hand off into the hub's tour
+      } else if (trackId && trackId !== key) {
+        markSeen(trackId) // leaving one hub's tour for another
+      }
+      if (seenRef.current.has(key)) {
+        if (trackId) close()
+        return
+      }
+      if (!startHub(key) && trackId) close() // hub has no tour (e.g. journey)
+    },
+    [trackId, index, markSeen, startHub, close]
+  )
+
+  // Whether the first-access prompt should auto-open (intro not yet seen).
+  const autoPrompt = useCallback(() => !tourDone() && !seenRef.current.has('intro'), [])
 
   return {
     active,
     index,
-    total,
-    step: TOUR_STEPS[index],
+    total: steps.length,
+    step: steps[index],
     start,
+    restart,
+    skipIntro,
     next,
+    finish,
     dismiss,
-    finish: dismiss,
+    onHubSelected,
+    autoPrompt,
   }
 }

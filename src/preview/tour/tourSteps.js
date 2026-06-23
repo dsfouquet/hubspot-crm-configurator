@@ -1,40 +1,41 @@
-// Declarative step list for the CRM preview guided tour. This is the single
-// source of all tour copy — tune wording here. Each step:
-//   id        — stable key
-//   hub        — which hub must be active for this step (the controller calls
-//                setHub(hub) on enter; null = hub-agnostic, e.g. menu intro / finish)
-//   target     — CSS selector for the element to spotlight ([data-tour="…"]);
-//                null = no spotlight (centered card, used for the finish step)
-//   title/body — callout copy
-//   placement  — preferred callout side: right | left | top | bottom | auto | center
-//   advanceOnTargetClick — clicking the highlighted target advances the tour
-//   isFinish   — last step; the primary button reads "Finish" and ends the tour
+// Tour copy lives here. Two parts:
 //
-// Flow: menu intro → invite a click on Sales Process → walk each hub in rail
-// order (highlight its rail button with the page already switched behind it,
-// then spotlight 1-2 key regions on that page) → closing card.
+//   INTRO_STEPS — the opening walk: the left menu, then the Sales Process
+//   screen, ending on an "explore on your own" step that hands control back to
+//   the viewer and invites them to click any menu item.
+//
+//   HUB_TOURS — a self-contained mini-tour per menu item. When the viewer clicks
+//   a rail item (CRM, Marketing, …) for the first time, that hub's track plays,
+//   spotlighting the key regions on THAT screen, then ends. Sales Process has no
+//   entry here because the intro already covers it.
+//
+// Each step: { id, target, title, body, placement, advanceOnTargetClick?,
+//              isExplore?, interactiveRail?, finishLabel? }
+//   target          — CSS selector to spotlight ([data-tour="…"]); null = centered card
+//   placement       — right | left | top | bottom | auto | center (flips to fit)
+//   advanceOnTargetClick — clicking the highlighted target advances the tour
+//   isExplore       — the hand-off step; clicking a rail item starts that hub's tour
+//   interactiveRail — don't block the rail; let the viewer click straight through
+//   finishLabel     — label for the last step's primary button (default "Done")
 
-export const TOUR_STEPS = [
+export const INTRO_STEPS = [
   {
     id: 'menu',
-    hub: null,
     target: '[data-tour="nav-rail"]',
     placement: 'right',
     title: 'This is your main menu',
-    body: 'Every part of your CRM lives here. Click any item to jump straight to it. Let’s take a quick walk through each one.',
+    body: 'Every part of your CRM lives here. Click any item to jump straight to it. Let’s start with your Sales Process.',
   },
   {
     id: 'nav-journey',
-    hub: 'journey',
     target: '[data-tour="nav-journey"]',
     placement: 'right',
     advanceOnTargetClick: true,
     title: 'Start with your Sales Process',
-    body: 'Sales Process shows how a deal moves through your business, from first touch to repeat customer. Click it, or hit Next.',
+    body: 'It shows how a deal moves through your business, from first touch to repeat customer. Click it, or hit Next.',
   },
   {
     id: 'journey-board',
-    hub: 'journey',
     target: '[data-tour="journey-board"]',
     placement: 'left',
     title: 'Your whole process on one board',
@@ -42,155 +43,143 @@ export const TOUR_STEPS = [
   },
   {
     id: 'journey-search',
-    hub: 'journey',
     target: '[data-tour="journey-search"]',
     placement: 'bottom',
     title: 'Plug in the tools you already use',
     body: 'Search a tool you already run to see where it fits. Nothing gets ripped out. It all connects to the same CRM.',
   },
   {
-    id: 'nav-crm',
-    hub: 'crm',
-    target: '[data-tour="nav-crm"]',
+    id: 'explore',
+    target: '[data-tour="nav-rail"]',
     placement: 'right',
-    title: 'CRM: your single source of truth',
-    body: 'Every contact, company, deal, and ticket in one place. Nothing stuck in a spreadsheet or someone’s inbox.',
-  },
-  {
-    id: 'crm-tabs',
-    hub: 'crm',
-    target: '[data-tour="crm-tabs"]',
-    placement: 'bottom',
-    title: 'Contacts, Companies, Deals, Tickets',
-    body: 'Switch between record types up here. Same relationship, every angle, always linked together.',
-  },
-  {
-    id: 'crm-content',
-    hub: 'crm',
-    target: '[data-tour="crm-content"]',
-    placement: 'top',
-    title: 'Saved views built for how you sell',
-    body: 'Live tables filtered the way your team works. Click any record to see its full history: every call, email, and quote attached.',
-  },
-  {
-    id: 'nav-marketing',
-    hub: 'marketing',
-    target: '[data-tour="nav-marketing"]',
-    placement: 'right',
-    title: 'Marketing that pays for itself',
-    body: 'Email, forms, landing pages, and campaigns run from here, and every dollar of spend ties back to revenue won.',
-  },
-  {
-    id: 'marketing-content',
-    hub: 'marketing',
-    target: '[data-tour="marketing-content"]',
-    placement: 'top',
-    title: 'Branded email and forms, on autopilot',
-    body: 'Newsletters and nurture sequences that send themselves, plus forms that turn website visitors into tracked contacts automatically.',
-  },
-  {
-    id: 'nav-sales',
-    hub: 'sales',
-    target: '[data-tour="nav-sales"]',
-    placement: 'right',
-    title: 'Sales: your rep’s daily cockpit',
-    body: 'Today’s tasks, meetings, and deals in one view, with the next action always queued up.',
-  },
-  {
-    id: 'sales-content',
-    hub: 'sales',
-    target: '[data-tour="sales-content"]',
-    placement: 'top',
-    title: 'Your day, organized for you',
-    body: 'Tasks, meetings, and pipeline at a glance, plus sequences that keep working leads while you’re out in the field.',
-  },
-  {
-    id: 'nav-commerce',
-    hub: 'commerce',
-    target: '[data-tour="nav-commerce"]',
-    placement: 'right',
-    title: 'Commerce: quote to cash',
-    body: 'Quotes, e-signatures, invoices, and payments, all built straight off the deal you just closed.',
-  },
-  {
-    id: 'commerce-content',
-    hub: 'commerce',
-    target: '[data-tour="commerce-content"]',
-    placement: 'top',
-    title: 'Sign and pay through one link',
-    body: 'Send a branded quote, collect the signature and deposit in the same motion, and watch payment status land on the record.',
-  },
-  {
-    id: 'nav-service',
-    hub: 'service',
-    target: '[data-tour="nav-service"]',
-    placement: 'right',
-    title: 'Service: nothing slips after the sale',
-    body: 'Problems become tracked tickets with owners and SLAs, so the customer you fought to win never feels dropped.',
-  },
-  {
-    id: 'service-content',
-    hub: 'service',
-    target: '[data-tour="service-content"]',
-    placement: 'top',
-    title: 'Tickets, knowledge base, and surveys',
-    body: 'All tied to the same customer record your sales team built, so service already knows the whole story.',
-  },
-  {
-    id: 'nav-automations',
-    hub: 'automations',
-    target: '[data-tour="nav-automations"]',
-    placement: 'right',
-    title: 'Automations: the engine room',
-    body: 'This is the work that runs without you: handoffs, follow-ups, alerts, and reminders firing on their own.',
-  },
-  {
-    id: 'automations-canvas',
-    hub: 'automations',
-    target: '[data-tour="automations-canvas"]',
-    placement: 'left',
-    title: 'A real workflow, mapped out',
-    body: 'Each trigger fires the next step automatically, so deals keep moving even on the days you’re slammed.',
-  },
-  {
-    id: 'nav-reporting',
-    hub: 'reporting',
-    target: '[data-tour="nav-reporting"]',
-    placement: 'right',
-    title: 'Reporting: your command center',
-    body: 'Pipeline, revenue, rep activity, and marketing ROI, updated live as the work happens.',
-  },
-  {
-    id: 'reporting-content',
-    hub: 'reporting',
-    target: '[data-tour="reporting-content"]',
-    placement: 'top',
-    title: 'Answers without the five-tab chase',
-    body: 'Dashboards that tell you where the business stands. One look, every morning, before 9am.',
-  },
-  {
-    id: 'nav-cadence',
-    hub: 'cadence',
-    target: '[data-tour="nav-cadence"]',
-    placement: 'right',
-    title: 'Accountability keeps it running',
-    body: 'The meeting rhythm and adoption rules that make sure the CRM actually gets used, not just installed.',
-  },
-  {
-    id: 'cadence-root',
-    hub: 'cadence',
-    target: '[data-tour="cadence-content"]',
-    placement: 'top',
-    title: 'Your operating rhythm, built in',
-    body: 'The CRM only pays off when it’s worked. This is what keeps the whole team on it, week after week.',
-  },
-  {
-    id: 'finish',
-    hub: null,
-    target: null,
-    placement: 'center',
-    isFinish: true,
-    title: 'That’s your CRM, end to end',
-    body: 'Every step connected, the busywork automated, and the relationships you’ve already earned finally working for you. Download the blueprint or book a call whenever you’re ready.',
+    isExplore: true,
+    interactiveRail: true,
+    finishLabel: 'Got it',
+    title: 'Now explore on your own',
+    body: 'Take your time on the Sales Process. When you’re ready, click any section on the left, CRM, Marketing, Sales, and I’ll show you around that screen too.',
   },
 ]
+
+export const HUB_TOURS = {
+  crm: [
+    {
+      id: 'crm-tabs',
+      target: '[data-tour="crm-tabs"]',
+      placement: 'bottom',
+      title: 'Four record types, one system',
+      body: 'Contacts, Companies, Deals, and Tickets. Switch between them up here. Every record stays linked to the others.',
+    },
+    {
+      id: 'crm-content',
+      target: '[data-tour="crm-content"]',
+      placement: 'top',
+      title: 'Live views built for how you sell',
+      body: 'Saved views filter your records the way your team works. Click any row to see its full history: every call, email, and quote attached.',
+    },
+  ],
+  marketing: [
+    {
+      id: 'marketing-tabs',
+      target: '[data-tour="marketing-tabs"]',
+      placement: 'bottom',
+      title: 'Email, forms, CTAs, campaigns',
+      body: 'Your whole marketing engine in one place. Switch between sections up here.',
+    },
+    {
+      id: 'marketing-content',
+      target: '[data-tour="marketing-content"]',
+      placement: 'top',
+      title: 'Sends and captures on autopilot',
+      body: 'Branded email and nurture that run themselves, plus forms that turn website visitors into tracked contacts.',
+    },
+  ],
+  sales: [
+    {
+      id: 'sales-tabs',
+      target: '[data-tour="sales-tabs"]',
+      placement: 'bottom',
+      title: 'Your rep’s daily cockpit',
+      body: 'Workspace, sequences, documents, meetings, and analytics. The whole sales day lives here.',
+    },
+    {
+      id: 'sales-content',
+      target: '[data-tour="sales-content"]',
+      placement: 'top',
+      title: 'Your day, organized for you',
+      body: 'Today’s tasks, meetings, and pipeline at a glance, with the next action always queued up.',
+    },
+  ],
+  commerce: [
+    {
+      id: 'commerce-tabs',
+      target: '[data-tour="commerce-tabs"]',
+      placement: 'bottom',
+      title: 'Quote to cash',
+      body: 'Quotes, invoices, and payments, all built straight off the deal. Switch sections up here.',
+    },
+    {
+      id: 'commerce-content',
+      target: '[data-tour="commerce-content"]',
+      placement: 'top',
+      title: 'Sign and pay in one link',
+      body: 'Send a branded quote, collect the signature and deposit together, and watch payment status land on the record.',
+    },
+  ],
+  service: [
+    {
+      id: 'service-tabs',
+      target: '[data-tour="service-tabs"]',
+      placement: 'bottom',
+      title: 'Support that doesn’t drop',
+      body: 'Help desk, knowledge base, and post-job surveys, all in one place.',
+    },
+    {
+      id: 'service-content',
+      target: '[data-tour="service-content"]',
+      placement: 'top',
+      title: 'Tied to the customer record',
+      body: 'Tickets carry owners and SLAs, and service sees the whole sales history, so nothing slips after the sale.',
+    },
+  ],
+  automations: [
+    {
+      id: 'automations-chips',
+      target: '[data-tour="automations-chips"]',
+      placement: 'bottom',
+      title: 'The work that runs without you',
+      body: 'Each one is a workflow: handoffs, follow-ups, alerts, and reminders firing on their own.',
+    },
+    {
+      id: 'automations-canvas',
+      target: '[data-tour="automations-canvas"]',
+      placement: 'left',
+      title: 'A real workflow, mapped out',
+      body: 'Every trigger fires the next step automatically, so deals keep moving even on your busiest days.',
+    },
+  ],
+  reporting: [
+    {
+      id: 'reporting-tabs',
+      target: '[data-tour="reporting-tabs"]',
+      placement: 'bottom',
+      title: 'Every dashboard you need',
+      body: 'Business health, sales, rep activity, marketing, and service. Switch views up here.',
+    },
+    {
+      id: 'reporting-content',
+      target: '[data-tour="reporting-content"]',
+      placement: 'top',
+      title: 'Answers without the five-tab chase',
+      body: 'Live dashboards that tell you where the business stands. One look, every morning, before 9am.',
+    },
+  ],
+  cadence: [
+    {
+      id: 'cadence-content',
+      target: '[data-tour="cadence-content"]',
+      placement: 'top',
+      title: 'Your operating rhythm, built in',
+      body: 'The meeting cadence and adoption rules that keep the whole team on the CRM, week after week. Software doesn’t create ROI, usage does.',
+    },
+  ],
+}

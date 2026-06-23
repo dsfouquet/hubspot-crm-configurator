@@ -339,7 +339,7 @@ export default function HubReporting() {
   return (
     <div className="h-full flex flex-col font-preview">
       {/* Sub-tab bar */}
-      <div className="border-b border-hs-border bg-white flex items-center px-2">
+      <div data-tour="reporting-tabs" className="border-b border-hs-border bg-white flex items-center px-2">
         {TABS.map((tab) => {
           const isActive = active === tab
           return (

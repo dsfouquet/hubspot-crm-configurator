@@ -3,7 +3,7 @@ import { useStore } from '../store/useStore'
 import DownloadPdfButton from '../components/DownloadPdfButton'
 import { createShareLink } from '../utils/shareSession'
 import TourOverlay from '../preview/tour/TourOverlay'
-import { useTour, tourDone } from '../preview/tour/useTour'
+import { useTour } from '../preview/tour/useTour'
 
 import HubJourney from '../preview/hubs/HubJourney'
 import HubCRM from '../preview/hubs/HubCRM'
@@ -267,9 +267,9 @@ export default function Step11_Preview({ readOnly = false }) {
     readOnly || isLive || session.previewUnlocked || Boolean(session.gate?.email)
 
   // Auto-prompt on first access in every mode (presenter, customer, shared link)
-  // unless this browser has already dismissed/finished the tour.
+  // unless this browser has already seen the intro or killed the tour.
   useEffect(() => {
-    if (unlocked && !tourDone()) setShowPrompt(true)
+    if (unlocked && tour.autoPrompt()) setShowPrompt(true)
   }, [unlocked])
 
   const startTour = () => {
@@ -278,7 +278,12 @@ export default function Step11_Preview({ readOnly = false }) {
   }
   const skipTour = () => {
     setShowPrompt(false)
-    tour.dismiss()
+    tour.skipIntro()
+  }
+  // Help button relaunches the whole experience from scratch.
+  const relaunchTour = () => {
+    setShowPrompt(false)
+    tour.restart()
   }
 
   const handleUnlock = ({ name, email }) => {
@@ -294,7 +299,7 @@ export default function Step11_Preview({ readOnly = false }) {
 
   return (
     <div className="h-full flex flex-col bg-hs-canvas">
-      <TopBar onHelp={startTour} />
+      <TopBar onHelp={relaunchTour} />
       <div className="flex-1 flex min-h-0">
         {/* HubSpot-style left rail */}
         <nav
@@ -308,7 +313,10 @@ export default function Step11_Preview({ readOnly = false }) {
               <button
                 key={h.key}
                 data-tour={`nav-${h.key}`}
-                onClick={() => setHub(h.key)}
+                onClick={() => {
+                  setHub(h.key)
+                  tour.onHubSelected(h.key)
+                }}
                 title={h.label}
                 aria-label={h.label}
                 className={`flex items-center gap-2.5 px-3.5 md:px-4 py-2.5 text-left text-[13px] font-preview transition-colors ${

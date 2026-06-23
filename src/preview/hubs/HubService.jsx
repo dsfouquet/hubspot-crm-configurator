@@ -42,7 +42,7 @@ export default function HubService() {
   return (
     <div className="h-full flex flex-col font-preview">
       {/* Sub-tab bar */}
-      <div className="flex items-center gap-1 px-4 border-b border-hs-border bg-white">
+      <div data-tour="service-tabs" className="flex items-center gap-1 px-4 border-b border-hs-border bg-white">
         {SUB_TABS.map((t) => {
           const active = t === tab
           return (
