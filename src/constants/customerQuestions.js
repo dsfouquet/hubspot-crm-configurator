@@ -133,6 +133,118 @@ export function customerPainGroups(industry) {
   })).filter((g) => g.painIds.length > 0)
 }
 
+// Q5 "Where do leads and customers live today?" — one collapsible dropdown per
+// CRM object, each its own multiselect with options tailored to that object.
+// Stored as wizard.currentTracking = { leads: [...], customers: [...], ... }
+// (object keyed by group so the same label in two groups stays distinct).
+export const TRACKING_GROUPS = [
+  {
+    key: 'leads',
+    label: 'Leads',
+    caption: 'New / incoming',
+    options: [
+      'Web form on our site',
+      'Phone calls / voicemail',
+      'Email inbox',
+      'Spreadsheet',
+      'Paper / sticky notes',
+      'Social media DMs',
+      'Referrals (in my head)',
+      'Another CRM',
+      'Nothing structured',
+    ],
+  },
+  {
+    key: 'customers',
+    label: 'Customers',
+    caption: 'Existing people',
+    options: [
+      'Spreadsheet',
+      'Email contacts',
+      'Accounting software (QuickBooks...)',
+      'Phone contacts',
+      'Paper files / binders',
+      'Another CRM',
+      'My memory',
+      'Nothing structured',
+    ],
+  },
+  {
+    key: 'companies',
+    label: 'Companies',
+    caption: 'Accounts / orgs',
+    options: [
+      'Spreadsheet',
+      'Email',
+      'Accounting software',
+      'Business cards',
+      'Another CRM',
+      'Not tracked separately',
+      'Nothing structured',
+    ],
+  },
+  {
+    key: 'deals',
+    label: 'Deals',
+    caption: 'Open pipeline / opportunities',
+    options: [
+      'Spreadsheet',
+      'Whiteboard',
+      'In my head',
+      'Email threads',
+      'Quoting / proposal software',
+      'Another CRM',
+      'Nothing structured',
+    ],
+  },
+  {
+    key: 'serviceTickets',
+    label: 'Service Tickets',
+    caption: 'Issues / support requests',
+    options: [
+      'Email inbox',
+      'Phone calls / texts',
+      'Spreadsheet',
+      'Sticky notes / paper',
+      'Help desk tool (Zendesk...)',
+      "We don't track these",
+      'Nothing structured',
+    ],
+  },
+  {
+    key: 'openJobs',
+    label: 'Open Jobs',
+    caption: 'Active work / projects',
+    options: [
+      'Spreadsheet',
+      'Whiteboard / job board',
+      'Project tool (Asana, Monday...)',
+      'Paper work orders',
+      'Field service app',
+      'In my head',
+      'Nothing structured',
+    ],
+  },
+]
+
+// Normalize wizard.currentTracking to a flat array of selected labels, tolerating
+// both the new grouped object and legacy flat-array sessions.
+export function trackingValues(v) {
+  if (Array.isArray(v)) return v // legacy
+  if (v && typeof v === 'object') return Object.values(v).flat()
+  return []
+}
+
+// Grouped, labeled readout: "Leads: Web form, Spreadsheet • Deals: In my head".
+// Falls back to a plain join for legacy flat-array sessions.
+export function formatTracking(v) {
+  if (Array.isArray(v)) return v
+  if (!v || typeof v !== 'object') return []
+  return TRACKING_GROUPS.filter((g) => (v[g.key] || []).length).map(
+    (g) => `${g.label}: ${v[g.key].join(', ')}`
+  )
+}
+
 export const CUSTOMER_QUESTIONS = [
   {
     key: 'industry',
@@ -172,18 +284,10 @@ export const CUSTOMER_QUESTIONS = [
     key: 'currentTracking',
     qid: 'currentTracking',
     prompt: 'Where do leads and customers live today?',
-    hint: 'Select all that apply',
-    type: 'multi',
-    allowOther: true,
-    options: [
-      'Spreadsheet',
-      'Email inbox',
-      'Paper / whiteboard',
-      'HubSpot (barely using it)',
-      'Another CRM (Salesforce, GHL, Pipedrive...)',
-      'My phone / memory',
-      'Nothing structured',
-    ],
+    hint: 'Open each one and check what applies',
+    type: 'tracking-multi',
+    groups: TRACKING_GROUPS,
+    allowOtherPerGroup: true,
   },
   {
     key: 'pains',

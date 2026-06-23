@@ -61,6 +61,8 @@ export default function CustomerIntake() {
     const a = wizard[question.key]
     if (question.type === 'pain-multi')
       return Array.isArray(a) && a.some((id) => question.painIds.includes(id))
+    if (question.type === 'tracking-multi')
+      return Boolean(a) && Object.values(a).some((arr) => Array.isArray(arr) && arr.length > 0)
     if (Array.isArray(a)) return a.length > 0
     return Boolean(a && String(a).trim())
   })()

@@ -7,6 +7,7 @@
 // Call-only questions (team access, urgency/decision, branding) stay out.
 
 import { SOLUTION_MAP } from './solutionMap'
+import { TRACKING_GROUPS } from './customerQuestions'
 
 export const DISCOVERY_SECTIONS = [
   { key: 'business', label: 'Your Business' },
@@ -231,18 +232,10 @@ export const DISCOVERY_QUESTIONS = [
     qid: 'currentTracking',
     section: 'crm',
     prompt: 'What do you use today to track leads, deals, and customers?',
-    type: 'multi',
-    hint: 'Select all that apply',
-    allowOther: true,
-    options: [
-      'Spreadsheet',
-      'Email inbox',
-      'Paper / whiteboard',
-      'HubSpot (barely using it)',
-      'Another CRM (Salesforce, GHL, Pipedrive...)',
-      'My phone / memory',
-      'Nothing structured',
-    ],
+    type: 'tracking-multi',
+    hint: 'Open each one and check what applies',
+    groups: TRACKING_GROUPS,
+    allowOtherPerGroup: true,
   },
   {
     key: 'dataImport',

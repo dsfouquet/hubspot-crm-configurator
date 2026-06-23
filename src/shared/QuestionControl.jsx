@@ -23,9 +23,35 @@ export default function QuestionControl({ question, size = 'compact' }) {
   const isPainMulti = question.type === 'pain-multi'
   const isPainSingle = question.type === 'single-from-pains'
   const isHabit = question.type === 'habit-matrix'
+  const isTracking = question.type === 'tracking-multi'
   const isSingle = question.type === 'single' || isPainSingle
   const isMulti = question.type === 'multi' || isPainMulti
   const isText = question.type === 'textarea'
+
+  // Grouped tracking-multi: wizard[key] is an object { groupKey: [labels] }.
+  // Each group's array holds selected option labels plus any free-text "Other".
+  const trackGroup = (k) => {
+    const v = answer && typeof answer === 'object' && !Array.isArray(answer) ? answer[k] : null
+    return Array.isArray(v) ? v : []
+  }
+  const writeTracking = (k, nextArr) => {
+    const live = useStore.getState().session.wizard[question.key]
+    const base = live && typeof live === 'object' && !Array.isArray(live) ? live : {}
+    setWizardAnswer(question.key, { ...base, [k]: nextArr })
+  }
+  const toggleTrack = (k, opt) => {
+    const live = useStore.getState().session.wizard[question.key]
+    const base = live && typeof live === 'object' && !Array.isArray(live) ? live : {}
+    const cur = Array.isArray(base[k]) ? base[k] : []
+    writeTracking(k, cur.includes(opt) ? cur.filter((o) => o !== opt) : [...cur, opt])
+  }
+  // Replace the group's free-text entry (anything not in the preset options).
+  const trackOther = (group, text) => {
+    const presets = trackGroup(group.key).filter((o) => group.options.includes(o))
+    writeTracking(group.key, text.trim() ? [...presets, text] : presets)
+  }
+  const trackOtherValue = (group) =>
+    trackGroup(group.key).find((o) => !group.options.includes(o)) || ''
 
   // Habit matrix (Yes / No / Not sure): stores wizard[key] = {id: state} and syncs
   // the mapped pain into wizard.pains. Statements are positively framed, so "Yes"
@@ -276,6 +302,106 @@ export default function QuestionControl({ question, size = 'compact' }) {
             {options.map((opt) => renderRow(opt))}
           </div>
         )
+      )}
+
+      {isTracking && (
+        // One collapsible card per CRM object (Leads, Customers, Deals, ...),
+        // single-open accordion, each its own multiselect + free-text "Other".
+        <div className={large ? 'space-y-3' : 'space-y-2'}>
+          {question.groups.map((group) => {
+            const isOpen = !!openGroups[group.key]
+            const selCount = trackGroup(group.key).length
+            return (
+              <div
+                key={group.key}
+                className={`bg-white border rounded-lg overflow-hidden ${
+                  selCount > 0 ? 'border-hs-orange/60' : 'border-hs-border'
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(group.key)}
+                  aria-expanded={isOpen}
+                  className="w-full flex items-center gap-2.5 text-left px-3.5 py-3 hover:bg-hs-canvas/60"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[12px] font-ui font-bold uppercase tracking-wide text-hs-orange">
+                        {group.label}
+                      </span>
+                      {selCount > 0 && (
+                        <span className="text-[10px] font-ui font-semibold text-white bg-hs-orange rounded-full px-1.5 py-0.5">
+                          {selCount} selected
+                        </span>
+                      )}
+                    </div>
+                    {group.caption && (
+                      <span className="block text-[11px] font-ui text-hs-text-light mt-0.5 leading-tight">
+                        {group.caption}
+                      </span>
+                    )}
+                  </div>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className={`text-hs-text-light shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    aria-hidden
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+                <div
+                  className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+                    isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <div className={`px-3.5 pb-3.5 pt-0.5 ${large ? 'space-y-2' : 'space-y-1'}`}>
+                      {group.options.map((opt) => {
+                        const sel = trackGroup(group.key).includes(opt)
+                        return (
+                          <button
+                            key={opt}
+                            type="button"
+                            onClick={() => toggleTrack(group.key, opt)}
+                            className={`w-full text-left flex items-center gap-2.5 rounded-md border font-ui transition-colors ${rowText} ${
+                              sel
+                                ? 'border-hs-orange bg-hs-orange/10'
+                                : 'border-hs-border bg-white hover:border-hs-text-light'
+                            }`}
+                          >
+                            <span
+                              className={`flex items-center justify-center ${large ? 'w-[18px] h-[18px]' : 'w-3.5 h-3.5'} shrink-0 rounded border ${
+                                sel ? 'bg-hs-orange border-hs-orange text-white' : 'border-hs-border'
+                              }`}
+                            >
+                              {sel && (
+                                <span className={`${large ? 'text-[11px]' : 'text-[9px]'} leading-none`}>✓</span>
+                              )}
+                            </span>
+                            <span>{opt}</span>
+                          </button>
+                        )
+                      })}
+                      {question.allowOtherPerGroup && (
+                        <input
+                          value={trackOtherValue(group)}
+                          onChange={(e) => trackOther(group, e.target.value)}
+                          placeholder="Other…"
+                          className={`hs-input w-full font-ui ${large ? 'text-[14px] px-3.5 py-2' : 'text-[12.5px] px-2.5 py-1.5'}`}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       )}
 
       {/* Classic research-backed leaks — secondary, collapsed by default so the

@@ -5,6 +5,7 @@
 import { SOLUTION_MAP, matchTextToLeaks, painLabel } from '../constants/solutionMap'
 import { WORKFLOW_TEMPLATES, instantiateTemplate } from '../constants/workflowTemplates'
 import { AVATAR_OBJECTS } from '../constants/avatars'
+import { trackingValues } from '../constants/customerQuestions'
 
 // Parse "Lead → Site Visit → Quote Sent → Won" (or commas, dashes, numbered
 // lists) into pipeline stages. Returns null if fewer than 2 stages found.
@@ -169,7 +170,7 @@ export function collectLeakIds(wizard) {
   const opsHabits = wizard.opsHabits || {}
   const inferred = []
   // Tracking leads in 2+ places = scattered systems.
-  const tracking = Array.isArray(wizard.currentTracking) ? wizard.currentTracking : []
+  const tracking = trackingValues(wizard.currentTracking)
   if (tracking.length >= 2 && !opsHabits.tools_dont_talk) inferred.push('tools_dont_talk')
   // Manual/Excel reporting or hours of meeting prep = reporting pain.
   if (

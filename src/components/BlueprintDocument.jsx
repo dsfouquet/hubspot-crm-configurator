@@ -4,6 +4,7 @@ import { activeViews } from '../utils/recommendations'
 import { scopeOffers, OFFERS } from '../utils/offerScoper'
 import { WIDGET_LABELS, AUTOMATION_HEALTH_WIDGETS } from '../constants/defaultWidgets'
 import { actionCount } from '../constants/workflowTemplates'
+import { formatTracking } from '../constants/customerQuestions'
 
 // Off-screen, print-optimized rendering of the full blueprint (spec Section 8).
 // html2pdf rasterizes #blueprint-doc into a multi-page A4 PDF. Each <Page> forces
@@ -213,7 +214,7 @@ export default function BlueprintDocument() {
             ['New business comes from', arr(w.leadSources)],
             ['Average deal size', arr(w.avgDealSize)],
             ['Sales cycle', arr(w.salesCycle)],
-            ['Currently tracking with', arr(w.currentTracking)],
+            ['Currently tracking with', formatTracking(w.currentTracking)],
           ].map(([label, vals]) => (
             <div key={label} style={{ marginBottom: 8 }}>
               <div style={{ fontSize: 11, color: '#7C98B6' }}>{label}</div>
