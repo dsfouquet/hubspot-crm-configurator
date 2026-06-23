@@ -40,6 +40,7 @@ export const PREVIEW_COMPONENTS = {
   contacts: () => <PreviewRecord slice="contacts" showIndexTable />,
   companies: () => <PreviewRecord slice="companies" showIndexTable />,
   deals: () => <PreviewDealRecord />,
+  tasks: () => <PreviewRecord slice="tasks" showIndexTable />,
   tickets: () => <PreviewRecord slice="tickets" showIndexTable />,
   customObjects: () => <PreviewCustomObjects />,
   workflows: () => <PreviewAutomations />,

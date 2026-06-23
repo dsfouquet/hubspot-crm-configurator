@@ -62,6 +62,21 @@ export const TICKETS = [
   { name: 'Noise complaint — rooftop unit', company: 'Red Stick Mechanical', priority: 'Medium', status: 'Resolved', owner: 'You', age: '6 days' },
 ]
 
+// Tasks as a first-class CRM object (HubSpot's 2025 Tasks refresh). type ∈ Call |
+// Email | To-do; status ∈ Not started | In progress | Waiting | Completed.
+export const TASKS = [
+  { name: 'Call Maria Chen — confirm pump selection', type: 'Call', company: 'Gulf Coast Chemical', assignee: 'You', dueDate: 'Jun 23, 2026', priority: 'High', status: 'Not started' },
+  { name: 'Send updated SIHI pricing', type: 'Email', company: 'Gulf Coast Chemical', assignee: 'You', dueDate: 'Jun 24, 2026', priority: 'High', status: 'In progress' },
+  { name: 'Follow up on plasma table quote', type: 'Email', company: 'Bayou Fabrication', assignee: 'Aimee Landry', dueDate: 'Jun 22, 2026', priority: 'Medium', status: 'Waiting' },
+  { name: 'Schedule site visit — Pelican', type: 'To-do', company: 'Pelican Industrial Services', assignee: 'Marcus Hebert', dueDate: 'Jun 25, 2026', priority: 'Medium', status: 'Not started' },
+  { name: 'Renewal call — annual service contract', type: 'Call', company: 'Pelican Industrial Services', assignee: 'Marcus Hebert', dueDate: 'Jun 26, 2026', priority: 'High', status: 'Not started' },
+  { name: 'Email case study to Acadiana', type: 'Email', company: 'Acadiana Builders Group', assignee: 'Aimee Landry', dueDate: 'Jun 20, 2026', priority: 'Low', status: 'In progress' },
+  { name: 'Confirm install window — Line 3', type: 'To-do', company: 'Pontchartrain Packaging', assignee: 'You', dueDate: 'Jun 27, 2026', priority: 'Medium', status: 'Waiting' },
+  { name: 'Win-back call — Crescent City', type: 'Call', company: 'Crescent City Logistics', assignee: 'Catherine Roy', dueDate: 'Jun 19, 2026', priority: 'Low', status: 'Completed' },
+  { name: 'Send PM schedule to Magnolia', type: 'Email', company: 'Magnolia Healthcare Group', assignee: 'Catherine Roy', dueDate: 'Jun 21, 2026', priority: 'Low', status: 'Completed' },
+  { name: 'Prep quote — Red Stick chiller', type: 'To-do', company: 'Red Stick Mechanical', assignee: 'Marcus Hebert', dueDate: 'Jun 28, 2026', priority: 'High', status: 'In progress' },
+]
+
 export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
 
 // Revenue trend (closed-won by month) — trending up, realistic variance.

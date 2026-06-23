@@ -53,6 +53,13 @@ export const STEP_COMPONENTS = {
       pipelineTitle="Pipeline Stage Configurator"
     />
   ),
+  tasks: (i) => (
+    <RecordStep
+      index={i}
+      slice="tasks"
+      intro="Configure your Task records — the to-dos, calls, and follow-ups your team works every day."
+    />
+  ),
   tickets: (i) => (
     <RecordStep
       index={i}

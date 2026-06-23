@@ -165,6 +165,37 @@ export function defaultTickets() {
   }
 }
 
+// ---------- TASKS (spec Step 5b — HubSpot Tasks-as-object refresh) ----------
+export function defaultTasks() {
+  return {
+    properties: [
+      prop('Title', 'Text', { locked: true, enabled: true }),
+      prop('Task Type', 'Dropdown', { locked: true, enabled: true }),
+      prop('Status', 'Dropdown', { locked: true, enabled: true }),
+      prop('Due Date', 'Date', { locked: true, enabled: true }),
+      prop('Priority', 'Dropdown', { enabled: true }),
+      prop('Assigned To', 'Dropdown', { enabled: true }),
+      prop('Queue', 'Dropdown'),
+      prop('Associated Record', 'Text'),
+      prop('Reminder', 'Date'),
+      prop('Notes', 'Text'),
+    ],
+    sections: [
+      section('About'),
+      section('Activity Feed'),
+      section('Associated Contact'),
+      section('Associated Company'),
+      section('Associated Deal'),
+      section('Notes'),
+    ],
+    activities: [
+      { key: 'notes', label: 'Notes', enabled: true },
+      { key: 'emails', label: 'Emails', enabled: true },
+      { key: 'calls', label: 'Calls', enabled: true },
+    ],
+  }
+}
+
 // Factory for a blank custom property (used by PropertyBuilder "+ Add").
 export function blankProperty(label = '', type = 'Text') {
   return { ...prop(label, type), enabled: true, custom: true, key: `custom_${Date.now()}` }

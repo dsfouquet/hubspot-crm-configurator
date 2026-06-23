@@ -1,7 +1,7 @@
 // Resolves the records associated with a featured preview record, pulled from the
 // shared demo data so the right-rail association cards link to real example records
 // (e.g. Maria Chen @ Gulf Coast Chemical → that company's deals, contacts, tickets).
-import { COMPANIES, CONTACTS, DEALS, TICKETS } from './demoData'
+import { COMPANIES, CONTACTS, DEALS, TICKETS, TASKS } from './demoData'
 import { SAMPLE } from './sampleData'
 import { initials } from './uiIcons'
 import { money, DEAL_STAGES_FALLBACK } from './recordHelpers'
@@ -25,6 +25,11 @@ export function associatedDeals(companyName = DEFAULT_COMPANY) {
 export function associatedTickets(companyName = DEFAULT_COMPANY) {
   const list = TICKETS.filter((t) => t.company === companyName)
   return list.length ? list : TICKETS.slice(0, 2)
+}
+
+export function associatedTasks(companyName = DEFAULT_COMPANY) {
+  const list = TASKS.filter((t) => t.company === companyName)
+  return list.length ? list : TASKS.slice(0, 2)
 }
 
 // Map a clicked demo row → the SAMPLE-shaped featured object PreviewRecord expects
@@ -102,6 +107,26 @@ export function toFeatured(slice, r, stages) {
         ticket_name: r.name,
         status: r.status || base.status,
         priority: r.priority || base.priority,
+      },
+    }
+  }
+
+  if (slice === 'tasks') {
+    return {
+      title: r.name,
+      subtitle: [r.type, r.dueDate ? `Due ${r.dueDate}` : null, r.priority ? `${r.priority} priority` : null]
+        .filter(Boolean)
+        .join(' · '),
+      initials: '✓',
+      company: r.company,
+      values: {
+        ...base,
+        title: r.name,
+        task_type: r.type || base.task_type,
+        status: r.status || base.status,
+        due_date: r.dueDate || base.due_date,
+        priority: r.priority || base.priority,
+        assigned_to: r.assignee || base.assigned_to,
       },
     }
   }

@@ -10,12 +10,12 @@ import {
   DataTable,
 } from '../charts'
 import { Tag, IconStar, IconPuzzle } from '../uiIcons'
-import { CONTACTS, COMPANIES, DEALS, TICKETS, REPS } from '../demoData'
+import { CONTACTS, COMPANIES, DEALS, TICKETS, TASKS, REPS } from '../demoData'
 import RecordPopup from '../RecordPopup'
 import { fmtK } from '../recordHelpers'
 import { fireTabTour } from '../tour/events'
 
-const TABS = ['Contacts', 'Companies', 'Deals', 'Tickets']
+const TABS = ['Contacts', 'Companies', 'Deals', 'Tasks', 'Tickets']
 
 // ---- small shared bits -----------------------------------------------------
 
@@ -605,6 +605,180 @@ function DealsTab({ session, onOpen }) {
   )
 }
 
+// ---- Tasks -----------------------------------------------------------------
+// HubSpot's 2025 Tasks refresh: tasks are a first-class CRM object with their own
+// index page, saved views, and Table / Board views (we ship Table + Board here).
+
+const TASK_PRIORITY_COLOR = { High: 'red', Medium: 'orange', Low: 'gray' }
+const TASK_STATUS_COLOR = {
+  'Not started': 'gray',
+  'In progress': 'orange',
+  Waiting: 'purple',
+  Completed: 'green',
+}
+const TASK_TYPE_COLOR = { Call: 'blue', Email: 'purple', 'To-do': 'gray' }
+// Fixed board columns, in workflow order, matching the Status property options.
+const TASK_BOARD_STAGES = ['Not started', 'In progress', 'Waiting', 'Completed']
+const TASK_VIEW_MODES = ['Table', 'Board']
+// "Today" is pinned to the demo's reference date so the Due-today view is non-empty.
+const TASK_TODAY = 'Jun 23, 2026'
+
+const TASK_VIEWS = [
+  { id: 'all', name: 'All tasks', description: 'Every task across your team', filter: () => true },
+  {
+    id: 'open',
+    name: 'Open',
+    description: 'Not yet completed',
+    filter: (t) => t.status !== 'Completed',
+  },
+  {
+    id: 'due_today',
+    name: 'Due today',
+    description: `Tasks due ${TASK_TODAY}`,
+    filter: (t) => t.dueDate === TASK_TODAY && t.status !== 'Completed',
+  },
+  {
+    id: 'high_priority',
+    name: 'High priority',
+    description: 'Flagged High, still open',
+    filter: (t) => t.priority === 'High' && t.status !== 'Completed',
+  },
+  {
+    id: 'completed',
+    name: 'Completed',
+    description: 'Done and logged',
+    filter: (t) => t.status === 'Completed',
+  },
+]
+
+function TaskCard({ task, onClick }) {
+  return (
+    <div
+      onClick={onClick}
+      className="bg-white rounded-md border border-hs-border px-3 py-2.5 shadow-sm cursor-pointer hover:border-hs-orange"
+    >
+      <div className="hs-link text-[12px] font-semibold leading-tight">{task.name}</div>
+      <div className="text-[10px] text-hs-text-light truncate">{task.company}</div>
+      <div className="flex items-center gap-1.5 mt-2">
+        <Tag color={TASK_TYPE_COLOR[task.type] || 'gray'}>{task.type}</Tag>
+        <Tag color={TASK_PRIORITY_COLOR[task.priority] || 'gray'}>{task.priority}</Tag>
+      </div>
+      <div className="flex items-center gap-1.5 mt-2 text-[10px] text-hs-text-light">
+        <Avatar name={task.assignee} />
+        <span className="truncate">{task.assignee}</span>
+        <span className="ml-auto shrink-0">{task.dueDate}</span>
+      </div>
+    </div>
+  )
+}
+
+function TasksTab({ session, onOpen }) {
+  const [mode, setMode] = useState('Table')
+  const recommended = activeViews(session)
+    .filter((v) => v.recordType === 'Tasks')
+    .map((v) => ({ ...v, count: applyRecommended(v.id, TASKS).length }))
+  const [view, setView] = useState('all')
+  const viewDefs = TASK_VIEWS.map((v) => ({ ...v, count: TASKS.filter(v.filter).length }))
+  const builtIn = TASK_VIEWS.find((v) => v.id === view)
+  const rec = recommended.find((v) => v.id === view)
+  const tasks = builtIn ? TASKS.filter(builtIn.filter) : applyRecommended(view, TASKS)
+  const activeDesc = (builtIn || rec)?.description
+
+  const cols = TASK_BOARD_STAGES.map((label) => ({
+    key: label,
+    label,
+    tasks: tasks.filter((t) => t.status === label),
+  }))
+
+  const columns = [
+    {
+      key: 'name',
+      label: 'Title',
+      render: (_v, row) => (
+        <div className="min-w-0">
+          <div className="hs-link font-semibold leading-tight truncate">{row.name}</div>
+          <div className="text-[10px] text-hs-text-light truncate">{row.company}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'type',
+      label: 'Type',
+      render: (v) => <Tag color={TASK_TYPE_COLOR[v] || 'gray'}>{v}</Tag>,
+    },
+    { key: 'dueDate', label: 'Due Date' },
+    {
+      key: 'priority',
+      label: 'Priority',
+      render: (v) => <Tag color={TASK_PRIORITY_COLOR[v] || 'gray'}>{v}</Tag>,
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (v) => <Tag color={TASK_STATUS_COLOR[v] || 'gray'}>{v}</Tag>,
+    },
+    { key: 'assignee', label: 'Assigned To' },
+  ]
+
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-3">
+        <h3 className="text-[15px] font-semibold text-hs-navy">Tasks</h3>
+        <span className="text-[12px] text-hs-text-light">{tasks.length} tasks</span>
+        <div className="inline-flex rounded-md border border-hs-border bg-white p-0.5 ml-2">
+          {TASK_VIEW_MODES.map((m) => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className={`text-[11px] px-2.5 py-1 rounded ${
+                mode === m
+                  ? 'bg-hs-navy text-white font-medium'
+                  : 'text-hs-text-light hover:text-hs-navy'
+              }`}
+            >
+              {m}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          className="hs-btn-primary ml-auto cursor-default"
+          style={{ padding: '6px 12px', fontSize: 12 }}
+        >
+          Create task
+        </button>
+      </div>
+      <SavedViews views={viewDefs} active={view} onPick={setView} extraViews={recommended} />
+      <ViewDescription text={activeDesc} />
+      {mode === 'Table' ? (
+        <IndexCard>
+          <DataTable columns={columns} rows={tasks} onRowClick={() => onOpen('tasks')} />
+        </IndexCard>
+      ) : (
+        <div className="flex gap-3 overflow-x-auto pb-2">
+          {cols.map((col) => (
+            <div key={col.key} className="w-56 shrink-0">
+              <div className="bg-white rounded-t-lg border border-hs-border border-b-0 px-3 py-2">
+                <div className="text-[12px] font-semibold text-hs-navy truncate">{col.label}</div>
+                <div className="text-[10px] text-hs-text-light">{col.tasks.length} tasks</div>
+              </div>
+              <div className="bg-hs-canvas border border-hs-border rounded-b-lg p-2 space-y-2 min-h-[120px]">
+                {col.tasks.length === 0 ? (
+                  <div className="text-[10px] text-hs-text-light text-center py-6">No tasks</div>
+                ) : (
+                  col.tasks.map((t, i) => (
+                    <TaskCard key={i} task={t} onClick={() => onOpen('tasks')} />
+                  ))
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ---- Tickets ---------------------------------------------------------------
 
 const PRIORITY_COLOR = { High: 'red', Medium: 'orange', Low: 'gray' }
@@ -846,6 +1020,7 @@ export default function HubCRM() {
         {tab === 'Contacts' && <ContactsTab session={session} onOpen={openRecordWith} />}
         {tab === 'Companies' && <CompaniesTab session={session} onOpen={openRecordWith} />}
         {tab === 'Deals' && <DealsTab session={session} onOpen={openRecordWith} />}
+        {tab === 'Tasks' && <TasksTab session={session} onOpen={openRecordWith} />}
         {tab === 'Tickets' && <TicketsTab session={session} onOpen={openRecordWith} />}
         {activeCustom && <CustomObjectTab object={activeCustom} />}
       </div>

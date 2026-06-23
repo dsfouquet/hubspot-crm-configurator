@@ -66,8 +66,8 @@ export const HUB_TOURS = {
       id: 'crm-tabs',
       target: '[data-tour="crm-tabs"]',
       placement: 'bottom',
-      title: 'Four record types, one system',
-      body: 'Contacts, Companies, Deals, and Tickets. Switch between them up here. Every record stays linked to the others.',
+      title: 'Five record types, one system',
+      body: 'Contacts, Companies, Deals, Tasks, and Tickets. Switch between them up here. Every record stays linked to the others.',
     },
     {
       id: 'crm-content',
@@ -293,6 +293,30 @@ export const RECORD_TOURS = {
       body: 'Contacts, the company, line items, and tasks all linked here. Click to follow any thread.',
     },
   ],
+  tasks: [
+    {
+      id: 'record-identity',
+      target: '[data-tour="record-identity"]',
+      placement: 'auto',
+      title: 'Everything about this task',
+      body: 'Type, due date, priority, owner, and every field you configured, pinned to one panel.',
+    },
+    recordActions,
+    {
+      id: 'record-center',
+      target: '[data-tour="record-center"]',
+      placement: 'auto',
+      title: 'The full task history',
+      body: 'Notes, emails, and calls tied to this task land on one timeline, so the context is never lost.',
+    },
+    {
+      id: 'record-associations',
+      target: '[data-tour="record-associations"]',
+      placement: 'auto',
+      title: 'Linked to the contact and deal',
+      body: 'The contact, company, and deal behind this task, one click away.',
+    },
+  ],
 }
 
 // Track id used to remember a record tour as seen (one per record type).
@@ -307,6 +331,7 @@ const TAB_COPY = {
     Contacts: 'Every person you do business with. Saved views filter them the way you sell, and each record carries its full history.',
     Companies: 'The accounts behind your contacts. Group, tier, and track every company in one place.',
     Deals: 'Your pipeline as a board, table, or calendar. Move a deal forward and the automations fire on their own.',
+    Tasks: 'Every to-do, call, and follow-up as a tracked task. View them as a table or a board, with due dates, priorities, and owners so nothing falls through.',
     Tickets: 'Support requests as tracked tickets, with owners, priorities, and SLAs so nothing slips.',
   },
   marketing: {

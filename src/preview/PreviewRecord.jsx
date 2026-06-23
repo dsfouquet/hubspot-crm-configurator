@@ -15,7 +15,7 @@ import {
   IconCalendar,
   IconTicket,
 } from './uiIcons'
-import { CONTACTS, COMPANIES, TICKETS } from './demoData'
+import { CONTACTS, COMPANIES, TICKETS, TASKS } from './demoData'
 import { money } from './recordHelpers'
 import {
   associatedCompany,
@@ -33,6 +33,7 @@ const LIFECYCLE_COLORS = { Lead: 'blue', MQL: 'purple', Customer: 'green', Evang
 const TIER_COLORS = { 'Tier 1': 'green', 'Tier 2': 'blue', 'Tier 3': 'gray' }
 const PRIORITY_COLORS = { High: 'red', Medium: 'orange', Low: 'gray' }
 const STATUS_COLORS = { New: 'blue', 'In Progress': 'orange', Resolved: 'green', Closed: 'gray', 'Waiting on Customer': 'purple' }
+const TASK_STATUS_COLORS = { 'Not started': 'gray', 'In progress': 'orange', Waiting: 'purple', Completed: 'green' }
 
 // Per-slice: the pinned identity column, property keys covered by it (skipped as
 // their own columns), the demo rows, and a resolver mapping a property key to the
@@ -91,6 +92,23 @@ const LIST_CONFIG = {
       priority: (r) => <Tag color={PRIORITY_COLORS[r.priority] || 'gray'}>{r.priority}</Tag>,
     },
   },
+  tasks: {
+    title: 'Example list view — Tasks',
+    rows: () => TASKS.slice(0, 7),
+    skip: ['title'],
+    identity: {
+      key: 'name',
+      label: 'Title',
+      render: (r) => <span className="hs-link font-semibold">{r.name}</span>,
+    },
+    cell: {
+      task_type: (r) => r.type,
+      status: (r) => <Tag color={TASK_STATUS_COLORS[r.status] || 'gray'}>{r.status}</Tag>,
+      priority: (r) => <Tag color={PRIORITY_COLORS[r.priority] || 'gray'}>{r.priority}</Tag>,
+      assigned_to: (r) => r.assignee,
+      due_date: (r) => <span className="text-hs-text-light">{r.dueDate}</span>,
+    },
+  },
 }
 
 // Build the list columns from the enabled properties, honoring saved column order.
@@ -128,10 +146,11 @@ const ACCENT = {
   contacts: '#0091AE',
   companies: '#6A78D1',
   deals: '#00BDA5',
+  tasks: '#F2C40F',
   tickets: '#F2545B',
 }
 
-const NOUN = { contacts: 'contact', companies: 'company', deals: 'deal', tickets: 'ticket' }
+const NOUN = { contacts: 'contact', companies: 'company', deals: 'deal', tasks: 'task', tickets: 'ticket' }
 
 const ACTION_ICON = { Note: IconNote, Email: IconMail, Call: IconPhone, Task: IconCheck, Meeting: IconCalendar }
 

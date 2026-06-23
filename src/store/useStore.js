@@ -15,6 +15,7 @@ import {
   defaultCompanies,
   defaultDeals,
   defaultTickets,
+  defaultTasks,
 } from '../constants/defaultProperties'
 import { defaultWidgets } from '../constants/defaultWidgets'
 import { defaultCadence, EOS_MEETINGS, OS_EOS } from '../constants/defaultCadence'
@@ -35,6 +36,7 @@ function buildInitialSession(mode = 'async') {
     contacts: defaultContacts(),
     companies: defaultCompanies(),
     deals: defaultDeals(),
+    tasks: defaultTasks(),
     tickets: defaultTickets(),
     customObjects: [],
     workflows: [],
@@ -53,16 +55,24 @@ function buildInitialSession(mode = 'async') {
   }
 }
 
+// Backfill record slices added after a session was first saved, so restored /
+// shared sessions never read an undefined slice (e.g. session.tasks). Mutates and
+// returns the same session object. Add future new slices here.
+function ensureSlices(session) {
+  if (session && !session.tasks) session.tasks = defaultTasks()
+  return session
+}
+
 // Resolve which session to load on first paint: URL ?session / ?code, else fresh.
 function resolveInitialSession() {
   const { sessionParam, codeParam } = readUrlSession()
   if (sessionParam) {
     const existing = loadSessionByUuid(sessionParam)
-    if (existing) return { session: existing, restored: true }
+    if (existing) return { session: ensureSlices(existing), restored: true }
   }
   if (codeParam) {
     const byCode = loadSessionByCode(codeParam)
-    if (byCode) return { session: byCode, restored: true }
+    if (byCode) return { session: ensureSlices(byCode), restored: true }
   }
   return { session: buildInitialSession('async'), restored: false }
 }
@@ -218,6 +228,7 @@ export const useStore = create((set, get) => ({
 
   // Load a restored session (from code/link). Skips the gate when appropriate.
   loadSession(restoredSession) {
+    ensureSlices(restoredSession)
     saveSession(restoredSession)
     syncUrlSession(restoredSession.sessionId)
     set({
@@ -236,6 +247,7 @@ export const useStore = create((set, get) => ({
   // Load a fetched shared session into a read-only preview surface. No save, no
   // URL sync — the prospect's view is ephemeral and never mutates storage.
   hydrateSharedPreview(sharedSession) {
+    ensureSlices(sharedSession)
     set({
       session: sharedSession,
       viewMode: 'preview',

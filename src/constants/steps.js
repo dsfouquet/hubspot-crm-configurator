@@ -7,6 +7,7 @@ export const STEPS = [
   { key: 'contacts', label: 'Contacts', short: 'Contacts' },
   { key: 'companies', label: 'Companies', short: 'Companies' },
   { key: 'deals', label: 'Deals', short: 'Deals' },
+  { key: 'tasks', label: 'Tasks', short: 'Tasks' },
   { key: 'tickets', label: 'Tickets / Support', short: 'Tickets' },
   { key: 'customObjects', label: 'Custom Objects', short: 'Objects' },
   { key: 'workflows', label: 'Automation Workflows', short: 'Automation' },
