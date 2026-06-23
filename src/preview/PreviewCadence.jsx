@@ -213,7 +213,7 @@ export default function PreviewCadence() {
   const isEos = cadence.operatingSystem === OS_EOS
 
   return (
-    <div className="p-5 space-y-4">
+    <div className="p-5 space-y-4" data-tour="cadence-content">
       {/* EOS framing — only when an operating system is selected. */}
       {isEos && (
         <div className="rounded-lg border border-hs-orange/30 bg-hs-orange/5 p-4">

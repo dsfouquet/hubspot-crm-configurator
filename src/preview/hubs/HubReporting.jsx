@@ -362,7 +362,7 @@ export default function HubReporting() {
       <FiltersBar title={titles[active]} />
 
       {/* Dashboard content */}
-      <div className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
+      <div data-tour="reporting-content" className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
         <div className="grid grid-cols-2 gap-3">
           {active === 'Business Health' && <BusinessHealth />}
           {active === 'Sales Overview' && <SalesOverview stageLabels={stageLabels} />}

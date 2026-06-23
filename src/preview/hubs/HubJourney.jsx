@@ -360,7 +360,7 @@ export default function HubJourney() {
               use fit in, and you can search for them on the right.
             </p>
           </div>
-          <div className="relative">
+          <div className="relative" data-tour="journey-search">
             <IconSearch
               width={14}
               height={14}
@@ -411,7 +411,7 @@ export default function HubJourney() {
 
       {/* 3) THE BOARD — responsive stage grid. Department handoffs sit in the
           header of the stage they feed INTO, so the baton-pass reads on the seam. */}
-      <div className="flex-1 min-h-0 overflow-y-auto hs-scroll bg-hs-canvas">
+      <div className="flex-1 min-h-0 overflow-y-auto hs-scroll bg-hs-canvas" data-tour="journey-board">
         <div
           className="grid gap-x-3 gap-y-5 px-4 py-4 items-start"
           style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))' }}

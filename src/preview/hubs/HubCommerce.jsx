@@ -59,7 +59,7 @@ export default function HubCommerce() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
+      <div data-tour="commerce-content" className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
         {tab === 'Quotes' && <QuotesTab />}
         {tab === 'Invoices' && <InvoicesTab />}
         {tab === 'Payments' && <PaymentsTab />}

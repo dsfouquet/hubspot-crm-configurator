@@ -11,7 +11,7 @@ export default function PreviewAutomations() {
 
   if (workflows.length === 0) {
     return (
-      <div className="h-full flex items-center justify-center p-8">
+      <div className="h-full flex items-center justify-center p-8" data-tour="automations-canvas">
         <div className="hs-empty-state font-preview max-w-sm">
           <div className="w-12 h-12 rounded-lg bg-white border border-hs-border flex items-center justify-center text-hs-marigold shadow-sm mb-1">
             <IconBolt width={22} height={22} />
@@ -66,7 +66,7 @@ export default function PreviewAutomations() {
 
       {/* Diagram — keyed so switching workflows fully remounts it, letting
           ReactFlow re-measure nodes (and capture handle bounds) from scratch. */}
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0" data-tour="automations-canvas">
         <WorkflowDiagram key={focused.id} workflow={focused} />
       </div>
     </div>

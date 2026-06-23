@@ -65,7 +65,7 @@ export default function HubService() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
+      <div data-tour="service-content" className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
         {tab === 'Help Desk' && <HelpDesk />}
         {tab === 'Knowledge Base' && <KnowledgeBase />}
         {tab === 'Surveys' && <Surveys />}

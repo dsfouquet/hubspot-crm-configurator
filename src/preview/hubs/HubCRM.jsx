@@ -796,7 +796,10 @@ export default function HubCRM() {
   return (
     <div className="h-full flex flex-col font-preview">
       {/* sub-tab bar */}
-      <div className="flex items-center gap-1 px-4 border-b border-hs-border bg-white shrink-0 overflow-x-auto hs-scroll">
+      <div
+        data-tour="crm-tabs"
+        className="flex items-center gap-1 px-4 border-b border-hs-border bg-white shrink-0 overflow-x-auto hs-scroll"
+      >
         {TABS.map((t) => {
           const active = t === tab
           return (
@@ -835,7 +838,7 @@ export default function HubCRM() {
       </div>
 
       {/* content */}
-      <div className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
+      <div data-tour="crm-content" className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
         {tab === 'Contacts' && <ContactsTab session={session} onOpen={openRecordWith} />}
         {tab === 'Companies' && <CompaniesTab session={session} onOpen={openRecordWith} />}
         {tab === 'Deals' && <DealsTab session={session} onOpen={openRecordWith} />}

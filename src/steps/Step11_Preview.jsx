@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from '../store/useStore'
 import DownloadPdfButton from '../components/DownloadPdfButton'
 import { createShareLink } from '../utils/shareSession'
+import TourOverlay from '../preview/tour/TourOverlay'
+import { useTour, tourDone } from '../preview/tour/useTour'
 
 import HubJourney from '../preview/hubs/HubJourney'
 import HubCRM from '../preview/hubs/HubCRM'
@@ -46,7 +48,7 @@ const HUBS = [
 
 // HubSpot-style global top bar: sprocket, search pill, settings/notifications,
 // account chip — the chrome that makes the demo read as the real product.
-function TopBar() {
+function TopBar({ onHelp }) {
   const gate = useStore((s) => s.session.gate)
   const initials =
     (gate?.name || 'You')
@@ -88,9 +90,15 @@ function TopBar() {
         <span className="p-2 rounded hover:bg-white/10" title="Notifications">
           <IconBell width={15} height={15} />
         </span>
-        <span className="p-2 rounded hover:bg-white/10" title="Help">
+        <button
+          type="button"
+          onClick={onHelp}
+          className="p-2 rounded hover:bg-white/10"
+          title="Take the quick tour"
+          aria-label="Take the quick tour"
+        >
           <IconHelp width={15} height={15} />
-        </span>
+        </button>
       </div>
       <div className="flex items-center gap-2 pl-2 border-l border-white/15">
         <span className="w-7 h-7 rounded-full bg-hs-calypso text-white text-[11px] font-semibold flex items-center justify-center">
@@ -248,11 +256,30 @@ export default function Step11_Preview({ readOnly = false }) {
   const beginAsyncSession = useStore((s) => s.beginAsyncSession)
   const [hub, setHub] = useState('journey')
 
+  // Guided tour controller + the one-time "Start the quick tour?" prompt.
+  const tour = useTour(setHub)
+  const [showPrompt, setShowPrompt] = useState(false)
+
   const isLive = session.mode === 'live'
   // Read-only shared links skip the gate entirely (the prospect is the intended
   // viewer). Otherwise: email is already captured at the front gate.
   const unlocked =
     readOnly || isLive || session.previewUnlocked || Boolean(session.gate?.email)
+
+  // Auto-prompt on first access in every mode (presenter, customer, shared link)
+  // unless this browser has already dismissed/finished the tour.
+  useEffect(() => {
+    if (unlocked && !tourDone()) setShowPrompt(true)
+  }, [unlocked])
+
+  const startTour = () => {
+    setShowPrompt(false)
+    tour.start()
+  }
+  const skipTour = () => {
+    setShowPrompt(false)
+    tour.dismiss()
+  }
 
   const handleUnlock = ({ name, email }) => {
     beginAsyncSession(name, email)
@@ -267,16 +294,20 @@ export default function Step11_Preview({ readOnly = false }) {
 
   return (
     <div className="h-full flex flex-col bg-hs-canvas">
-      <TopBar />
+      <TopBar onHelp={startTour} />
       <div className="flex-1 flex min-h-0">
         {/* HubSpot-style left rail */}
-        <nav className="shrink-0 w-12 md:w-44 bg-hs-navy flex flex-col py-2 overflow-y-auto hs-scroll">
+        <nav
+          data-tour="nav-rail"
+          className="shrink-0 w-12 md:w-44 bg-hs-navy flex flex-col py-2 overflow-y-auto hs-scroll"
+        >
           {HUBS.map((h) => {
             const isActive = h.key === hub
             const Icon = h.Icon
             return (
               <button
                 key={h.key}
+                data-tour={`nav-${h.key}`}
                 onClick={() => setHub(h.key)}
                 title={h.label}
                 aria-label={h.label}
@@ -310,6 +341,51 @@ export default function Step11_Preview({ readOnly = false }) {
       </div>
 
       <ActionBar readOnly={readOnly} />
+
+      {/* First-access prompt: "Start the quick tour?" */}
+      {showPrompt && !tour.active && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-hs-navy/60 p-4 font-preview">
+          <div className="w-full max-w-sm bg-white rounded-xl shadow-2xl overflow-hidden">
+            <div className="bg-hs-navy px-6 py-5">
+              <h2 className="font-semibold text-white text-lg leading-snug">
+                Take a quick tour?
+              </h2>
+              <p className="text-[13px] text-white/70 mt-1 leading-snug">
+                A 60-second walk through your new CRM, one section at a time.
+              </p>
+            </div>
+            <div className="p-5 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={skipTour}
+                className="text-[12px] text-hs-text-light hover:text-hs-navy hover:underline"
+              >
+                No thanks
+              </button>
+              <button
+                type="button"
+                onClick={startTour}
+                className="hs-btn-primary"
+                style={{ padding: '8px 20px', fontSize: 13 }}
+              >
+                Start the tour →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Guided tour overlay */}
+      {tour.active && tour.step && (
+        <TourOverlay
+          step={tour.step}
+          index={tour.index}
+          total={tour.total}
+          onNext={tour.next}
+          onDismiss={tour.dismiss}
+          onFinish={tour.finish}
+        />
+      )}
     </div>
   )
 }

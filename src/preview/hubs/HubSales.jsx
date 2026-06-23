@@ -348,7 +348,7 @@ export default function HubSales() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
+      <div data-tour="sales-content" className="flex-1 min-h-0 overflow-y-auto bg-hs-canvas p-4">
         {tab === 'Workspace' && <Workspace session={session} onOpen={setModal} />}
         {tab === 'Sequences' && <Sequences session={session} />}
         {tab === 'Documents' && <Documents />}
