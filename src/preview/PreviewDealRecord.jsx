@@ -6,7 +6,7 @@ const fmtK = (n) => (n >= 1000 ? `$${Math.round(n / 1000)}K` : `$${n}`)
 
 // Deal preview = the featured record up top + a mini pipeline board populated
 // with example deals distributed across the user's custom stages.
-export default function PreviewDealRecord() {
+export default function PreviewDealRecord({ onOpenRecord }) {
   const stages = useStore((s) => s.session.deals.pipelineStages)
 
   // Bucket demo deals into the user's stages (clamped); the featured deal
@@ -21,7 +21,7 @@ export default function PreviewDealRecord() {
 
   return (
     <div>
-      <PreviewRecord slice="deals" />
+      <PreviewRecord slice="deals" onOpenRecord={onOpenRecord} />
 
       <div className="px-5 pb-6">
         <h3 className="text-[12px] font-preview font-semibold uppercase tracking-wide text-hs-text-light mb-2">

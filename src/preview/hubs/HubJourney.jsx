@@ -341,8 +341,6 @@ export default function HubJourney() {
   // Handoffs key off ACTIVE steps only (a greyed "Get found" the business doesn't
   // use shouldn't imply a Marketing → Sales baton).
   const activeIds = new Set(allSteps.filter((s) => s.active).map((s) => s.id))
-  // First active card in the very first phase gets the "Start here" badge.
-  const firstActiveId = allSteps.find((s) => s.active)?.id
 
   const openStep = allSteps.find((s) => s.id === open?.id) || null
   const openIntegs = openStep ? integrationsForStep(openStep.id) : []
@@ -465,21 +463,9 @@ export default function HubJourney() {
                     const isHighlighted = highlight.includes(step.id)
                     const isOpen = open?.id === step.id
                     const integs = integrationsForStep(step.id)
-                    const isStart = step.id === firstActiveId
                     const muted = !step.active
                     return (
                       <div key={step.id}>
-                        {isStart && (
-                          <div className="mb-1">
-                            <span
-                              className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide text-white rounded-[3px] px-1.5 py-0.5"
-                              style={{ backgroundColor: ACCENT }}
-                            >
-                              Start here
-                              <IconArrowRight width={9} height={9} className="shrink-0" />
-                            </span>
-                          </div>
-                        )}
                         <button
                           ref={(el) => (cardRefs.current[step.id] = el)}
                           onClick={(e) =>
@@ -499,12 +485,19 @@ export default function HubJourney() {
                             borderStyle: step.isCustom || muted ? 'dashed' : 'solid',
                           }}
                         >
-                          <span
-                            className={`flex-1 text-[12.5px] font-semibold leading-snug ${
-                              muted ? 'text-hs-text-light' : 'text-hs-navy'
-                            }`}
-                          >
-                            {step.header || step.title}
+                          <span className="flex-1 min-w-0">
+                            <span
+                              className={`block text-[12.5px] font-semibold leading-snug ${
+                                muted ? 'text-hs-text-light' : 'text-hs-navy'
+                              }`}
+                            >
+                              {step.header || step.title}
+                            </span>
+                            {step.summary && (
+                              <span className="block mt-0.5 text-[11px] font-normal text-hs-text-light leading-snug">
+                                {step.summary}
+                              </span>
+                            )}
                           </span>
                           {step.isCustom ? (
                             <span className="shrink-0 mt-0.5 text-[9px] font-semibold uppercase tracking-wide text-hs-text-light bg-hs-canvas border border-hs-border rounded-[3px] px-1.5 py-0.5">
