@@ -26,6 +26,7 @@ import {
   AR_AGING,
   DEALS,
 } from '../demoData'
+import { fireTabTour } from '../tour/events'
 
 const TABS = ['Business Health', 'Sales Overview', 'Rep Activity', 'Marketing', 'Service']
 
@@ -345,7 +346,10 @@ export default function HubReporting() {
           return (
             <button
               key={tab}
-              onClick={() => setActive(tab)}
+              onClick={() => {
+                setActive(tab)
+                fireTabTour('reporting', tab)
+              }}
               className={`text-[13px] px-3 py-2.5 -mb-px border-b-2 ${
                 isActive
                   ? 'text-hs-navy font-medium border-hs-orange'

@@ -20,6 +20,7 @@ import {
   MONTHS,
 } from '../demoData'
 import { industryCopy } from '../industryCopy'
+import { fireTabTour } from '../tour/events'
 
 const TABS = ['Email', 'Forms', 'CTAs', 'Campaigns']
 
@@ -36,7 +37,10 @@ export default function HubMarketing() {
           return (
             <button
               key={t}
-              onClick={() => setTab(t)}
+              onClick={() => {
+                setTab(t)
+                fireTabTour('marketing', t)
+              }}
               className={`relative px-4 py-2.5 text-[13px] transition-colors ${
                 active
                   ? 'text-hs-navy font-medium'

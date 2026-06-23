@@ -183,3 +183,185 @@ export const HUB_TOURS = {
     },
   ],
 }
+
+// Record-detail tours: play once per record type the first time a record popup
+// opens (clicking a name in CRM, or a company/deal/ticket). The contact,
+// company, and ticket records share PreviewRecord's three-column layout; deals
+// add a pipeline board, so they get one extra step.
+const recordActions = {
+  id: 'record-actions',
+  target: '[data-tour="record-actions"]',
+  placement: 'auto',
+  title: 'Act without leaving the record',
+  body: 'Log a note, send an email, make a call, set a task, or book a meeting right here. Every action logs itself to the timeline.',
+}
+
+export const RECORD_TOURS = {
+  contacts: [
+    {
+      id: 'record-identity',
+      target: '[data-tour="record-identity"]',
+      placement: 'auto',
+      title: 'Everything about this contact',
+      body: 'Name, role, company, and every field you configured, pinned to one panel so nobody hunts for it.',
+    },
+    recordActions,
+    {
+      id: 'record-center',
+      target: '[data-tour="record-center"]',
+      placement: 'auto',
+      title: 'Every interaction, logged for you',
+      body: 'Overview, Activities, and Intelligence. Every call, email, and meeting lands on this timeline on its own, so the history is never lost.',
+    },
+    {
+      id: 'record-associations',
+      target: '[data-tour="record-associations"]',
+      placement: 'auto',
+      title: 'Linked to the whole relationship',
+      body: 'Their company, open deals, and tasks all connect here. Click any one to jump straight to it.',
+    },
+  ],
+  companies: [
+    {
+      id: 'record-identity',
+      target: '[data-tour="record-identity"]',
+      placement: 'auto',
+      title: 'Everything about this account',
+      body: 'The company profile and every field you configured, in one panel.',
+    },
+    recordActions,
+    {
+      id: 'record-center',
+      target: '[data-tour="record-center"]',
+      placement: 'auto',
+      title: 'The full account history',
+      body: 'Every touch across the relationship, logged automatically, so anyone on your team can pick it up cold.',
+    },
+    {
+      id: 'record-associations',
+      target: '[data-tour="record-associations"]',
+      placement: 'auto',
+      title: 'Every contact, deal, and ticket',
+      body: 'The people, deals, and tickets tied to this account all live here. Click to jump to any of them.',
+    },
+  ],
+  tickets: [
+    {
+      id: 'record-identity',
+      target: '[data-tour="record-identity"]',
+      placement: 'auto',
+      title: 'Everything about this ticket',
+      body: 'Status, priority, owner, and every field you configured, in one panel.',
+    },
+    recordActions,
+    {
+      id: 'record-center',
+      target: '[data-tour="record-center"]',
+      placement: 'auto',
+      title: 'The full support history',
+      body: 'Every reply, call, and note on this ticket, logged automatically so the customer never has to repeat themselves.',
+    },
+    {
+      id: 'record-associations',
+      target: '[data-tour="record-associations"]',
+      placement: 'auto',
+      title: 'Tied to the customer',
+      body: 'The contact, company, and related deals behind this ticket, one click away.',
+    },
+  ],
+  deals: [
+    {
+      id: 'record-identity',
+      target: '[data-tour="record-identity"]',
+      placement: 'auto',
+      title: 'Everything about this deal',
+      body: 'Amount, stage, close date, and every field you configured, pinned in one place.',
+    },
+    recordActions,
+    {
+      id: 'record-center',
+      target: '[data-tour="record-center"]',
+      placement: 'auto',
+      title: 'Every touch on the deal',
+      body: 'Calls, emails, and meetings auto-logged, so the deal’s whole story sits on one timeline.',
+    },
+    {
+      id: 'record-associations',
+      target: '[data-tour="record-associations"]',
+      placement: 'auto',
+      title: 'The people and company behind it',
+      body: 'Contacts, the company, line items, and tasks all linked here. Click to follow any thread.',
+    },
+  ],
+}
+
+// Track id used to remember a record tour as seen (one per record type).
+export const recordTrackId = (slice) => `record:${slice}`
+
+// Per-tab tours: a one-step callout that plays the first time a top sub-tab is
+// clicked in a hub view. Each spotlights that hub's content area (which is now
+// showing the clicked tab) with copy specific to the tab. Built from a compact
+// { hub: { tab: body } } table so the copy stays easy to scan and tune.
+const TAB_COPY = {
+  crm: {
+    Contacts: 'Every person you do business with. Saved views filter them the way you sell, and each record carries its full history.',
+    Companies: 'The accounts behind your contacts. Group, tier, and track every company in one place.',
+    Deals: 'Your pipeline as a board, table, or calendar. Move a deal forward and the automations fire on their own.',
+    Tickets: 'Support requests as tracked tickets, with owners, priorities, and SLAs so nothing slips.',
+  },
+  marketing: {
+    Email: 'Branded sends and nurture sequences, with open and click rates tracked on every one.',
+    Forms: 'Forms that turn website visitors into tracked contacts, then route and follow up automatically.',
+    CTAs: 'Calls-to-action you drop on any page, with click-through tracked so you see what converts.',
+    Campaigns: 'Every campaign tied to leads and closed revenue, so you know which spend actually pays.',
+  },
+  sales: {
+    Workspace: 'Your rep’s home base: today’s tasks, meetings, and pipeline, with the next move queued up.',
+    Sequences: 'Automated email cadences that work your leads on schedule while you’re in the field.',
+    Documents: 'Sales collateral you can send and track, so you see what the prospect actually opened.',
+    Meetings: 'A booking link that kills the back-and-forth and drops meetings straight on your calendar.',
+    Analytics: 'Activity and outcomes by rep, so you coach on the numbers instead of gut feel.',
+  },
+  commerce: {
+    Quotes: 'Branded quotes built off the deal, with e-signature and a payment link in the same place.',
+    Invoices: 'Invoices that fire from the deal and sync to your books, so payment status shows on the record.',
+    Payments: 'Collect deposits and payments through the CRM, tracked against the deal automatically.',
+  },
+  service: {
+    'Help Desk': 'Every request as a ticket with an owner and an SLA, tied to the customer’s full history.',
+    'Knowledge Base': 'Self-serve articles that deflect the repeat questions before they ever become tickets.',
+    Surveys: 'Post-job NPS and CSAT that flag unhappy customers before they churn and turn happy ones into reviews.',
+  },
+  reporting: {
+    'Business Health': 'The top-level view of the whole business: pipeline, revenue, and service in one glance.',
+    'Sales Overview': 'Pipeline, forecast, and win rates, updated live as deals move.',
+    'Rep Activity': 'Calls, emails, and meetings by rep, so effort and outcomes sit side by side.',
+    Marketing: 'Lead sources, campaign ROI, and cost per lead, tying marketing spend to revenue.',
+    Service: 'Ticket volume, response times, and receivables, so support and cash both stay visible.',
+  },
+}
+
+// Expand the copy table into the same { hub: { tab: [steps] } } shape the
+// controller consumes. Every tab tour is a single step on the hub's content area.
+export const TAB_TOURS = Object.fromEntries(
+  Object.entries(TAB_COPY).map(([hub, tabs]) => [
+    hub,
+    Object.fromEntries(
+      Object.entries(tabs).map(([tab, body]) => [
+        tab,
+        [
+          {
+            id: `tab-${hub}-${tab}`,
+            target: `[data-tour="${hub}-content"]`,
+            placement: 'top',
+            title: tab,
+            body,
+          },
+        ],
+      ])
+    ),
+  ])
+)
+
+// Track id used to remember a tab tour as seen (one per hub+tab).
+export const tabTrackId = (hub, tab) => `tab:${hub}:${tab}`

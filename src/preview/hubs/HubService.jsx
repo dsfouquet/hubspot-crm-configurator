@@ -6,6 +6,7 @@ import {
 } from '../charts'
 import { Tag, IconWarning, IconSearch, IconBook, IconCheck } from '../uiIcons'
 import { TICKETS, KB_ARTICLES, NPS_DATA } from '../demoData'
+import { fireTabTour } from '../tour/events'
 
 const SUB_TABS = ['Help Desk', 'Knowledge Base', 'Surveys']
 
@@ -48,7 +49,10 @@ export default function HubService() {
           return (
             <button
               key={t}
-              onClick={() => setTab(t)}
+              onClick={() => {
+                setTab(t)
+                fireTabTour('service', t)
+              }}
               className={`relative px-3 py-2.5 text-[13px] font-preview transition-colors ${
                 active
                   ? 'text-hs-navy font-medium'

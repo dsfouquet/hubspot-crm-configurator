@@ -1,5 +1,12 @@
 import { useCallback, useRef, useState } from 'react'
-import { INTRO_STEPS, HUB_TOURS } from './tourSteps'
+import {
+  INTRO_STEPS,
+  HUB_TOURS,
+  RECORD_TOURS,
+  recordTrackId,
+  TAB_TOURS,
+  tabTrackId,
+} from './tourSteps'
 
 // Per-browser flags:
 //   DONE_KEY — global kill switch ("Don't show me any more"); nothing auto-shows.
@@ -135,6 +142,39 @@ export function useTour(setHub) {
     [trackId, index, markSeen, startHub, close]
   )
 
+  // Called when a record popup opens. Plays that record type's tour once. The
+  // popup is already on screen, so this doesn't touch the active hub.
+  const startRecord = useCallback(
+    (slice) => {
+      if (tourDone()) return
+      if (trackId) return // don't interrupt an in-progress track
+      const id = recordTrackId(slice)
+      if (seenRef.current.has(id)) return
+      const list = RECORD_TOURS[slice]
+      if (!list || !list.length) return
+      setTrackId(id)
+      setSteps(list)
+      setIndex(0)
+    },
+    [trackId]
+  )
+
+  // Called when a top sub-tab is clicked in a hub. Plays that tab's tour once.
+  const startTab = useCallback(
+    (hub, tab) => {
+      if (tourDone()) return
+      if (trackId) return // don't interrupt an in-progress track
+      const id = tabTrackId(hub, tab)
+      if (seenRef.current.has(id)) return
+      const list = TAB_TOURS[hub]?.[tab]
+      if (!list || !list.length) return
+      setTrackId(id)
+      setSteps(list)
+      setIndex(0)
+    },
+    [trackId]
+  )
+
   // Whether the first-access prompt should auto-open (intro not yet seen).
   const autoPrompt = useCallback(() => !tourDone() && !seenRef.current.has('intro'), [])
 
@@ -150,6 +190,8 @@ export function useTour(setHub) {
     finish,
     dismiss,
     onHubSelected,
+    startRecord,
+    startTab,
     autoPrompt,
   }
 }

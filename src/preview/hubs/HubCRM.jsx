@@ -13,6 +13,7 @@ import { Tag, IconStar, IconPuzzle } from '../uiIcons'
 import { CONTACTS, COMPANIES, DEALS, TICKETS, REPS } from '../demoData'
 import RecordPopup from '../RecordPopup'
 import { fmtK } from '../recordHelpers'
+import { fireTabTour } from '../tour/events'
 
 const TABS = ['Contacts', 'Companies', 'Deals', 'Tickets']
 
@@ -806,7 +807,10 @@ export default function HubCRM() {
             <button
               key={t}
               type="button"
-              onClick={() => setTab(t)}
+              onClick={() => {
+                setTab(t)
+                fireTabTour('crm', t)
+              }}
               className={`text-[13px] px-3 py-2.5 -mb-px border-b-2 transition-colors whitespace-nowrap ${
                 active
                   ? 'text-hs-navy font-medium border-hs-orange'

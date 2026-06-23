@@ -1,12 +1,22 @@
 // Shared record popup used both by the HubCRM demo (clicking a row/association) and
 // by PreviewRecord itself (clicking an association in the per-step preview pane).
 // Renders the matching record detail and lets clicks inside swap to the next record.
+import { useEffect } from 'react'
 import PreviewRecord from './PreviewRecord'
 import PreviewDealRecord from './PreviewDealRecord'
 import { DEAL_STAGES_FALLBACK } from './recordHelpers'
 import { toFeatured } from './associations'
 
 export default function RecordPopup({ slice, record, session, onClose, onOpenRecord }) {
+  // Tell the preview's tour controller a record opened, so the per-record-type
+  // tour can play (once per type). Fires on every open / association swap; the
+  // controller dedupes by type. Harmless when no tour is listening.
+  useEffect(() => {
+    if (slice) {
+      window.dispatchEvent(new CustomEvent('cc-tour-record', { detail: { slice } }))
+    }
+  }, [slice, record])
+
   if (!slice) return null
 
   const stages =

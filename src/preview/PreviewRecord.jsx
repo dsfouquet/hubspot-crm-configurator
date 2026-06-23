@@ -390,7 +390,7 @@ export default function PreviewRecord({ slice, showIndexTable = false, featured,
     <div className="p-5">
       <div className="flex bg-white rounded-lg border border-hs-border overflow-hidden">
         {/* LEFT — identity + actions + About */}
-        <div className="w-[248px] shrink-0 border-r border-hs-border">
+        <div data-tour="record-identity" className="w-[248px] shrink-0 border-r border-hs-border">
           <div className="flex flex-col items-center text-center px-4 pt-5 pb-4 border-b border-hs-border">
             <div
               className="w-14 h-14 rounded-full flex items-center justify-center text-white font-preview font-semibold text-lg mb-2"
@@ -408,7 +408,7 @@ export default function PreviewRecord({ slice, showIndexTable = false, featured,
           </div>
 
           {/* Action bar — icon + label, like HubSpot's record actions */}
-          <div className="flex justify-center gap-1 px-2 py-3 border-b border-hs-border">
+          <div data-tour="record-actions" className="flex justify-center gap-1 px-2 py-3 border-b border-hs-border">
             {['Note', 'Email', 'Call', 'Task', 'Meeting'].map((a) => {
               const Icon = ACTION_ICON[a]
               return (
@@ -442,7 +442,7 @@ export default function PreviewRecord({ slice, showIndexTable = false, featured,
         </div>
 
         {/* CENTER — activity tabs + timeline */}
-        <div className="flex-1 min-w-0 bg-hs-canvas">
+        <div data-tour="record-center" className="flex-1 min-w-0 bg-hs-canvas">
           <div className="bg-white border-b border-hs-border px-4 flex gap-5">
             {['Overview', 'Activities', 'Intelligence'].map((t) => {
               const active = t === 'Activities'
@@ -494,7 +494,7 @@ export default function PreviewRecord({ slice, showIndexTable = false, featured,
 
         {/* RIGHT — association cards */}
         {rightSections.length > 0 && (
-          <div className="w-[280px] shrink-0 bg-hs-canvas border-l border-hs-border p-3 space-y-2.5">
+          <div data-tour="record-associations" className="w-[280px] shrink-0 bg-hs-canvas border-l border-hs-border p-3 space-y-2.5">
             {rightSections.map((sec) => (
               <AssocCard
                 key={sec.key}

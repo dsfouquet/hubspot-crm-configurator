@@ -272,6 +272,20 @@ export default function Step11_Preview({ readOnly = false }) {
     if (unlocked && tour.autoPrompt()) setShowPrompt(true)
   }, [unlocked])
 
+  // A record popup (contact/company/deal/ticket) just opened — play its tour.
+  useEffect(() => {
+    const onRecord = (e) => tour.startRecord(e.detail?.slice)
+    window.addEventListener('cc-tour-record', onRecord)
+    return () => window.removeEventListener('cc-tour-record', onRecord)
+  }, [tour.startRecord])
+
+  // A top sub-tab was clicked inside a hub — play that tab's tour.
+  useEffect(() => {
+    const onTab = (e) => tour.startTab(e.detail?.hub, e.detail?.tab)
+    window.addEventListener('cc-tour-tab', onTab)
+    return () => window.removeEventListener('cc-tour-tab', onTab)
+  }, [tour.startTab])
+
   const startTour = () => {
     setShowPrompt(false)
     tour.start()

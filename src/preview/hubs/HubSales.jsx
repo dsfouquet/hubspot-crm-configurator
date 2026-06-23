@@ -40,6 +40,7 @@ import {
   REP_ACTIVITY,
   PIPELINE_VALUES,
 } from '../demoData'
+import { fireTabTour } from '../tour/events'
 
 // Look up a demo contact by name (falls back to a minimal stub so the modal
 // always renders something sensible even if a name doesn't match).
@@ -331,7 +332,10 @@ export default function HubSales() {
           return (
             <button
               key={t}
-              onClick={() => setTab(t)}
+              onClick={() => {
+                setTab(t)
+                fireTabTour('sales', t)
+              }}
               className={`relative text-[13px] px-3 py-2.5 transition-colors ${
                 active
                   ? 'text-hs-navy font-medium'

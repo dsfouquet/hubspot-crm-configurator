@@ -21,6 +21,8 @@ import {
 } from '../demoData'
 import { industryCopy } from '../industryCopy'
 
+import { fireTabTour } from '../tour/events'
+
 const TABS = ['Quotes', 'Invoices', 'Payments']
 
 const money = (n) =>
@@ -42,7 +44,10 @@ export default function HubCommerce() {
           return (
             <button
               key={t}
-              onClick={() => setTab(t)}
+              onClick={() => {
+                setTab(t)
+                fireTabTour('commerce', t)
+              }}
               className={`relative text-[13px] py-2.5 px-3 -mb-px transition-colors ${
                 active
                   ? 'text-hs-navy font-medium'
