@@ -2,6 +2,7 @@ import { useStore } from '../store/useStore'
 import { stepsForMode } from '../constants/steps'
 import { PREVIEW_COMPONENTS } from '../preview/registry'
 import ZoomFrame from '../preview/ZoomFrame'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 // Right preview pane — mimics the HubSpot UI. In presenter mode it goes full width
 // and bumps font size ~20% for screen-share readability (spec 3.2). ZoomFrame owns
@@ -29,7 +30,9 @@ export default function PreviewPane() {
         presenterMode ? 'text-[1.2em]' : ''
       }`}
     >
-      {selfZooms ? render(currentStep) : <ZoomFrame>{render(currentStep)}</ZoomFrame>}
+      <ErrorBoundary resetKey={stepKey}>
+        {selfZooms ? render(currentStep) : <ZoomFrame>{render(currentStep)}</ZoomFrame>}
+      </ErrorBoundary>
     </section>
   )
 }

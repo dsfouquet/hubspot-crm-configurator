@@ -18,6 +18,16 @@ export default function PreviewDiscovery() {
       return ids.length ? ids.map((id) => painParts(id).pain) : null
     }
     if (q.type === 'single-from-pains') return a ? [painParts(a).pain] : null
+    if (q.type === 'tracking-multi') {
+      // Answer is an object { groupKey: [labels] } — flatten to the selected
+      // labels so it renders as tags (returning the raw object crashes React).
+      if (!a || typeof a !== 'object' || Array.isArray(a)) return null
+      const labels = Object.values(a)
+        .filter(Array.isArray)
+        .flat()
+        .filter(Boolean)
+      return labels.length ? labels : null
+    }
     if (q.type === 'habit-matrix') {
       if (!a || typeof a !== 'object') return null
       // Surface the statements flagged as a problem (No / Not sure).
